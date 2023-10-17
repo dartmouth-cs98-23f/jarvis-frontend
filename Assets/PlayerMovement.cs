@@ -17,12 +17,10 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void MovePlayerByClick()
     {
         if (Input.touchCount > 0) 
         {
-            Debug.Log("Touch detected");
             Touch touch = Input.GetTouch(0);
             if (touch.phase == TouchPhase.Began) 
             {
@@ -31,13 +29,19 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
-        if (targetPosition != rb.position)
+        if (Vector2.Distance(targetPosition, transform.position) > 0.1f) // Adjust the tolerance level as needed
         {
             rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
-        } else 
+        }
+        else 
         {
             rb.velocity = Vector2.zero;
         }
-        Debug.Log("Moving player to (" + targetPosition.x + ", " + targetPosition.y + ")");
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        MovePlayerByClick();
     }
 }
