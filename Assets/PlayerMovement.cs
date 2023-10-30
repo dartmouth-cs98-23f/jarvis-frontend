@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Vector2 targetPosition;
-
+    bool canMove = true;
     private float moveSpeed = 5.0f;
 
     // Start is called before the first frame update
@@ -39,9 +39,19 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void OnHamburgerMenuClick()
+    {
+        canMove = false;
+        Debug.Log("Hamburger Menu Clicked!");
+    }
+
+
     // Update is called once per frame
     void Update()
     {
-        MovePlayerByClick();
+        if (canMove){
+            MovePlayerByClick();
+        }
+        
     }
 }
