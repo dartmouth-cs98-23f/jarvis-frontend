@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CreateAccount : MonoBehaviour
+public class CreateAccountNavigator : MonoBehaviour
 {
 
     public InputField firstNameInput;
@@ -11,10 +11,13 @@ public class CreateAccount : MonoBehaviour
     public InputField emailInput;
     public InputField passwordInput;
     public InputField confirmPasswordInput;
+    public GameObject RegisterPanel;
+    public GameObject QuestionPanels;
     // Start is called before the first frame update
     void Start()
     {
-        
+        RegisterPanel.SetActive(true);
+        QuestionPanels.SetActive(false);
     }
 
     public void OnCreateAccountButtonClicked()
@@ -40,8 +43,9 @@ public class CreateAccount : MonoBehaviour
         }
 
         // TODO: Get error message from backend and display it
-        if (createAccount(firstName, lastName, email, password, confirmPassword))
+        if (CreateAccount(firstName, lastName, email, password, confirmPassword))
         {
+            NavigateToQuestionPanels();
             Debug.Log("Successfully created account with first name: " + firstName + ", last name: " + lastName + " email: " + email + " and password: " + password + "");
         } else
         {
@@ -56,9 +60,15 @@ public class CreateAccount : MonoBehaviour
     //  "error: password must be at least 8 characters"
     // "error: passwords do not match"
     // "error: email is not valid"
-    private bool createAccount(string firstName, string lastName, string email, string password, string confirmPassword)
+    private bool CreateAccount(string firstName, string lastName, string email, string password, string confirmPassword)
     {
         return true;
+    }
+
+    private void NavigateToQuestionPanels()
+    {
+        RegisterPanel.SetActive(false);
+        QuestionPanels.SetActive(true);
     }
 
     // Update is called once per frame
@@ -66,4 +76,5 @@ public class CreateAccount : MonoBehaviour
     {
         
     }
+
 }
