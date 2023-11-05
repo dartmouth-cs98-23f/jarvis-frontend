@@ -19,10 +19,10 @@ public class PlayerMovement : MonoBehaviour
 
     void MovePlayerByClick()
     {
-        if (Input.touchCount > 0) 
+        if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Began) 
+            if (touch.phase == TouchPhase.Began)
             {
                 targetPosition = Camera.main.ScreenToWorldPoint(touch.position);
             }
@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
         }
-        else 
+        else
         {
             rb.velocity = Vector2.zero;
         }
