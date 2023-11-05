@@ -23,6 +23,7 @@ Library: /Users/vico/Dev/simU/Temp/BurstOutput/StaticLibraries/lib_burst_generat
 --assembly-defines=Unity.Mathematics;
 --assembly-defines=Unity.Profiling.Core;
 --assembly-defines=Unity.Subsystem.Registration;
+--assembly-defines=Unity.TextMeshPro;
 --assembly-defines=Unity.VisualScripting.Core;
 --assembly-defines=Unity.VisualScripting.Flow;
 --assembly-defines=UnityEngine;

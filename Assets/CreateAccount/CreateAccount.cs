@@ -32,6 +32,13 @@ public class CreateAccount : MonoBehaviour
             return;
         }
 
+        // TODO: Add UI error message for users
+        if (password != confirmPassword)
+        {
+            Debug.Log("Passwords do not match");
+            return;
+        }
+
         // TODO: Get error message from backend and display it
         if (createAccount(firstName, lastName, email, password, confirmPassword))
         {
@@ -44,6 +51,11 @@ public class CreateAccount : MonoBehaviour
 
     // TODO: this is a temporary method that should be calling the backend's create account method instead
     // returns true if the account was successfully created, false otherwise
+    // "successful"
+    // "error: email already exists"
+    //  "error: password must be at least 8 characters"
+    // "error: passwords do not match"
+    // "error: email is not valid"
     private bool createAccount(string firstName, string lastName, string email, string password, string confirmPassword)
     {
         return true;
