@@ -57,11 +57,8 @@ public class PlayerMovement : MonoBehaviour
     {
         // If the player is within the stopping distance, stop its movement and animation
         rb.velocity = Vector2.zero;
-        Debug.Log("Here");
         animator.SetFloat("MoveX", 0.001f);
         animator.SetFloat("MoveY", 0.001f);
-        Debug.Log("MoveX: " + animator.GetFloat("MoveX"));
-        Debug.Log("Here2");
     }
 }
 
