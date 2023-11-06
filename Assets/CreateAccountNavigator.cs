@@ -68,7 +68,7 @@ public class CreateAccountNavigator : MonoBehaviour
     // "error: email is not valid"
     private async Task<bool> CreateAccount(string firstName, string lastName, string email, string password, string confirmPassword)
 {
-    HTTPClient httpClient = new HTTPClient();
+    HTTPClient httpClient = HTTPClient.Instance;
     bool registrationSuccessful = await httpClient.RegisterUser(firstName, lastName, email, password);
     if (registrationSuccessful){
         return true;
