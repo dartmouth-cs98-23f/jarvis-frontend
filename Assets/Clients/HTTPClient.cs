@@ -15,7 +15,8 @@ public class HTTPClient
     private static HTTPClient instance;
     private readonly HttpClient httpClient = new HttpClient();
     private const string url = "http://localhost:5087";  
-    private string myId;
+    private Guid myId;
+    private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
     private HTTPClient() { }
 
@@ -79,7 +80,6 @@ public class HTTPClient
         return false; // Registration failed due to exception
     }
 }
-    
 
     public async Task<bool> PostResponses(List<string> answers)
 {
@@ -111,7 +111,8 @@ public class HTTPClient
     }
 }
 
-public async Task<UserData> GetUser(string userId)
+// TODO: This method should be called when in proximity to another character
+public async Task<UserData> GetUser(Guid userId)
 {
     string apiUrl = $"{url}/users/{userId}";
 
@@ -127,18 +128,39 @@ public async Task<UserData> GetUser(string userId)
         }
         else
         {
-            // Handle other HTTP status codes if needed
             Debug.LogError("Error: " + response.StatusCode);
-            return null;
+            return null; // May need to change null
         }
     }
     catch (HttpRequestException e)
     {
-        // Handle other exceptions if needed
         Debug.LogError("HTTP Request Exception: " + e.Message);
         return null; 
     }
 }
+
+// TODO: This method should be called when in proximity to another character
+public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
+    try {
+        string apiUrl = $"{url}?senderId={senderId}&recipientId={receiverId}";
+
+        HttpResponseMessage response = await httpClient.GetAsync(url);
+
+        if (response.IsSuccessStatusCode) {
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            List<ChatMessage> chatHistory = JsonConvert.DeserializeObject<List<ChatMessage>>(jsonResponse);
+            return chatHistory;
+        } else {
+            Debug.LogError("Error: " + response.StatusCode);
+            return null; // May need to change null
+        }
+    } catch (HttpRequestException e) {
+        Debug.LogError("HTTP Request Exception: " + e.Message);
+        return null; 
+    }
+}
+
+
 
 [System.Serializable]
 public class UserData
@@ -153,7 +175,6 @@ public class UserData
     public DateTime lastActiveTime;
 }
 
-
     [System.Serializable]
     public class UserRegistrationData
     {
@@ -166,8 +187,23 @@ public class UserData
     [System.Serializable]
     public class UserRegistrationResponse
     {
-        public string userId;
+        public Guid userId;
         public string responseString;
+    }
+
+    [System.Serializable]
+    public class Location
+    {
+        public int coordX;
+        public int coordY;
+    }
+    [System.Serializable]
+    public class ChatMessage {
+        public Guid senderId;
+        public Guid receiverId;
+        public string content;
+        public bool isGroupChat;
+        public string createdTime;
     }
 
 }
