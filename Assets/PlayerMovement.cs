@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Clients;
+using System.Threading.Tasks;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -16,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    void MovePlayerByClick()
+    private async Task MovePlayerByClick()
     {
     if (Input.touchCount > 0)
     {
@@ -52,6 +54,13 @@ public class PlayerMovement : MonoBehaviour
     {
         // Move the player towards the target position
         rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
+
+        // Get the current player position
+        int xCoordinate = Mathf.RoundToInt(transform.position.x);
+        int yCoordinate = Mathf.RoundToInt(transform.position.y);
+
+        // Send the updated location to the server
+        await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
     }
     else
     {
@@ -64,8 +73,8 @@ public class PlayerMovement : MonoBehaviour
 
 
     // Update is called once per frame
-    void Update()
+    async void Update()
     {
-        MovePlayerByClick();
+        await MovePlayerByClick();
     }
 }

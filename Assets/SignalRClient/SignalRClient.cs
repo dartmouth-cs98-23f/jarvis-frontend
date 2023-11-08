@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using UnityEngine;
 
 
 namespace Clients {
@@ -38,6 +39,7 @@ public class SignalRClient
         {
             if (instance == null)
             {
+                Debug.Log("Initializing SignalRClient");
                 instance = new SignalRClient(firstName, url);
                 await instance.ConnectAsync();
             }
@@ -131,6 +133,10 @@ public class SignalRClient
     public int X_coordinate { get; set; }
     public int Y_coordinate { get; set; }
 }
+    public Dictionary<Guid, Location> UserLocations
+        {
+            get { return userLocations; }
+        }
 
 }
 }

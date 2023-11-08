@@ -1,11 +1,10 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 
 namespace Clients {
@@ -204,6 +203,11 @@ public class UserData
         public string content;
         public bool isGroupChat;
         public string createdTime;
+    }
+
+    public Guid MyId
+    {
+        get { return myId; }
     }
 
 }
