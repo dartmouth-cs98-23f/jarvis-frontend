@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = SignalRClientLibrary
+build_property.ProjectDir = /Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/

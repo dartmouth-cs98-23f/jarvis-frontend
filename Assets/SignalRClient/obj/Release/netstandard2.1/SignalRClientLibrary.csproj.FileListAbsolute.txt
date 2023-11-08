@@ -1,0 +1,10 @@
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/obj/Release/netstandard2.1/SignalRClientLibrary.csproj.AssemblyReference.cache
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/obj/Release/netstandard2.1/SignalRClientLibrary.GeneratedMSBuildEditorConfig.editorconfig
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/obj/Release/netstandard2.1/SignalRClientLibrary.AssemblyInfoInputs.cache
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/obj/Release/netstandard2.1/SignalRClientLibrary.AssemblyInfo.cs
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/obj/Release/netstandard2.1/SignalRClientLibrary.csproj.CoreCompileInputs.cache
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/bin/Release/netstandard2.1/SignalRClientLibrary.deps.json
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/bin/Release/netstandard2.1/SignalRClientLibrary.dll
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/bin/Release/netstandard2.1/SignalRClientLibrary.pdb
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/obj/Release/netstandard2.1/SignalRClientLibrary.dll
+/Users/evan/cs98/jarvis-frontend/Assets/SignalRClient/obj/Release/netstandard2.1/SignalRClientLibrary.pdb
