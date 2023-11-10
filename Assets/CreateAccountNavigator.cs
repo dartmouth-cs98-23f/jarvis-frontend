@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Clients;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class CreateAccountNavigator : MonoBehaviour
 {
@@ -20,7 +23,7 @@ public class CreateAccountNavigator : MonoBehaviour
         QuestionPanels.SetActive(false);
     }
 
-    public void OnCreateAccountButtonClicked()
+    public async void OnCreateAccountButtonClicked()
     {
         string firstName = firstNameInput.text;
         string lastName = lastNameInput.text;
@@ -43,11 +46,14 @@ public class CreateAccountNavigator : MonoBehaviour
         }
 
         // TODO: Get error message from backend and display it
-        if (CreateAccount(firstName, lastName, email, password, confirmPassword))
+        bool registrationSuccessful = await CreateAccount(firstName, lastName, email, password, confirmPassword);
+
+        if (registrationSuccessful)
         {
             NavigateToQuestionPanels();
             Debug.Log("Successfully created account with first name: " + firstName + ", last name: " + lastName + " email: " + email + " and password: " + password + "");
-        } else
+        }
+        else
         {
             Debug.Log("Failed to create account due to backend error");
         }
@@ -60,10 +66,18 @@ public class CreateAccountNavigator : MonoBehaviour
     //  "error: password must be at least 8 characters"
     // "error: passwords do not match"
     // "error: email is not valid"
-    private bool CreateAccount(string firstName, string lastName, string email, string password, string confirmPassword)
-    {
+    private async Task<bool> CreateAccount(string firstName, string lastName, string email, string password, string confirmPassword)
+{
+    HTTPClient httpClient = HTTPClient.Instance;
+    bool registrationSuccessful = await httpClient.RegisterUser(firstName, lastName, email, password);
+    if (registrationSuccessful){
         return true;
     }
+    else{
+        return false; 
+    }
+}
+
 
     private void NavigateToQuestionPanels()
     {

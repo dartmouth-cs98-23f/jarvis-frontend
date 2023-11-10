@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Clients;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class CreateAccount : MonoBehaviour
 {
@@ -17,7 +20,7 @@ public class CreateAccount : MonoBehaviour
         
     }
 
-    public void OnCreateAccountButtonClicked()
+    public async void OnCreateAccountButtonClicked()
     {
         string firstName = firstNameInput.text;
         string lastName = lastNameInput.text;
@@ -40,10 +43,13 @@ public class CreateAccount : MonoBehaviour
         }
 
         // TODO: Get error message from backend and display it
-        if (createAccount(firstName, lastName, email, password, confirmPassword))
+        bool registrationSuccessful = await createAccount(firstName, lastName, email, password, confirmPassword);
+
+        if (registrationSuccessful)
         {
             Debug.Log("Successfully created account with first name: " + firstName + ", last name: " + lastName + " email: " + email + " and password: " + password + "");
-        } else
+        }
+        else
         {
             Debug.Log("Failed to create account due to backend error");
         }
@@ -56,10 +62,17 @@ public class CreateAccount : MonoBehaviour
     //  "error: password must be at least 8 characters"
     // "error: passwords do not match"
     // "error: email is not valid"
-    private bool createAccount(string firstName, string lastName, string email, string password, string confirmPassword)
-    {
+    private async Task<bool> createAccount(string firstName, string lastName, string email, string password, string confirmPassword)
+{
+    HTTPClient httpClient = HTTPClient.Instance;
+    bool registrationSuccessful = await httpClient.RegisterUser(firstName, lastName, email, password);
+    if (registrationSuccessful){
         return true;
     }
+    else{
+        return false; 
+    }
+}
 
     // Update is called once per frame
     void Update()
