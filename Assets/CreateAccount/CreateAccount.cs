@@ -67,6 +67,8 @@ public class CreateAccount : MonoBehaviour
     HTTPClient httpClient = HTTPClient.Instance;
     bool registrationSuccessful = await httpClient.RegisterUser(firstName, lastName, email, password);
     if (registrationSuccessful){
+        await SignalRClient.Initialize(firstName, "blank"); // TODO: Need to get this URL
+        Debug.Log("SignalRClient just initialized");
         return true;
     }
     else{

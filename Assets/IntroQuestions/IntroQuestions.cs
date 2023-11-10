@@ -26,7 +26,7 @@ public async void OnQuestionClicked()
     // Check the count and validate answers accordingly
     if (string.IsNullOrEmpty(currentAnswer))
     {
-        // TODO: Add UI error message for users
+        // TODO: Add UI error message for users, make sure button doesn't let them advance with empty response
         Debug.Log($"Please provide an answer for question {clickCount} before proceeding.");
         return;
     }
@@ -50,7 +50,7 @@ public async void OnQuestionClicked()
         }
         else
         {
-            Debug.Log("Failed to create account due to backend error");
+            Debug.Log("Failed to post responses due to backend error");
         }
     }
 
