@@ -198,11 +198,12 @@ public class UserData
     }
     [System.Serializable]
     public class ChatMessage {
+        public Guid id;
         public Guid senderId;
         public Guid receiverId;
         public string content;
         public bool isGroupChat;
-        public string createdTime;
+        public DateTime createdTime;
     }
 
     public Guid MyId

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Clients;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
+using System;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -60,7 +62,7 @@ public class PlayerMovement : MonoBehaviour
         int yCoordinate = Mathf.RoundToInt(transform.position.y);
 
         // Send the updated location to the server
-        await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
+        // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate); // TODO: Uncomment
     }
     else
     {
@@ -77,4 +79,5 @@ public class PlayerMovement : MonoBehaviour
     {
         await MovePlayerByClick();
     }
+
 }
