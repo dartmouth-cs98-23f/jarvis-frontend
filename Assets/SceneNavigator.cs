@@ -15,7 +15,8 @@ public class SceneNavigator : MonoBehaviour
     {
         SceneManager.LoadScene("MainMap");
     }
-    public void LoadChat(){
+    public void LoadChat()
+    {
         SceneManager.LoadScene("Chat");
     }
 }
