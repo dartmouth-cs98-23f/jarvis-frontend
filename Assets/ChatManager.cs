@@ -163,7 +163,7 @@ public class ChatManager : MonoBehaviour
             }
         }
 
-        Debug.Log("BuildChatHistory called: " + sortedChatMessages);
+        // Debug.Log("BuildChatHistory called: " + sortedChatMessages);
     }
 
     void GenerateChatMessageObject(ChatMessage chatMessage)
