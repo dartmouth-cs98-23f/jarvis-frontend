@@ -1675,6 +1675,7 @@ MonoBehaviour:
   messageInputField: {fileID: 111037768}
   contentPanel: {fileID: 1625375207}
   chatMessagePrefab: {fileID: 3880945074633732517, guid: cd77b26fe01b845398b047eff5576c8e, type: 3}
+  otherUserName: {fileID: 1856904599}
   sortedChatMessages: []
 --- !u!1 &1797941184
 GameObject:
@@ -1910,7 +1911,6 @@ RectTransform:
   - {fileID: 111037767}
   - {fileID: 1540749761}
   - {fileID: 1635374381}
-  - {fileID: 2074973841}
   - {fileID: 44196561}
   - {fileID: 2092534068}
   m_Father: {fileID: 0}
@@ -2078,41 +2078,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2064084078}
   m_CullTransparentMesh: 1
---- !u!1 &2074973840
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2074973841}
-  m_Layer: 5
-  m_Name: ChatManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2074973841
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2074973840}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1824647013}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2092534067
 GameObject:
   m_ObjectHideFlags: 0

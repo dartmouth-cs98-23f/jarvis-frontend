@@ -33,30 +33,6 @@ public class ChatMessage
 
 public static class JsonHelper
 {
-    // public static List<ChatMessage> ConvertJsonToChatList(string json)
-    // {
-    //     // format date time for deserialization
-    //     // TODO: replace "yyyy-MM-ddTHH:mm:ssZ" with the actual date-time format used in JSON string
-    //     IsoDateTimeConverter dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-ddTHH:mm:ssZ" };
-
-    //     // Deserialize the JSON into a dictionary
-    //     var dict = JsonConvert.DeserializeObject<Dictionary<string, ChatMessage>>(json, dateTimeConverter);
-
-    //     // Iterate over the dictionary to set the id property of each ChatMessage
-    //     foreach (var entry in dict)
-    //     {
-    //         entry.Value.id = entry.Key; // Set the id of ChatMessage to the key from the dictionary
-    //     }
-
-    //     // Create a list from the dictionary values
-    //     List<ChatMessage> chatList = new List<ChatMessage>(dict.Values);
-
-    //     // Sort the list based on the createdTime
-    //     chatList.Sort((x, y) => DateTime.Compare(x.createdTime, y.createdTime));
-
-    //     return chatList;
-    // }
-
     public static List<ChatMessage> ConvertJsonToChatList(string json)
     {
         List<ChatMessage> chatList = JsonConvert.DeserializeObject<List<ChatMessage>>(json);
@@ -77,6 +53,9 @@ public class ChatManager : MonoBehaviour
     public GameObject chatMessagePrefab;
     public GameObject otherUserName;
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
+
+    private Sprite userImage; // TODO: replace with actual image of user once backend api can handle it
+    private Sprite otherUserImage; // TODO: replace with actual image of other user once backend api can handle it
 
     private string chatTestJsonString = @"
     [
@@ -110,8 +89,12 @@ public class ChatManager : MonoBehaviour
 
     void Start()
     {
+        // TODO: replace with loading the actual images of the users once backend api can handle
+        userImage = Resources.Load<Sprite>("Shapes/user_head");
+        otherUserImage = Resources.Load<Sprite>("Shapes/npc_head");
         // TODO: Get current user information and the other user information
         BuildOtherUserProfile();
+
     }
 
     // Update is called once per frame
@@ -186,7 +169,14 @@ public class ChatManager : MonoBehaviour
     {
         GameObject chatGO = Instantiate(chatMessagePrefab, contentPanel);
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
-        chatMessageComponent.SetChatDetails(chatMessage.SenderId, chatMessage.Content);
+        if (chatMessage.SenderId == currentUserId)
+        {
+            chatMessageComponent.SetChatDetails(userImage, chatMessage.Content);
+        }
+        else
+        {
+            chatMessageComponent.SetChatDetails(otherUserImage, chatMessage.Content);
+        }
     }
 
     // TODO: replace this with backend api logic here
