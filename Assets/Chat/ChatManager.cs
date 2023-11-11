@@ -6,7 +6,8 @@ using UnityEngine.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-
+using Clients;
+using System.Threading.Tasks;
 
 [Serializable]
 public class ChatMessage
@@ -70,9 +71,11 @@ public class ChatManager : MonoBehaviour
     // Start is called before the first frame update
     private Guid currentUserId = new Guid("cf11a140-99b3-4e07-9108-249f2b66533d"); // TODO: This is a temporary testing value. Update value when changing from previous scene
     private Guid otherUserID = new Guid("c75ed4cb-2406-41ec-b3d7-2b2cf0806c52");  // TODO: This is a temporary testing value. Update value when changing from previous scene
+    // private HTTPClient httpClient = HTTPClient.Instance;
     public InputField messageInputField;
     public Transform contentPanel;
     public GameObject chatMessagePrefab;
+    public GameObject otherUserName;
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
 
     private string chatTestJsonString = @"
@@ -108,13 +111,26 @@ public class ChatManager : MonoBehaviour
     void Start()
     {
         // TODO: Get current user information and the other user information
-        // buildOtherUserProfile();
+        BuildOtherUserProfile();
     }
 
     // Update is called once per frame
     void Update()
     {
         BuildChatHistory();
+    }
+
+    public async void BuildOtherUserProfile()
+    {
+        // TODO: Replace code with actual code to get user information
+        // HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
+        HTTPClient.UserData otherUser = new HTTPClient.UserData();
+        otherUser.firstName = "John";
+        otherUser.lastName = "Doe";
+        if (otherUser == null){
+            return;
+        }
+        otherUserName.GetComponent<Text>().text = otherUser.firstName + " " + otherUser.lastName;
     }
 
     // TODO: This is a temporary method for frontend testing
