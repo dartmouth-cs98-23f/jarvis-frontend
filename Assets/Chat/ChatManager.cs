@@ -176,6 +176,11 @@ public class ChatManager : MonoBehaviour
     // TODO: replace this with backend api logic here
     void SendMessage(Guid receiverId, string content)
     {
+        if (string.IsNullOrEmpty(content))
+        {
+            return;
+        }
+        
         // TODO: Remove this after backend api is implemented
         ChatMessage message =  new ChatMessage();
         message.SenderId = currentUserId;
