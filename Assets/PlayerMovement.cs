@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 targetPosition;
     private Animator animator;
     private float moveSpeed = 5.0f;
+    private Guid collidedUserId;
 
     // Start is called before the first frame update
     void Start()
@@ -73,6 +74,37 @@ public class PlayerMovement : MonoBehaviour
     }
 }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+{
+    Debug.Log($"Collided with GameObject: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
+
+    // Check if the collision is with an NPC
+    if (collision.gameObject.CompareTag("NPC"))
+    {
+        NPCCharacter npcCharacter = collision.gameObject.GetComponent<NPCCharacter>();
+
+        if (npcCharacter != null)
+        {
+            // Access NPC information
+            collidedUserId = npcCharacter.GetUserId();
+
+            Debug.Log($"Collided with NPC (ID: {collidedUserId})");
+
+            // Disable the Rigidbody2D to stop the NPCCharacter from moving
+            Rigidbody2D npcRigidbody = npcCharacter.GetComponent<Rigidbody2D>();
+            if (npcRigidbody != null)
+            {
+                npcRigidbody.bodyType = RigidbodyType2D.Static; // Set to Static to make it immovable
+            }
+
+            // Store the collidedUserId in PlayerPrefs
+            PlayerPrefs.SetString("CollidedUserId", collidedUserId.ToString());
+
+            // Load the "Chat" scene
+            SceneManager.LoadScene("Chat");
+        }
+    }
+}
 
     // Update is called once per frame
     async void Update()
