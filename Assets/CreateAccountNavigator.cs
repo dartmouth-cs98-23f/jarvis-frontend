@@ -69,11 +69,9 @@ public class CreateAccountNavigator : MonoBehaviour
     private async Task<bool> CreateAccount(string firstName, string lastName, string email, string password, string confirmPassword)
 {
     HTTPClient httpClient = HTTPClient.Instance;
-    bool registrationSuccessful = await httpClient.RegisterUser(firstName, lastName, email, password);
-    // bool registrationSuccessful = await httpClient.Login(email, password);
+    // bool registrationSuccessful = await httpClient.RegisterUser(firstName, lastName, email, password);
+    bool registrationSuccessful = await httpClient.Login(email, password);
     if (registrationSuccessful){
-        await SignalRClient.Initialize(firstName, "https://simyou.azurewebsites.net/unity");
-        Debug.Log("SignalRClient just initialized");
         return true;
     }
     else{

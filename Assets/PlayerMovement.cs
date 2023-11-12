@@ -84,9 +84,11 @@ public class PlayerMovement : MonoBehaviour
 
         // Send the updated location to the server
         // TODO: Replace with code below
-        PlayerPrefs.SetString("lastKnownX", xCoordinate.ToString());
-        PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
-        // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate)
+        // PlayerPrefs.SetString("lastKnownX", xCoordinate.ToString());
+        // PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
+        
+        await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
+
 
     }
     else

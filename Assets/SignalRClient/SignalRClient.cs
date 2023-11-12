@@ -42,6 +42,13 @@ public class SignalRClient
                 Debug.Log("Initializing SignalRClient");
                 instance = new SignalRClient(firstName, url);
                 await instance.ConnectAsync();
+                if (instance._connection.State == HubConnectionState.Connected)
+                {
+                    Debug.Log("IM ACTUALLY CONNECTED");
+                }
+                else{
+                    Debug.Log("I am not actually connected :(");
+                }
             }
         }
 
@@ -93,9 +100,9 @@ public class SignalRClient
                 Y_coordinate = yCoordinate
             };
 
-            Debug.Log("UpdateLocation called with location " + location);
+            Debug.Log("UpdateLocation called with location " + location.X_coordinate + " " + location.Y_coordinate);
 
-            await _connection.SendAsync("UpdateLocation", location);
+            await _connection.SendAsync("UpdateLocation", location.X_coordinate, location.Y_coordinate);
         }
 
      public void RegisterUpdateLocationHandler()

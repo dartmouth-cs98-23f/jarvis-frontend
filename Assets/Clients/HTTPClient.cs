@@ -17,7 +17,7 @@ public class HTTPClient
     public UserData currentUserData = new UserData();
 
     private readonly HttpClient httpClient = new HttpClient();
-    private const string url = "http://localhost:5087";  
+    private const string url = "https://simyou.azurewebsites.net";  
     private Guid myId;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
@@ -191,13 +191,14 @@ public async Task<UserData> GetUser(Guid userId)
 // TODO: This method should be called when in proximity to another character
 public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
     try {
-        string apiUrl = $"{url}?senderId={senderId}&recipientId={receiverId}";
+        string apiUrl = $"{url}/chats/history";
 
         HttpResponseMessage response = await httpClient.GetAsync(url);
 
         if (response.IsSuccessStatusCode) {
             string jsonResponse = await response.Content.ReadAsStringAsync();
             List<ChatMessage> chatHistory = JsonConvert.DeserializeObject<List<ChatMessage>>(jsonResponse);
+        
             return chatHistory;
         } else {
             Debug.LogError("Error: " + response.StatusCode);
@@ -254,13 +255,25 @@ public class UserData
         public int coordY;
     }
     [System.Serializable]
-    public class ChatMessage {
-        public Guid id;
-        public Guid senderId;
-        public Guid receiverId;
-        public string content;
-        public bool isGroupChat;
-        public DateTime createdTime;
+    public class ChatMessage
+    {
+        [JsonProperty("id")]
+        public Guid Id { get; set; }
+
+        [JsonProperty("senderId")]
+        public Guid SenderId { get; set; }
+
+        [JsonProperty("receiverId")]
+        public Guid ReceiverId { get; set; }
+
+        [JsonProperty("content")]
+        public string Content { get; set; }
+
+        [JsonProperty("isGroupChat")]
+        public bool IsGroupChat { get; set; }
+
+        [JsonProperty("createdTime")]
+        public DateTime CreatedTime { get; set; }
     }
 
     public Guid MyId
