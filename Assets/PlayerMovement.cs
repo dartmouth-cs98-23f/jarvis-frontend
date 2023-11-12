@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Clients;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.EventSystems;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -14,11 +16,14 @@ public class PlayerMovement : MonoBehaviour
     private float moveSpeed = 5.0f;
     private Guid collidedUserId;
 
+    public GameObject InteractButton;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
     }
 
     private async Task MovePlayerByClick()
@@ -26,10 +31,25 @@ public class PlayerMovement : MonoBehaviour
     if (Input.touchCount > 0)
     {
         Touch touch = Input.GetTouch(0);
+
+        // Clicked on a UI element, do not move the player
+        if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+            {
+                return;
+            }
+        
         if (touch.phase == TouchPhase.Began)
         {
             targetPosition = Camera.main.ScreenToWorldPoint(touch.position);
+            
         }
+    }
+
+    // This fixes the player automatically going to 0,0 on start
+    if (targetPosition.x == 0f && targetPosition.y == 0f)
+    {
+        rb.velocity = Vector2.zero;
+        return;
     }
 
     Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
@@ -63,7 +83,11 @@ public class PlayerMovement : MonoBehaviour
         int yCoordinate = Mathf.RoundToInt(transform.position.y);
 
         // Send the updated location to the server
-        // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate); // TODO: Uncomment
+        // TODO: Replace with code below
+        PlayerPrefs.SetString("lastKnownX", xCoordinate.ToString());
+        PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
+        // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate)
+
     }
     else
     {
@@ -74,9 +98,12 @@ public class PlayerMovement : MonoBehaviour
     }
 }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D collision)
 {
     Debug.Log($"Collided with GameObject: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
+
+    // Show click to chat button
+    InteractButton.SetActive(true);
 
     // Check if the collision is with an NPC
     if (collision.gameObject.CompareTag("NPC"))
@@ -99,12 +126,18 @@ public class PlayerMovement : MonoBehaviour
 
             // Store the collidedUserId in PlayerPrefs
             PlayerPrefs.SetString("CollidedUserId", collidedUserId.ToString());
-
-            // Load the "Chat" scene
-            SceneManager.LoadScene("Chat");
         }
     }
+
+
+
 }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        // Hide click to chat button
+        InteractButton.SetActive(false);
+    }
 
     // Update is called once per frame
     async void Update()

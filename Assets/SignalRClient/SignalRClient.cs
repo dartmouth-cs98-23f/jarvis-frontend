@@ -93,6 +93,8 @@ public class SignalRClient
                 Y_coordinate = yCoordinate
             };
 
+            Debug.Log("UpdateLocation called with location " + location);
+
             await _connection.SendAsync("UpdateLocation", location);
         }
 
@@ -100,7 +102,7 @@ public class SignalRClient
         {
             _connection.On<Guid, Location>("UpdateLocation", (userId, location) =>
             {
-                Console.WriteLine($"User {userId} moved to X: {location.X_coordinate}, Y: {location.Y_coordinate}");
+                Debug.Log($"User {userId} moved to X: {location.X_coordinate}, Y: {location.Y_coordinate}");
                 
                 userLocations[userId] = location;
             });

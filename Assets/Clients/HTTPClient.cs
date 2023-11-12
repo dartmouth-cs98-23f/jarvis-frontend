@@ -12,6 +12,10 @@ namespace Clients {
 public class HTTPClient
 {
     private static HTTPClient instance;
+
+    //TODO: Delete currentUserData
+    public UserData currentUserData = new UserData();
+
     private readonly HttpClient httpClient = new HttpClient();
     private const string url = "http://localhost:5087";  
     private Guid myId;
@@ -61,6 +65,52 @@ public class HTTPClient
             string jsonResponse = await response.Content.ReadAsStringAsync();
             UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
             Debug.Log("User registered successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.responseString);
+            myId = registrationResponse.userId;
+
+            return true; // Registration successful
+        }
+        else
+        {
+            // Handle other HTTP status codes if needed
+            Debug.LogError("Error: " + response.StatusCode);
+            return false; // Registration failed
+        }
+    }
+    catch (HttpRequestException e)
+    {
+        // Handle other exceptions if needed
+        Debug.LogError("HTTP Request Exception: " + e.Message);
+        return false; // Registration failed due to exception
+    }
+}
+
+    public async Task<bool> Login(string email, string password)
+{
+    string apiUrl = $"{url}/Authentication/login";
+
+    Debug.Log("login called");
+    try
+    {
+        UserLoginData loginData = new UserLoginData
+        {
+            Email = email,
+            Password = password
+        };
+
+        string jsonRequest = JsonConvert.SerializeObject(loginData);
+        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+        Debug.Log("before response");
+
+        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+        Debug.Log("after response" + response);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Debug.Log("response is success status code");
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
+            Debug.Log("User logged in successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.responseString);
             myId = registrationResponse.userId;
 
             return true; // Registration successful
@@ -179,6 +229,13 @@ public class UserData
     {
         public string FirstName;
         public string LastName;
+        public string Password;
+        public string Email;
+    }
+
+ [System.Serializable]
+    public class UserLoginData
+    {
         public string Password;
         public string Email;
     }
