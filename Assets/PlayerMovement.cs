@@ -87,7 +87,6 @@ public class PlayerMovement : MonoBehaviour
             // Check if the next position is within the bounds of the tilemap
             if (IsWithinTilemapBounds(nextPosition))
             {
-                Debug.Log("Within Tilemap Bounds");
                 // Move the player towards the target position
                 rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
             }
@@ -101,8 +100,9 @@ public class PlayerMovement : MonoBehaviour
             int xCoordinate = Mathf.RoundToInt(transform.position.x);
             int yCoordinate = Mathf.RoundToInt(transform.position.y);
 
-            // PlayerPrefs.SetString("lastKnownX", xCoordinate.ToString());
-            // PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
+            // TODO: Comment out when backend works
+            PlayerPrefs.SetString("lastKnownX", xCoordinate.ToString());
+            PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
 
             // Send the updated location to the server
             await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
@@ -120,8 +120,6 @@ public class PlayerMovement : MonoBehaviour
     {
         // Convert world position to tile position
         Vector3Int cellPosition = tilemap.WorldToCell(position);
-
-        Debug.Log(tilemap.cellBounds.Contains(cellPosition));
 
         // Check if the cell position is within the bounds of the tilemap
         return tilemap.cellBounds.Contains(cellPosition);

@@ -52,29 +52,23 @@ public class GameClient : MonoBehaviour
 
     void BuildAllCharacters()
     {
-        // userId = new Guid("be05eea4-f13b-41fe-ade7-e09ff6044bda");
-        // Debug.Log("BuildAllCharacters userId: " + userId); 
-        // Debug.Log("BuildAllCharacters userId HTTP Client: " + HTTPClient.Instance.MyId);
-
         // TODO: Uncomment below for local testing
-        ////////////////////////////////////////////////////
+        //////////////////////////////////////////////////
 
-        // httpClient.currentUserData.firstName = "Evan";
-        // httpClient.currentUserData.lastName = "Phillips";
-        // string xCoordinateString = PlayerPrefs.GetString("lastKnownX", "0");
-        // string yCoordinateString = PlayerPrefs.GetString("lastKnownY", "0");
-        // httpClient.currentUserData.lastKnownX = int.Parse(xCoordinateString);
-        // httpClient.currentUserData.lastKnownY = int.Parse(yCoordinateString);
+        string xCoordinateString = PlayerPrefs.GetString("lastKnownX", "0");
+        string yCoordinateString = PlayerPrefs.GetString("lastKnownY", "0");
+        currentUserData.lastKnownX = int.Parse(xCoordinateString);
+        currentUserData.lastKnownY = int.Parse(yCoordinateString);
 
-        ////////////////////////////////////////////////////
+        //////////////////////////////////////////////////
 
         // ADD back httpClient.currentUserData if testing locally
         // TODO: Handle error codes
-        // if (currentUserData == null)
-        // { 
-        //     Debug.Log("error getting user");
-        //     return;
-        // }
+        if (currentUserData == null)
+        { 
+            Debug.Log("error getting user");
+            return;
+        }
 
         GameObject currentUserGO = Instantiate(currentPlayerPrefab, mainMap);
         currentUserGO.tag = "Player";
