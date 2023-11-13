@@ -40,6 +40,7 @@ public class SignalRClient
         if (instance == null)
         {
             string baseURL = "http://localhost:5087/unity";
+            // string baseURL = "https://simyou.azurewebsites.net/unity";
             string urlWithUserId = baseURL + "?userId=" + userId.ToString();
             Debug.Log("Initializing SignalRClient with URL:" + urlWithUserId);
             instance = new SignalRClient(firstName, urlWithUserId);

@@ -33,7 +33,8 @@ public class GameClient : MonoBehaviour
         currentUserData = await HTTPClient.Instance.GetUser(userId);
         if (currentUserData != null)
         {
-            Debug.Log("InitializeUserData: " + currentUserData.firstName);
+            Debug.Log("InitializeGame: " + currentUserData.firstName);
+            Debug.Log("InitializeGame: " + currentUserData.lastKnownX + ", " + currentUserData.lastKnownY);
             BuildAllCharacters(); // Call this method after user data is initialized
             await SignalRClient.Initialize(userId, currentUserData.firstName); // TODO: Change first name to user first name later
             signalRClient = SignalRClient.Instance;
@@ -44,6 +45,9 @@ public class GameClient : MonoBehaviour
             Debug.LogError("Failed to initialize user data.");
         }
     }
+
+    // c8268729-e4f5-4df3-85fc-51779d7c2b35
+    //d2e12e14-5df1-4a0e-92f1-11f2f10e5880
 
     void BuildAllCharacters()
     {
@@ -96,7 +100,7 @@ public class GameClient : MonoBehaviour
         
         CharacterComponent georgeWashingtonComponent = georgeWashingtonGO.GetComponent<CharacterComponent>();
         georgeWashingtonComponent.SetPosition(-10, 10, 0); // Add back httpClient.currentUserData if testing locally
-        georgeWashingtonComponent.SetUserId(new Guid("a7374288-d61d-439e-9c56-855a61cba425")); // Add back httpClient.currentUserData if testing locally
+        georgeWashingtonComponent.SetUserId(new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41")); // Add back httpClient.currentUserData if testing locally
 
     }
     
