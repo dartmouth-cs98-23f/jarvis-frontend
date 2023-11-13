@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.EventSystems;
+using UnityEngine.Tilemaps;
+
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -17,87 +19,110 @@ public class PlayerMovement : MonoBehaviour
     private Guid collidedUserId;
 
     public GameObject InteractButton;
+    public Tilemap tilemap; // Reference to the Tilemap
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
     }
 
+    public void SetTilemap(Tilemap tilemap)
+    {
+        this.tilemap = tilemap;
+    }
+    
     private async Task MovePlayerByClick()
     {
-    if (Input.touchCount > 0)
-    {
-        Touch touch = Input.GetTouch(0);
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
 
-        // Clicked on a UI element, do not move the player
-        if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+            // Clicked on a UI element, do not move the player
+            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
             {
                 return;
             }
-        
-        if (touch.phase == TouchPhase.Began)
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                targetPosition = Camera.main.ScreenToWorldPoint(touch.position);
+            }
+        }
+
+        // This fixes the player automatically going to 0,0 on start
+        if (targetPosition.x == 0f && targetPosition.y == 0f)
         {
-            targetPosition = Camera.main.ScreenToWorldPoint(touch.position);
-            
+            rb.velocity = Vector2.zero;
+            return;
+        }
+
+        Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
+
+        // Calculate the absolute values of movement in x and y directions
+        float absMoveX = Mathf.Abs(direction.x);
+        float absMoveY = Mathf.Abs(direction.y);
+
+        // Determine which animation to play based on the movement direction
+        if (absMoveY > absMoveX)
+        {
+            // Play walk forward animation
+            animator.SetFloat("MoveX", 0f);
+            animator.SetFloat("MoveY", direction.y);
+        }
+        else
+        {
+            // Play walk right animation
+            animator.SetFloat("MoveX", direction.x);
+            animator.SetFloat("MoveY", 0f);
+        }
+
+        // Check if the distance between the player and the target is greater than the stopping distance
+        if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
+        {
+            // Calculate the next position
+            Vector2 nextPosition = (Vector2)transform.position + direction * moveSpeed * Time.deltaTime;
+
+            // Check if the next position is within the bounds of the tilemap
+            if (IsWithinTilemapBounds(nextPosition))
+            {
+                Debug.Log("Within Tilemap Bounds");
+                // Move the player towards the target position
+                rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
+            }
+            else
+            {
+                // Stop the player if the next position is outside the tilemap bounds
+                rb.velocity = Vector2.zero;
+            }
+
+            // Get the current player position
+            int xCoordinate = Mathf.RoundToInt(transform.position.x);
+            int yCoordinate = Mathf.RoundToInt(transform.position.y);
+
+            // Send the updated location to the server
+            await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
+        }
+        else
+        {
+            // If the player is within the stopping distance, stop its movement and animation
+            rb.velocity = Vector2.zero;
+            animator.SetFloat("MoveX", 0.001f);
+            animator.SetFloat("MoveY", 0.001f);
         }
     }
 
-    // This fixes the player automatically going to 0,0 on start
-    if (targetPosition.x == 0f && targetPosition.y == 0f)
+    private bool IsWithinTilemapBounds(Vector2 position)
     {
-        rb.velocity = Vector2.zero;
-        return;
+        // Convert world position to tile position
+        Vector3Int cellPosition = tilemap.WorldToCell(position);
+
+        Debug.Log(tilemap.cellBounds.Contains(cellPosition));
+
+        // Check if the cell position is within the bounds of the tilemap
+        return tilemap.cellBounds.Contains(cellPosition);
     }
-
-    Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
-
-    // Calculate the absolute values of movement in x and y directions
-    float absMoveX = Mathf.Abs(direction.x);
-    float absMoveY = Mathf.Abs(direction.y);
-
-    // Determine which animation to play based on the movement direction
-    if (absMoveY > absMoveX)
-    {
-        // Play walk forward animation
-        animator.SetFloat("MoveX", 0f);
-        animator.SetFloat("MoveY", direction.y);
-    }
-    else
-    {
-        // Play walk right animation
-        animator.SetFloat("MoveX", direction.x);
-        animator.SetFloat("MoveY", 0f);
-    }
-
-    // Check if the distance between the player and the target is greater than the stopping distance
-    if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
-    {
-        // Move the player towards the target position
-        rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
-
-        // Get the current player position
-        int xCoordinate = Mathf.RoundToInt(transform.position.x);
-        int yCoordinate = Mathf.RoundToInt(transform.position.y);
-
-        // Send the updated location to the server
-        // TODO: Replace with code below
-        // PlayerPrefs.SetString("lastKnownX", xCoordinate.ToString());
-        // PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
-        
-        await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
-
-    }
-    else
-    {
-        // If the player is within the stopping distance, stop its movement and animation
-        rb.velocity = Vector2.zero;
-        animator.SetFloat("MoveX", 0.001f);
-        animator.SetFloat("MoveY", 0.001f);
-    }
-}
 
     void OnCollisionEnter2D(Collision2D collision)
 {
@@ -152,13 +177,6 @@ public class PlayerMovement : MonoBehaviour
             PlayerPrefs.SetString("CollidedUserId", collidedUserId.ToString());
         }
     }
-
-
-
-    
-
-
-
 }
 
     void OnCollisionExit2D(Collision2D collision)
@@ -172,5 +190,5 @@ public class PlayerMovement : MonoBehaviour
     {
         await MovePlayerByClick();
     }
-
 }
+
