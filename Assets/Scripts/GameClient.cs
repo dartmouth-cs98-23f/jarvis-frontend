@@ -1,6 +1,7 @@
 using UnityEngine;
 using Clients;
 using System;
+using UnityEngine.Tilemaps;
 
 
 public class GameClient : MonoBehaviour
@@ -77,9 +78,13 @@ public class GameClient : MonoBehaviour
 
         GameObject currentUserGO = Instantiate(currentPlayerPrefab, mainMap);
         currentUserGO.tag = "Player";
+
+        Tilemap tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+
         PlayerMovement playerMovementScript = currentUserGO.GetComponent<PlayerMovement>();
         playerMovementScript.InteractButton = GameObject.Find("InteractButton");
         playerMovementScript.InteractButton.SetActive(false);
+        playerMovementScript.SetTilemap(tilemap);
         CharacterComponent characterComponent = currentUserGO.GetComponent<CharacterComponent>();
         characterComponent.SetPosition(currentUserData.lastKnownX, currentUserData.lastKnownY, 0); // Add back httpClient.currentUserData if testing locally
 
