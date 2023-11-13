@@ -81,7 +81,7 @@ public class HTTPClient
     catch (HttpRequestException e)
     {
         // Handle other exceptions if needed
-        Debug.LogError("HTTP Request Exception: " + e.Message);
+        Debug.LogError("Register HTTP Request Exception: " + e.Message);
         return false; // Registration failed due to exception
     }
 }
@@ -127,7 +127,7 @@ public class HTTPClient
     catch (HttpRequestException e)
     {
         // Handle other exceptions if needed
-        Debug.LogError("HTTP Request Exception: " + e.Message);
+        Debug.LogError("Login HTTP Request Exception: " + e.Message);
         return false; // Registration failed due to exception
     }
 }
@@ -157,7 +157,7 @@ public class HTTPClient
     }
     catch (HttpRequestException e)
     {
-        Debug.LogError("HTTP Request Exception: " + e.Message);
+        Debug.LogError("PostResponses HTTP Request Exception: " + e.Message);
         return false; // Posting responses failed due to exception
     }
 }
@@ -186,7 +186,7 @@ public async Task<UserData> GetUser(Guid userId)
     }
     catch (HttpRequestException e)
     {
-        Debug.LogError("HTTP Request Exception: " + e.Message);
+        Debug.LogError("GetUser HTTP Request Exception: " + e.Message);
         return null; 
     }
 }
@@ -196,7 +196,7 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
     try {
         string apiUrl = $"{url}/chats/history";
 
-        HttpResponseMessage response = await httpClient.GetAsync(url);
+        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
         if (response.IsSuccessStatusCode) {
             string jsonResponse = await response.Content.ReadAsStringAsync();
@@ -208,7 +208,7 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
             return null; // May need to change null
         }
     } catch (HttpRequestException e) {
-        Debug.LogError("HTTP Request Exception: " + e.Message);
+        Debug.LogError("GetChatHistory HTTP Request Exception: " + e.Message);
         return null; 
     }
 }
