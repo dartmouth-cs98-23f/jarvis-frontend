@@ -88,8 +88,8 @@ public class ChatManager : MonoBehaviour
     void Update()
     {
         // TODO: Switch for backend API
-        // BuildChatHistory();
-        LocalBuildChatHistory();
+        BuildChatHistory();
+        // LocalBuildChatHistory();
     }
 
 
@@ -149,8 +149,8 @@ public class ChatManager : MonoBehaviour
     {
 
         // TODO: Switch for backend API
-        LocalSendChat(otherUserID, messageInputField.text);
-        // SendChat(otherUserID, messageInputField.text);
+        // LocalSendChat(otherUserID, messageInputField.text);
+        SendChat(otherUserID, messageInputField.text);
         // Debug.Log("after adding new chat entry" + chatTestJsonString);
         messageInputField.text = "";
     }
