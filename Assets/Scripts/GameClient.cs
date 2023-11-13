@@ -15,7 +15,7 @@ public class GameClient : MonoBehaviour
     private HTTPClient httpClient;
     private HTTPClient.UserData currentUserData;
 
-    void Start()
+    void Awake()
     {
         httpClient = HTTPClient.Instance; // get httpClient
         userId = httpClient.MyId; // TODO: Uncomment and delete line below
@@ -88,7 +88,8 @@ public class GameClient : MonoBehaviour
         georgeWashingtonGO.tag = "Player";
         PlayerMovement georgeWashingtonMovementScript = georgeWashingtonGO.GetComponent<PlayerMovement>();
         Transform georgeMainCamera = georgeWashingtonGO.transform.Find("Main Camera");
-        // If the child exists, destroy it
+        // If the camera exists, destroy it
+        // destroy mainCamera and playerMovement script for NPC
         if (georgeMainCamera != null)
         {
             Destroy(georgeMainCamera.gameObject);
@@ -101,6 +102,26 @@ public class GameClient : MonoBehaviour
         CharacterComponent georgeWashingtonComponent = georgeWashingtonGO.GetComponent<CharacterComponent>();
         georgeWashingtonComponent.SetPosition(-10, 10, 0); // Add back httpClient.currentUserData if testing locally
         georgeWashingtonComponent.SetUserId(new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41")); // Add back httpClient.currentUserData if testing locally
+
+
+
+        GameObject yodaGO = Instantiate(currentPlayerPrefab, mainMap);
+        yodaGO.tag = "Player";
+        PlayerMovement yodaMovementScript = yodaGO.GetComponent<PlayerMovement>();
+        Transform yodaMainCamera = yodaGO.transform.Find("Main Camera");
+        // destroy mainCamera and playerMovement script for NPC
+        if (yodaMainCamera != null)
+        {
+            Destroy(yodaMainCamera.gameObject);
+        }
+        if (yodaMovementScript != null)
+        {
+            Destroy(yodaMovementScript);
+        }
+        
+        CharacterComponent yodaComponent = yodaGO.GetComponent<CharacterComponent>();
+        yodaComponent.SetPosition(10, -3, 0); // Add back httpClient.currentUserData if testing locally
+        yodaComponent.SetUserId(new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559")); // Add back httpClient.currentUserData if testing locally
 
     }
     

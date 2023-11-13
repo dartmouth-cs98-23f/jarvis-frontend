@@ -88,7 +88,6 @@ public class PlayerMovement : MonoBehaviour
         // PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
         
         await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
-
     }
     else
     {

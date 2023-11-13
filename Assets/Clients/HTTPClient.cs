@@ -74,7 +74,7 @@ public class HTTPClient
         else
         {
             // Handle other HTTP status codes if needed
-            Debug.LogError("Error: " + response.StatusCode);
+            Debug.LogError("RegisterUser Error: " + response.StatusCode);
             return false; // Registration failed
         }
     }
@@ -120,7 +120,7 @@ public class HTTPClient
         else
         {
             // Handle other HTTP status codes if needed
-            Debug.LogError("Error: " + response.StatusCode);
+            Debug.LogError("Login Error: " + response.StatusCode);
             return false; // Registration failed
         }
     }
@@ -151,7 +151,7 @@ public class HTTPClient
         }
         else
         {
-            Debug.LogError("Error: " + response.StatusCode);
+            Debug.LogError("PostResponsesError: " + response.StatusCode);
             return false; // Posting responses failed
         }
     }
@@ -180,7 +180,7 @@ public async Task<UserData> GetUser(Guid userId)
         }
         else
         {
-            Debug.LogError("Error: " + response.StatusCode);
+            Debug.LogError("GetUser Error: " + response.StatusCode);
             return null; // May need to change null
         }
     }
@@ -204,7 +204,7 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
         
             return chatHistory;
         } else {
-            Debug.LogError("Error: " + response.StatusCode);
+            Debug.LogError("GetChatHistory Error: " + response.StatusCode);
             return null; // May need to change null
         }
     } catch (HttpRequestException e) {
