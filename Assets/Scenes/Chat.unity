@@ -849,7 +849,7 @@ GameObject:
   - component: {fileID: 885487713}
   - component: {fileID: 885487712}
   m_Layer: 5
-  m_Name: NPCProfileImage
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1675,7 +1675,8 @@ MonoBehaviour:
   messageInputField: {fileID: 111037768}
   contentPanel: {fileID: 1625375207}
   chatMessagePrefab: {fileID: 3880945074633732517, guid: cd77b26fe01b845398b047eff5576c8e, type: 3}
-  otherUserName: {fileID: 1856904599}
+  cardUsername: {fileID: 1856904601}
+  cardProfileImage: {fileID: 885487712}
   sortedChatMessages: []
 --- !u!1 &1797941184
 GameObject:

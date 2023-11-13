@@ -27,10 +27,13 @@ public class ChatManager : MonoBehaviour
     private HTTPClient httpClient = HTTPClient.Instance;
     private Guid currentUserId = HTTPClient.Instance.MyId;
     private Guid otherUserID; 
+    private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
+    private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
     public InputField messageInputField;
     public Transform contentPanel;
     public GameObject chatMessagePrefab;
-    public GameObject otherUserName;
+    public Text cardUsername;
+    public Image cardProfileImage;
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
 
     private Sprite userImage; // TODO: replace with actual image of user once backend api can handle it
@@ -40,25 +43,25 @@ public class ChatManager : MonoBehaviour
     [
         {
             ""id"": ""44dcb24a-3fb6-4533-be6f-7c56eb259c89"",
-            ""senderId"": ""cf11a140-99b3-4e07-9108-249f2b66533d"",
-            ""receiverId"": ""c75ed4cb-2406-41ec-b3d7-2b2cf0806c52"",
+            ""senderId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
+            ""receiverId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
             ""content"": ""This is old text"",
             ""isGroupChat"": false,
             ""createdTime"": ""2022-05-21T08:20:00Z""
         },
         {
             ""id"": ""21526023-eb1b-4b1a-be79-beb0d714dc45"",
-            ""senderId"": ""cf11a140-99b3-4e07-9108-249f2b66533d"",
-            ""receiverId"": ""c75ed4cb-2406-41ec-b3d7-2b2cf0806c52"",
+            ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
+            ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
             ""content"": ""This is the newest text"",
             ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T14:45:30Z""
         },
         {
             ""id"": ""e23ae41c-b1da-4679-982f-2e38154b217b"",
-            ""senderId"": ""c75ed4cb-2406-41ec-b3d7-2b2cf0806c52"",
-            ""receiverId"": ""cf11a140-99b3-4e07-9108-249f2b66533d"",
-            ""content"": ""This is new text"",
+            ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
+            ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
+            ""content"": ""This is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new text"",
             ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T13:45:30Z""
         },
@@ -69,32 +72,51 @@ public class ChatManager : MonoBehaviour
     void Start()
     {
         // TODO: replace with loading the actual images of the users once backend api can handle
-        userImage = Resources.Load<Sprite>("Shapes/user_head");
-        otherUserImage = Resources.Load<Sprite>("Shapes/npc_head");
         otherUserID = new Guid(PlayerPrefs.GetString("CollidedUserId"));
+
+        // Initialize user images
+        userImage = GetUserImage(currentUserId);
+        otherUserImage = GetUserImage(otherUserID);
+
         Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
         // TODO: Get current user information and the other user information
         BuildOtherUserProfile();
 
     }
-
+    
     // Update is called once per frame
     void Update()
     {
-        BuildChatHistory();
+        // TODO: Switch for backend API
+        // BuildChatHistory();
+        LocalBuildChatHistory();
+    }
+
+
+    Sprite GetUserImage(Guid userId)
+    {
+        if (userId.ToString() == yodaID.ToString()) {
+            return Resources.Load<Sprite>("Shapes/master_yoda_head");
+        } else if (userId.ToString() == georgeWashID.ToString())
+        {
+            return Resources.Load<Sprite>("Shapes/george_washington_head");
+        } else if (userId.ToString() == currentUserId.ToString()) {
+            return Resources.Load<Sprite>("Shapes/user_head");
+        }
+        else {
+            return Resources.Load<Sprite>("Shapes/npc_head");
+        }
     }
 
     public async void BuildOtherUserProfile()
     {
         // TODO: Replace code with actual code to get user information
         HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
-        // HTTPClient.UserData otherUser = new HTTPClient.UserData();
-        // otherUser.firstName = "John";
-        // otherUser.lastName = "Doe";
         if (otherUser == null){
             return;
         }
-        otherUserName.GetComponent<Text>().text = otherUser.firstName + " " + otherUser.lastName;
+        cardUsername.GetComponent<Text>().text = otherUser.firstName + " " + otherUser.lastName;
+        cardProfileImage.sprite = otherUserImage;
     }
 
     // TODO: This is a temporary method for frontend testing
@@ -125,7 +147,10 @@ public class ChatManager : MonoBehaviour
     // send message to backend
     public void onClickSendMessage() //add to unity button
     {
-        SendChat(otherUserID, messageInputField.text);
+
+        // TODO: Switch for backend API
+        LocalSendChat(otherUserID, messageInputField.text);
+        // SendChat(otherUserID, messageInputField.text);
         // Debug.Log("after adding new chat entry" + chatTestJsonString);
         messageInputField.text = "";
     }
@@ -133,13 +158,27 @@ public class ChatManager : MonoBehaviour
     async void BuildChatHistory()
     {
         sortedChatMessages = await httpClient.GetChatHistory(currentUserId, otherUserID);
-        if (sortedChatMessages == null) 
+         if (sortedChatMessages == null) 
         {
             return;
         }
-        sortedChatMessages.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));           // Sort the list based on the createdTime
+        sortedChatMessages.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime)); 
+        
+        // Sort the list based on the createdTime
+        foreach (HTTPClient.ChatMessage chatMessage in sortedChatMessages)
+        {
+            if (generatedMessageIds.Add(chatMessage.Id)) // if chatMessage has not been created yet
+            {
+                GenerateChatMessageObject(chatMessage);
+            }
+        }
 
-        // sortedChatMessages = JsonHelper.ConvertJsonToChatList(chatJsonString);
+    }
+
+    // For local frontend testing
+    void LocalBuildChatHistory()
+    {
+        sortedChatMessages = JsonHelper.ConvertJsonToChatList(LocalGetChatHistory(otherUserID));
         foreach (HTTPClient.ChatMessage chatMessage in sortedChatMessages)
         {
             if (generatedMessageIds.Add(chatMessage.Id)) // if chatMessage has not been created yet
@@ -184,10 +223,29 @@ public class ChatManager : MonoBehaviour
         await SignalRClient.Instance.SendChat(otherUserID, content);
     }
 
-    // TODO: replace this with backend api logic here
-    // async string GetChatHistory(Guid otherUserID)
-    // {
-    //     // return chatTestJsonString;
-    //     return await httpClient.GetChatHistory(currentUserId, otherUserID); // replace this line with above for local testing
-    // }
+    // For local frontend testing
+    void LocalSendChat(Guid receiverId, string content)
+    {
+        if (string.IsNullOrEmpty(content))
+        {
+            return;
+        }
+        
+        // Uncomment this for local testing
+        HTTPClient.ChatMessage message =  new HTTPClient.ChatMessage();
+        message.SenderId = currentUserId;
+        message.ReceiverId = receiverId;
+        message.Content = content;
+        message.IsGroupChat = false;
+        message.CreatedTime = DateTime.Now; // TODO: check if this is auto-generated on backend
+        AddNewChatEntry(Guid.NewGuid(), message);
+    }
+
+
+    // For local frontend testing
+    string LocalGetChatHistory(Guid otherUserID)
+    {
+        // return chatTestJsonString;
+        return chatTestJsonString; // replace this line with above for local testing
+    }
 }
