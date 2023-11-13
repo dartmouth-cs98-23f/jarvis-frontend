@@ -89,7 +89,6 @@ public class PlayerMovement : MonoBehaviour
         
         await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
 
-
     }
     else
     {
@@ -108,28 +107,55 @@ public class PlayerMovement : MonoBehaviour
     InteractButton.SetActive(true);
 
     // Check if the collision is with an NPC
-    if (collision.gameObject.CompareTag("NPC"))
-    {
-        NPCCharacter npcCharacter = collision.gameObject.GetComponent<NPCCharacter>();
+    // if (collision.gameObject.CompareTag("NPC"))
+    // {
+    //     NPCCharacter npcCharacter = collision.gameObject.GetComponent<NPCCharacter>();
 
-        if (npcCharacter != null)
+    //     if (npcCharacter != null)
+    //     {
+    //         // Access NPC information
+    //         collidedUserId = npcCharacter.GetUserId();
+
+    //         Debug.Log($"Collided with NPC (ID: {collidedUserId})");
+
+    //         // Disable the Rigidbody2D to stop the NPCCharacter from moving
+    //         Rigidbody2D npcRigidbody = npcCharacter.GetComponent<Rigidbody2D>();
+    //         if (npcRigidbody != null)
+    //         {
+    //             npcRigidbody.bodyType = RigidbodyType2D.Static; // Set to Static to make it immovable
+    //         }
+
+    //         // Store the collidedUserId in PlayerPrefs
+    //         PlayerPrefs.SetString("CollidedUserId", collidedUserId.ToString());
+    //     }
+    // }
+
+    if (collision.gameObject.CompareTag("Player"))
+    {
+        CharacterComponent playerCharacterComponent = collision.gameObject.GetComponent<CharacterComponent>();
+
+        if (playerCharacterComponent != null)
         {
             // Access NPC information
-            collidedUserId = npcCharacter.GetUserId();
+            collidedUserId = playerCharacterComponent.GetUserId();
 
-            Debug.Log($"Collided with NPC (ID: {collidedUserId})");
+            Debug.Log($"Collided with Player (ID: {collidedUserId})");
 
             // Disable the Rigidbody2D to stop the NPCCharacter from moving
-            Rigidbody2D npcRigidbody = npcCharacter.GetComponent<Rigidbody2D>();
-            if (npcRigidbody != null)
+            Rigidbody2D playerRigidbody = playerCharacterComponent.GetComponent<Rigidbody2D>();
+            if (playerRigidbody != null)
             {
-                npcRigidbody.bodyType = RigidbodyType2D.Static; // Set to Static to make it immovable
+                playerRigidbody.bodyType = RigidbodyType2D.Static; // Set to Static to make it immovable
             }
 
             // Store the collidedUserId in PlayerPrefs
             PlayerPrefs.SetString("CollidedUserId", collidedUserId.ToString());
         }
     }
+
+
+
+    
 
 
 

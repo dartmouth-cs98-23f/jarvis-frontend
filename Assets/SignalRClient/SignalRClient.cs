@@ -15,42 +15,70 @@ public class SignalRClient
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
     private static SignalRClient instance;
 
-        private SignalRClient(string firstName, string url)
-        {
-            this.firstName = firstName.Length <= 10 ? firstName.ToLower() : firstName.ToLower()[..10];
-            _connection = new HubConnectionBuilder()
-                .WithUrl(url)
-                .Build();
-        }
+    private SignalRClient(string firstName, string url)
+    {
+        this.firstName = firstName.Length <= 10 ? firstName.ToLower() : firstName.ToLower()[..10];
+        _connection = new HubConnectionBuilder()
+            .WithUrl(url)
+            .Build();
+    }
 
-        public static SignalRClient Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    throw new Exception("SignalRClient has not been initialized. Call Initialize method first.");
-                }
-                return instance;
-            }
-        }
-
-        public static async Task Initialize(string firstName, string url)
+    public static SignalRClient Instance
+    {
+        get
         {
             if (instance == null)
             {
-                Debug.Log("Initializing SignalRClient");
-                instance = new SignalRClient(firstName, url);
-                await instance.ConnectAsync();
-                if (instance._connection.State == HubConnectionState.Connected)
-                {
-                    Debug.Log("IM ACTUALLY CONNECTED");
-                }
-                else{
-                    Debug.Log("I am not actually connected :(");
-                }
+                throw new Exception("SignalRClient has not been initialized. Call Initialize method first.");
             }
+            return instance;
         }
+    }
+
+    public static async Task Initialize(Guid userId, string firstName)
+    {
+        if (instance == null)
+        {
+            string baseURL = "http://localhost:5087/unity";
+            string urlWithUserId = baseURL + "?userId=" + userId.ToString();
+            Debug.Log("Initializing SignalRClient with URL:" + urlWithUserId);
+            instance = new SignalRClient(firstName, urlWithUserId);
+            await instance.ConnectAsync();
+            if (instance._connection.State == HubConnectionState.Connected)
+            {
+                Debug.Log("IM ACTUALLY CONNECTED");
+            }
+            else{
+                Debug.Log("I am not actually connected :(");
+            }
+        } 
+        // TODO: Delete code below
+        // else 
+        // {
+        //     Debug.Log("Called Initialize but SignalRClient Instance already exist");
+        //     if (IsConnected())
+        //     {
+        //         Debug.Log("IM ACTUALLY CONNECTED and Instance is not null");
+        //     }
+        //     else{
+        //         Debug.Log("I am not actually connected :( and Instance is not null. I'm gonna try reconnecting...");
+        //         instance = new SignalRClient("Vico1", url);
+        //         await instance.ConnectAsync();
+        //         if (instance._connection.State == HubConnectionState.Connected)
+        //         {
+        //             Debug.Log("I reconnected");
+        //         }
+        //         else{
+        //             Debug.Log("I failed to reconnect");
+        //         }
+        //     }
+        // }
+    }
+
+    public static bool IsConnected()
+    {
+        return instance != null && instance._connection.State == HubConnectionState.Connected;
+    }
 
     /// <summary>
     /// Connects the client to the server.
@@ -101,26 +129,37 @@ public class SignalRClient
             };
 
             Debug.Log("UpdateLocation called with location " + location.X_coordinate + " " + location.Y_coordinate);
-
-            await _connection.SendAsync("UpdateLocation", location.X_coordinate, location.Y_coordinate);
+            if (IsConnected()) 
+            {
+                await _connection.SendAsync("UpdateLocation", location.X_coordinate, location.Y_coordinate);
+                Debug.Log("In updateLocation isConnected, updating location");
+            } else 
+            {
+                Debug.Log("In updateLocation not Connected, failed to update");
+            }
         }
 
      public void RegisterUpdateLocationHandler()
         {
-            _connection.On<Guid, Location>("UpdateLocation", (userId, location) =>
+            // TODO: Refactor handleError out into a combined handler
+            _connection.On<string>("HandleError", (error) =>
             {
-                Debug.Log($"User {userId} moved to X: {location.X_coordinate}, Y: {location.Y_coordinate}");
+                Debug.Log($"Error: {error}");
+            });
+            _connection.On<Guid, int, int>("UpdateLocation", (userId, xCoord, yCoord) =>
+            {
+                Debug.Log($"User {userId} moved to X: {xCoord}, Y: {yCoord}");
                 
-                userLocations[userId] = location;
+                userLocations[userId] = new Location { X_coordinate = xCoord, Y_coordinate = yCoord };
             });
         }
 
     // Sends a message to a user through the server.
-    public async Task SendMessage(Guid receiverId, string message)
+    public async Task SendChat(Guid receiverId, string message)
     {
         try
         {
-            await _connection.SendAsync("SendMessage", receiverId, message);
+            await _connection.SendAsync("SendChat", receiverId, message);
         }
         catch (Exception ex)
         {

@@ -72,6 +72,7 @@ public class ChatManager : MonoBehaviour
         userImage = Resources.Load<Sprite>("Shapes/user_head");
         otherUserImage = Resources.Load<Sprite>("Shapes/npc_head");
         otherUserID = new Guid(PlayerPrefs.GetString("CollidedUserId"));
+        Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
         // TODO: Get current user information and the other user information
         BuildOtherUserProfile();
 
@@ -124,7 +125,7 @@ public class ChatManager : MonoBehaviour
     // send message to backend
     public void onClickSendMessage() //add to unity button
     {
-        SendMessage(otherUserID, messageInputField.text);
+        SendChat(otherUserID, messageInputField.text);
         // Debug.Log("after adding new chat entry" + chatTestJsonString);
         messageInputField.text = "";
     }
@@ -132,6 +133,10 @@ public class ChatManager : MonoBehaviour
     async void BuildChatHistory()
     {
         sortedChatMessages = await httpClient.GetChatHistory(currentUserId, otherUserID);
+        if (sortedChatMessages == null) 
+        {
+            return;
+        }
         sortedChatMessages.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));           // Sort the list based on the createdTime
 
         // sortedChatMessages = JsonHelper.ConvertJsonToChatList(chatJsonString);
@@ -160,7 +165,7 @@ public class ChatManager : MonoBehaviour
     }
 
     // TODO: replace this with backend api logic here
-    async void SendMessage(Guid receiverId, string content)
+    async void SendChat(Guid receiverId, string content)
     {
         if (string.IsNullOrEmpty(content))
         {
@@ -176,7 +181,7 @@ public class ChatManager : MonoBehaviour
         // message.CreatedTime = DateTime.Now; // TODO: check if this is auto-generated on backend
         // AddNewChatEntry(Guid.NewGuid(), message);
 
-        await SignalRClient.Instance.SendMessage(otherUserID, content);
+        await SignalRClient.Instance.SendChat(otherUserID, content);
     }
 
     // TODO: replace this with backend api logic here

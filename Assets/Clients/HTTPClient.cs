@@ -17,7 +17,7 @@ public class HTTPClient
     public UserData currentUserData = new UserData();
 
     private readonly HttpClient httpClient = new HttpClient();
-    private const string url = "https://simyou.azurewebsites.net";  
+    private const string url = "http://localhost:5087";  
     private Guid myId;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
@@ -163,6 +163,7 @@ public class HTTPClient
 // TODO: This method should be called when in proximity to another character
 public async Task<UserData> GetUser(Guid userId)
 {
+    Debug.Log("Called GetUser in httpClient userid: " + userId.ToString());
     string apiUrl = $"{url}/users/{userId}";
 
     try
