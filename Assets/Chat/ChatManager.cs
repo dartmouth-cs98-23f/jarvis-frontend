@@ -81,6 +81,7 @@ public class ChatManager : MonoBehaviour
         Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
         // TODO: Get current user information and the other user information
         BuildOtherUserProfile();
+        BuildChatHistory();
 
     }
     
@@ -88,7 +89,7 @@ public class ChatManager : MonoBehaviour
     void Update()
     {
         // TODO: Switch for backend API
-        BuildChatHistory();
+        // BuildChatHistory();
         // LocalBuildChatHistory();
     }
 
@@ -167,8 +168,14 @@ public class ChatManager : MonoBehaviour
         // Sort the list based on the createdTime
         foreach (HTTPClient.ChatMessage chatMessage in sortedChatMessages)
         {
+            Debug.Log(chatMessage.Content);
+            foreach (var element in generatedMessageIds)
+            {
+                Debug.Log($"HashSet Element: {element}");
+            }
             if (generatedMessageIds.Add(chatMessage.Id)) // if chatMessage has not been created yet
             {
+                Debug.Log(chatMessage.Id);
                 GenerateChatMessageObject(chatMessage);
             }
         }
@@ -193,6 +200,7 @@ public class ChatManager : MonoBehaviour
     {
         GameObject chatGO = Instantiate(chatMessagePrefab, contentPanel);
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
+        Debug.Log("Id in GCMO" + chatMessage.Id);
         if (chatMessage.SenderId == currentUserId)
         {
             chatMessageComponent.SetChatDetails(userImage, chatMessage.Content);

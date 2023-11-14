@@ -37,11 +37,11 @@ public class HTTPClient
         }
     }
 
-    private void OnDestroy()
-    {
-        // Dispose of the HttpClient when the script is destroyed to prevent resource leaks
-        httpClient.Dispose();
-    }
+    // private void OnDestroy()
+    // {
+    //     // Dispose of the HttpClient when the script is destroyed to prevent resource leaks
+    //     httpClient.Dispose();
+    // }
 
     public async Task<bool> RegisterUser(string firstName, string lastName, string email, string password)
 {
@@ -191,12 +191,15 @@ public async Task<UserData> GetUser(Guid userId)
     }
 }
 
-// TODO: This method should be called when in proximity to another character
 public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
     try {
-        string apiUrl = $"{url}/chats/history";
+        senderId = new Guid("8ab1d23e-94f0-42bc-a58e-0a09f41cb4b8");
+        receiverId = new Guid("6e8f927c-e59d-4ccb-9b94-da5a45c9bc3a");
+        string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
 
+        Debug.Log($"Is httpClient disposed? {httpClient == null}");
         HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+        Debug.Log("Response " + response);
 
         if (response.IsSuccessStatusCode) {
             string jsonResponse = await response.Content.ReadAsStringAsync();
