@@ -22,6 +22,15 @@ public static class JsonHelper
 
 }
 
+public static class StringParser
+{
+    public static string ParseInput(string input)
+    {
+        var cleaned = System.Text.RegularExpressions.Regex.Replace(input, "[\"\n]", string.Empty);
+        return cleaned;
+    }
+}
+
 public class ChatManager : MonoBehaviour
 {
     private HTTPClient httpClient = HTTPClient.Instance;
@@ -61,7 +70,7 @@ public class ChatManager : MonoBehaviour
             ""id"": ""e23ae41c-b1da-4679-982f-2e38154b217b"",
             ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
             ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
-            ""content"": ""This is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new text"",
+            ""content"": ""This is new textThis is new text\nThis is new textThis is new text\nThis is new text\nThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new text"",
             ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T13:45:30Z""
         },
@@ -193,21 +202,20 @@ public class ChatManager : MonoBehaviour
                 GenerateChatMessageObject(chatMessage);
             }
         }
-
     }
 
     void GenerateChatMessageObject(HTTPClient.ChatMessage chatMessage)
     {
         GameObject chatGO = Instantiate(chatMessagePrefab, contentPanel);
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
-        Debug.Log("Id in GCMO" + chatMessage.Id);
+        string messageContent = StringParser.ParseInput(chatMessage.Content);
         if (chatMessage.SenderId == currentUserId)
         {
-            chatMessageComponent.SetChatDetails(userImage, chatMessage.Content);
+            chatMessageComponent.SetChatDetails(userImage, messageContent);
         }
         else
         {
-            chatMessageComponent.SetChatDetails(otherUserImage, chatMessage.Content);
+            chatMessageComponent.SetChatDetails(otherUserImage, messageContent);
         }
     }
 
