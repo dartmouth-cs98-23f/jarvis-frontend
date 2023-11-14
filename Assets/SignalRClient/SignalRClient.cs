@@ -47,6 +47,7 @@ public class SignalRClient
             string urlWithUserId = baseURL + "?userId=" + userId.ToString();
             Debug.Log("Initializing SignalRClient with URL:" + urlWithUserId);
             instance = new SignalRClient(firstName, urlWithUserId);
+            Debug.Log("Post instance assignment" + instance);
             await instance.ConnectAsync();
             if (instance._connection.State == HubConnectionState.Connected)
             {
