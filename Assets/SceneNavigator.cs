@@ -5,14 +5,19 @@ using UnityEngine.SceneManagement;
 
 public class SceneNavigator : MonoBehaviour
 {
+
     // Start is called before the first frame update
     public void LoadCreateAccount()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("CreateAccount");
     }
 
     public void LoadGame()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("MainMap");
+    }
+    public void LoadChat()
+    {
+        SceneManager.LoadScene("Chat");
     }
 }

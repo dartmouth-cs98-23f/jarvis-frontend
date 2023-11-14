@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Clients;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class CreateAccountNavigator : MonoBehaviour
 {
@@ -18,9 +21,10 @@ public class CreateAccountNavigator : MonoBehaviour
     {
         RegisterPanel.SetActive(true);
         QuestionPanels.SetActive(false);
+        // InitializeSignalRClient(); // TODO: Delete this line
     }
 
-    public void OnCreateAccountButtonClicked()
+    public async void OnCreateAccountButtonClicked()
     {
         string firstName = firstNameInput.text;
         string lastName = lastNameInput.text;
@@ -43,11 +47,14 @@ public class CreateAccountNavigator : MonoBehaviour
         }
 
         // TODO: Get error message from backend and display it
-        if (CreateAccount(firstName, lastName, email, password, confirmPassword))
+        bool registrationSuccessful = await CreateAccount(firstName, lastName, email, password, confirmPassword);
+
+        if (registrationSuccessful)
         {
             NavigateToQuestionPanels();
             Debug.Log("Successfully created account with first name: " + firstName + ", last name: " + lastName + " email: " + email + " and password: " + password + "");
-        } else
+        }
+        else
         {
             Debug.Log("Failed to create account due to backend error");
         }
@@ -60,10 +67,19 @@ public class CreateAccountNavigator : MonoBehaviour
     //  "error: password must be at least 8 characters"
     // "error: passwords do not match"
     // "error: email is not valid"
-    private bool CreateAccount(string firstName, string lastName, string email, string password, string confirmPassword)
-    {
+    private async Task<bool> CreateAccount(string firstName, string lastName, string email, string password, string confirmPassword)
+{
+    HTTPClient httpClient = HTTPClient.Instance;
+    bool registrationSuccessful = await httpClient.RegisterUser(firstName, lastName, email, password);
+    // bool registrationSuccessful = await httpClient.Login(email, password);
+    if (registrationSuccessful){
         return true;
     }
+    else{
+        return false; 
+    }
+}
+
 
     private void NavigateToQuestionPanels()
     {
@@ -74,7 +90,21 @@ public class CreateAccountNavigator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // if (SignalRClient.IsConnected())
+        // {
+        //     Debug.Log("SignalRClient is connected in createAccount");
+        // }
+        // else
+        // {
+        //     Debug.Log("SignalRClient is not connected in createAccount");
+        // }
     }
+
+    // // TODO: Delete this method and use normal CreateAccount shi
+    // // Doing this rn so we can skip create account screen
+    // async void InitializeSignalRClient(){
+    //     Debug.Log("calling initializeSignalRClient in CreateAccountNavigator");
+    //     await SignalRClient.Initialize("SimU", "http://localhost:5087/unity?userId=091cd9c9-7ae0-4766-9a3b-1e43f9f255ce");
+    // }
 
 }

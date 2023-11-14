@@ -1,4 +1,4 @@
-Library: /Users/vico/Dev/simU/Temp/BurstOutput/StaticLibraries/lib_burst_generated
+Library: /Users/evan/cs98/jarvis-frontend/Temp/BurstOutput/StaticLibraries/lib_burst_generated
 --platform=iOS
 --backend=burst-llvm-10
 --target=ARMV8A_AARCH64
@@ -8,12 +8,39 @@ Library: /Users/vico/Dev/simU/Temp/BurstOutput/StaticLibraries/lib_burst_generat
 --float-precision=Standard
 --target-framework=NetFramework
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=Microsoft.AspNetCore.Connections.Abstractions;
+--assembly-defines=Microsoft.AspNetCore.Http.Connections.Client;
+--assembly-defines=Microsoft.AspNetCore.Http.Connections.Common;
+--assembly-defines=Microsoft.AspNetCore.SignalR.Client.Core;
+--assembly-defines=Microsoft.AspNetCore.SignalR.Client;
+--assembly-defines=Microsoft.AspNetCore.SignalR.Common;
+--assembly-defines=Microsoft.AspNetCore.SignalR.Protocols.Json;
+--assembly-defines=Microsoft.Extensions.DependencyInjection.Abstractions;
+--assembly-defines=Microsoft.Extensions.DependencyInjection;
+--assembly-defines=Microsoft.Extensions.Features;
+--assembly-defines=Microsoft.Extensions.Logging.Abstractions;
+--assembly-defines=Microsoft.Extensions.Logging;
+--assembly-defines=Microsoft.Extensions.Options;
+--assembly-defines=Microsoft.Extensions.Primitives;
 --assembly-defines=Mono.Security;
 --assembly-defines=mscorlib;
+--assembly-defines=Newtonsoft.Json;
+--assembly-defines=SimpleInspectorAttributes;
+--assembly-defines=SimpleSideMenu;
 --assembly-defines=System.Configuration;
 --assembly-defines=System.Core;
+--assembly-defines=System.Data;
 --assembly-defines=System;
+--assembly-defines=System.IO.Pipelines;
+--assembly-defines=System.Net.Http;
+--assembly-defines=System.Numerics;
+--assembly-defines=System.Runtime.CompilerServices.Unsafe;
+--assembly-defines=System.Runtime.Serialization;
+--assembly-defines=System.Text.Encodings.Web;
+--assembly-defines=System.Text.Json;
+--assembly-defines=System.Threading.Channels;
 --assembly-defines=System.Xml;
+--assembly-defines=System.Xml.Linq;
 --assembly-defines=Unity.2D.Animation.Runtime;
 --assembly-defines=Unity.AdaptivePerformance;
 --assembly-defines=Unity.Burst;
@@ -27,14 +54,15 @@ Library: /Users/vico/Dev/simU/Temp/BurstOutput/StaticLibraries/lib_burst_generat
 --assembly-defines=Unity.VisualScripting.Core;
 --assembly-defines=Unity.VisualScripting.Flow;
 --assembly-defines=UnityEngine;
+--assembly-defines=Utilities;
 --linker-options=min-ios-version=12.0
 --generate-link-xml=Temp/burst.link.xml
---temp-folder=/Users/vico/Dev/simU/Temp/Burst
+--temp-folder=/Users/evan/cs98/jarvis-frontend/Temp/Burst
 --debug=Full
 --generate-static-linkage-methods
 --key-folder=/Applications/Unity/Hub/Editor/2022.3.10f1/PlaybackEngines/iOSSupport
---decode-folder=/Users/vico/Dev/simU/Library/Burst
---output=/Users/vico/Dev/simU/Temp/BurstOutput/StaticLibraries/lib_burst_generated
+--decode-folder=/Users/evan/cs98/jarvis-frontend/Library/Burst
+--output=/Users/evan/cs98/jarvis-frontend/Temp/BurstOutput/StaticLibraries/lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/
 
 --method=Unity.Burst.BurstCompiler+BurstCompilerHelper, Unity.Burst, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::IsBurstEnabled()--8c2be93e18276203cbd918daa2748a10

@@ -9,9 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/CreateAccount.unity
     guid: 30cb07941710e42f583bac330e431820
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/MainMap.unity
     guid: 3fc8acdd13e6c734bafef6554d6fdbcd
+  - enabled: 0
+    path: Assets/Chat.unity
+    guid: bf077f958b0c04a3b9195d44224967eb
+  - enabled: 1
+    path: Assets/Scenes/Chat.unity
+    guid: 3fc6820da57df4257b37283e4eaafe06
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: a0f91785bf7ab469bb7a0d01a6874104, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: ab93719af96064aa296415d591fdb87e, type: 2}
-

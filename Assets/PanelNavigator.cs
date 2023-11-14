@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Clients;
 
 public class PanelNavigator : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class PanelNavigator : MonoBehaviour
 
     public void ShowNextPanel()
     {
+        CheckSignalRConnection();
         if (currentPanelIndex < panels.Length - 1)
         {
             Debug.Log("show next panel");
@@ -39,6 +41,18 @@ public class PanelNavigator : MonoBehaviour
             panels[currentPanelIndex].SetActive(false);
             currentPanelIndex--;
             panels[currentPanelIndex].SetActive(true);
+        }
+    }
+
+    // TODO: Remove after testing signalRClient
+    async void CheckSignalRConnection(){
+        if (SignalRClient.IsConnected())
+        {
+            Debug.Log("SignalRClient is connected in panel");
+        }
+        else
+        {
+            Debug.Log("SignalRClient is not connected in panel");
         }
     }
 }
