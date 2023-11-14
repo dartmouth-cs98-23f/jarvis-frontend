@@ -192,28 +192,20 @@ public async Task<UserData> GetUser(Guid userId)
 }
 
 public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
-    try {
-        senderId = new Guid("8ab1d23e-94f0-42bc-a58e-0a09f41cb4b8");
-        receiverId = new Guid("6e8f927c-e59d-4ccb-9b94-da5a45c9bc3a");
-        string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
+    string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
 
-        Debug.Log($"Is httpClient disposed? {httpClient == null}");
-        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
-        Debug.Log("Response " + response);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
-        if (response.IsSuccessStatusCode) {
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            List<ChatMessage> chatHistory = JsonConvert.DeserializeObject<List<ChatMessage>>(jsonResponse);
-        
-            return chatHistory;
-        } else {
-            Debug.LogError("GetChatHistory Error: " + response.StatusCode);
-            return null; // May need to change null
-        }
-    } catch (HttpRequestException e) {
-        Debug.LogError("GetChatHistory HTTP Request Exception: " + e.Message);
-        return null; 
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<ChatMessage> chatHistory = JsonConvert.DeserializeObject<List<ChatMessage>>(jsonResponse);
+    
+        return chatHistory;
+    } else {
+        Debug.LogError("GetChatHistory Error: " + response.StatusCode);
+        return null; // May need to change null
     }
+    
 }
 
 

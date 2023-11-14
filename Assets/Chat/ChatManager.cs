@@ -31,10 +31,11 @@ public static class StringParser
     }
 }
 
+namespace ChatManager{
 public class ChatManager : MonoBehaviour
 {
     private HTTPClient httpClient = HTTPClient.Instance;
-    private Guid currentUserId = HTTPClient.Instance.MyId;
+    public Guid currentUserId = HTTPClient.Instance.MyId;
     private Guid otherUserID; 
     private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
     private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
@@ -88,6 +89,7 @@ public class ChatManager : MonoBehaviour
         otherUserImage = GetUserImage(otherUserID);
 
         Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
+        SignalRClient.Instance.RegisterSendMessageHandler(this);
         // TODO: Get current user information and the other user information
         BuildOtherUserProfile();
         BuildChatHistory();
@@ -97,10 +99,26 @@ public class ChatManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO: Switch for backend API
-        // BuildChatHistory();
-        // LocalBuildChatHistory();
+        // Check if there is a received message to process
+        if (!string.IsNullOrEmpty(SignalRClient.SenderId))
+        {
+            Debug.Log("Got message, going to generate GCMO");
+            // Create a ChatMessage object and reset the static variables
+            GenerateChatMessageObject(new HTTPClient.ChatMessage
+            {
+                SenderId = new Guid(SignalRClient.SenderId),
+                ReceiverId = currentUserId,
+                Content = SignalRClient.Message,
+                IsGroupChat = false,
+                CreatedTime = DateTime.UtcNow
+            });
+
+            // Reset the static variables to indicate that the message has been processed
+            SignalRClient.SenderId = null;
+            SignalRClient.Message = null;
+        }
     }
+
 
 
     Sprite GetUserImage(Guid userId)
@@ -177,14 +195,8 @@ public class ChatManager : MonoBehaviour
         // Sort the list based on the createdTime
         foreach (HTTPClient.ChatMessage chatMessage in sortedChatMessages)
         {
-            Debug.Log(chatMessage.Content);
-            foreach (var element in generatedMessageIds)
-            {
-                Debug.Log($"HashSet Element: {element}");
-            }
             if (generatedMessageIds.Add(chatMessage.Id)) // if chatMessage has not been created yet
             {
-                Debug.Log(chatMessage.Id);
                 GenerateChatMessageObject(chatMessage);
             }
         }
@@ -204,8 +216,9 @@ public class ChatManager : MonoBehaviour
         }
     }
 
-    void GenerateChatMessageObject(HTTPClient.ChatMessage chatMessage)
+    public void GenerateChatMessageObject(HTTPClient.ChatMessage chatMessage)
     {
+        // Debug.Log("Calling GCMO");
         GameObject chatGO = Instantiate(chatMessagePrefab, contentPanel);
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
         string messageContent = StringParser.ParseInput(chatMessage.Content);
@@ -227,16 +240,17 @@ public class ChatManager : MonoBehaviour
             return;
         }
         
-        // Uncomment this for local testing
-        // ChatMessage message =  new ChatMessage();
-        // message.SenderId = currentUserId;
-        // message.ReceiverId = receiverId;
-        // message.Content = content;
-        // message.IsGroupChat = false;
-        // message.CreatedTime = DateTime.Now; // TODO: check if this is auto-generated on backend
+        HTTPClient.ChatMessage message =  new HTTPClient.ChatMessage();
+        message.SenderId = currentUserId;
+        message.ReceiverId = receiverId;
+        message.Content = content;
+        message.IsGroupChat = false;
+        message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
         // AddNewChatEntry(Guid.NewGuid(), message);
 
         await SignalRClient.Instance.SendChat(otherUserID, content);
+
+        GenerateChatMessageObject(message);
     }
 
     // For local frontend testing
@@ -253,7 +267,7 @@ public class ChatManager : MonoBehaviour
         message.ReceiverId = receiverId;
         message.Content = content;
         message.IsGroupChat = false;
-        message.CreatedTime = DateTime.Now; // TODO: check if this is auto-generated on backend
+        message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
         AddNewChatEntry(Guid.NewGuid(), message);
     }
 
@@ -264,4 +278,5 @@ public class ChatManager : MonoBehaviour
         // return chatTestJsonString;
         return chatTestJsonString; // replace this line with above for local testing
     }
+}
 }

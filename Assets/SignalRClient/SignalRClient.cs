@@ -13,6 +13,9 @@ public class SignalRClient
     private readonly string firstName;
     private readonly HubConnection _connection;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
+
+    public static string SenderId;
+    public static string Message;
     private static SignalRClient instance;
 
     private SignalRClient(string firstName, string url)
@@ -129,11 +132,9 @@ public class SignalRClient
                 Y_coordinate = yCoordinate
             };
 
-            Debug.Log("UpdateLocation called with location " + location.X_coordinate + " " + location.Y_coordinate);
             if (IsConnected()) 
             {
                 await _connection.SendAsync("UpdateLocation", location.X_coordinate, location.Y_coordinate);
-                Debug.Log("In updateLocation isConnected, updating location");
             } else 
             {
                 Debug.Log("In updateLocation not Connected, failed to update");
@@ -168,12 +169,13 @@ public class SignalRClient
         }
     }
 
-    public void RegisterSendMessageHandler()
+    public void RegisterSendMessageHandler(ChatManager.ChatManager chatManager)
     {
-        _connection.On<string, string>("SendMessage", (senderId, message) =>
+        _connection.On<string, string>("ReceiveMessage", (senderId, message) =>
         {
-            Console.WriteLine($"Message received from user {senderId}: {message}");
-            // Handle the received message, for example, display it in your game UI
+            Debug.Log($"Message received from user {senderId}: {message}");
+            SenderId = senderId;
+            Message = message;
         });
     }
 
