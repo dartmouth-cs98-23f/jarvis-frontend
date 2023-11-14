@@ -13,37 +13,76 @@ public class SignalRClient
     private readonly string firstName;
     private readonly HubConnection _connection;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
+
+    public static string SenderId;
+    public static string Message;
     private static SignalRClient instance;
 
-        private SignalRClient(string firstName, string url)
-        {
-            this.firstName = firstName.Length <= 10 ? firstName.ToLower() : firstName.ToLower()[..10];
-            _connection = new HubConnectionBuilder()
-                .WithUrl(url)
-                .Build();
-        }
+    private SignalRClient(string firstName, string url)
+    {
+        this.firstName = firstName.Length <= 10 ? firstName.ToLower() : firstName.ToLower()[..10];
+        _connection = new HubConnectionBuilder()
+            .WithUrl(url)
+            .Build();
+    }
 
-        public static SignalRClient Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    throw new Exception("SignalRClient has not been initialized. Call Initialize method first.");
-                }
-                return instance;
-            }
-        }
-
-        public static async Task Initialize(string firstName, string url)
+    public static SignalRClient Instance
+    {
+        get
         {
             if (instance == null)
             {
-                Debug.Log("Initializing SignalRClient");
-                instance = new SignalRClient(firstName, url);
-                await instance.ConnectAsync();
+                throw new Exception("SignalRClient has not been initialized. Call Initialize method first.");
             }
+            return instance;
         }
+    }
+
+    public static async Task Initialize(Guid userId, string firstName)
+    {
+        if (instance == null)
+        {
+            // string baseURL = "http://localhost:5087/unity";
+            string baseURL = "https://simyou.azurewebsites.net/unity";
+            string urlWithUserId = baseURL + "?userId=" + userId.ToString();
+            Debug.Log("Initializing SignalRClient with URL:" + urlWithUserId);
+            instance = new SignalRClient(firstName, urlWithUserId);
+            await instance.ConnectAsync();
+            if (instance._connection.State == HubConnectionState.Connected)
+            {
+                Debug.Log("IM ACTUALLY CONNECTED");
+            }
+            else{
+                Debug.Log("I am not actually connected :(");
+            }
+        } 
+        // TODO: Delete code below
+        // else 
+        // {
+        //     Debug.Log("Called Initialize but SignalRClient Instance already exist");
+        //     if (IsConnected())
+        //     {
+        //         Debug.Log("IM ACTUALLY CONNECTED and Instance is not null");
+        //     }
+        //     else{
+        //         Debug.Log("I am not actually connected :( and Instance is not null. I'm gonna try reconnecting...");
+        //         instance = new SignalRClient("Vico1", url);
+        //         await instance.ConnectAsync();
+        //         if (instance._connection.State == HubConnectionState.Connected)
+        //         {
+        //             Debug.Log("I reconnected");
+        //         }
+        //         else{
+        //             Debug.Log("I failed to reconnect");
+        //         }
+        //     }
+        // }
+    }
+
+    public static bool IsConnected()
+    {
+        return instance != null && instance._connection.State == HubConnectionState.Connected;
+    }
 
     /// <summary>
     /// Connects the client to the server.
@@ -93,25 +132,36 @@ public class SignalRClient
                 Y_coordinate = yCoordinate
             };
 
-            await _connection.SendAsync("UpdateLocation", location);
+            if (IsConnected()) 
+            {
+                await _connection.SendAsync("UpdateLocation", location.X_coordinate, location.Y_coordinate);
+            } else 
+            {
+                Debug.Log("In updateLocation not Connected, failed to update");
+            }
         }
 
      public void RegisterUpdateLocationHandler()
         {
-            _connection.On<Guid, Location>("UpdateLocation", (userId, location) =>
+            // TODO: Refactor handleError out into a combined handler
+            _connection.On<string>("HandleError", (error) =>
             {
-                Console.WriteLine($"User {userId} moved to X: {location.X_coordinate}, Y: {location.Y_coordinate}");
+                Debug.Log($"Error: {error}");
+            });
+            _connection.On<Guid, int, int>("UpdateLocation", (userId, xCoord, yCoord) =>
+            {
+                Debug.Log($"User {userId} moved to X: {xCoord}, Y: {yCoord}");
                 
-                userLocations[userId] = location;
+                userLocations[userId] = new Location { X_coordinate = xCoord, Y_coordinate = yCoord };
             });
         }
 
     // Sends a message to a user through the server.
-    public async Task SendMessage(Guid receiverId, string message)
+    public async Task SendChat(Guid receiverId, string message)
     {
         try
         {
-            await _connection.SendAsync("SendMessage", receiverId, message);
+            await _connection.SendAsync("SendChat", receiverId, message);
         }
         catch (Exception ex)
         {
@@ -119,12 +169,13 @@ public class SignalRClient
         }
     }
 
-    public void RegisterSendMessageHandler()
+    public void RegisterSendMessageHandler(ChatManager.ChatManager chatManager)
     {
-        _connection.On<string, string>("SendMessage", (senderId, message) =>
+        _connection.On<string, string>("ReceiveMessage", (senderId, message) =>
         {
-            Console.WriteLine($"Message received from user {senderId}: {message}");
-            // Handle the received message, for example, display it in your game UI
+            Debug.Log($"Message received from user {senderId}: {message}");
+            SenderId = senderId;
+            Message = message;
         });
     }
 

@@ -10,48 +10,42 @@ using Clients;
 using System.Threading.Tasks;
 
 [Serializable]
-public class ChatMessage
-{
-    [JsonProperty("id")]
-    public Guid Id { get; set; }
-
-    [JsonProperty("senderId")]
-    public Guid SenderId { get; set; }
-
-    [JsonProperty("receiverId")]
-    public Guid ReceiverId { get; set; }
-
-    [JsonProperty("content")]
-    public string Content { get; set; }
-
-    [JsonProperty("isGroupChat")]
-    public bool IsGroupChat { get; set; }
-
-    [JsonProperty("createdTime")]
-    public DateTime CreatedTime { get; set; }
-}
 
 public static class JsonHelper
 {
-    public static List<ChatMessage> ConvertJsonToChatList(string json)
+    public static List<HTTPClient.ChatMessage> ConvertJsonToChatList(string json)
     {
-        List<ChatMessage> chatList = JsonConvert.DeserializeObject<List<ChatMessage>>(json);
+        List<HTTPClient.ChatMessage> chatList = JsonConvert.DeserializeObject<List<HTTPClient.ChatMessage>>(json);
         chatList.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));           // Sort the list based on the createdTime
         return chatList;
     }
 
 }
 
+public static class StringParser
+{
+    public static string ParseInput(string input)
+    {
+        Debug.Log("Input pre parse" + input);
+        string cleaned = input.Replace("\\n", "\n").Replace("\"", "").Replace("\\", "");
+        Debug.Log("Input post parse" + cleaned);
+        return cleaned;
+    }
+}
+
+namespace ChatManager{
 public class ChatManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    private Guid currentUserId = new Guid("cf11a140-99b3-4e07-9108-249f2b66533d"); // TODO: This is a temporary testing value. Update value when changing from previous scene
-    private Guid otherUserID = new Guid("c75ed4cb-2406-41ec-b3d7-2b2cf0806c52");  // TODO: This is a temporary testing value. Update value when changing from previous scene
-    // private HTTPClient httpClient = HTTPClient.Instance;
+    private HTTPClient httpClient = HTTPClient.Instance;
+    public Guid currentUserId = HTTPClient.Instance.MyId;
+    private Guid otherUserID; 
+    private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
+    private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
     public InputField messageInputField;
     public Transform contentPanel;
     public GameObject chatMessagePrefab;
-    public GameObject otherUserName;
+    public Text cardUsername;
+    public Image cardProfileImage;
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
 
     private Sprite userImage; // TODO: replace with actual image of user once backend api can handle it
@@ -61,64 +55,104 @@ public class ChatManager : MonoBehaviour
     [
         {
             ""id"": ""44dcb24a-3fb6-4533-be6f-7c56eb259c89"",
-            ""senderId"": ""cf11a140-99b3-4e07-9108-249f2b66533d"",
-            ""receiverId"": ""c75ed4cb-2406-41ec-b3d7-2b2cf0806c52"",
+            ""senderId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
+            ""receiverId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
             ""content"": ""This is old text"",
             ""isGroupChat"": false,
             ""createdTime"": ""2022-05-21T08:20:00Z""
         },
         {
             ""id"": ""21526023-eb1b-4b1a-be79-beb0d714dc45"",
-            ""senderId"": ""cf11a140-99b3-4e07-9108-249f2b66533d"",
-            ""receiverId"": ""c75ed4cb-2406-41ec-b3d7-2b2cf0806c52"",
+            ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
+            ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
             ""content"": ""This is the newest text"",
             ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T14:45:30Z""
         },
         {
             ""id"": ""e23ae41c-b1da-4679-982f-2e38154b217b"",
-            ""senderId"": ""c75ed4cb-2406-41ec-b3d7-2b2cf0806c52"",
-            ""receiverId"": ""cf11a140-99b3-4e07-9108-249f2b66533d"",
-            ""content"": ""This is new text"",
+            ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
+            ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
+            ""content"": ""This is new textThis is new text\nThis is new textThis is new text\nThis is new text\nThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new text"",
             ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T13:45:30Z""
         },
     ]";
 
-    public List<ChatMessage> sortedChatMessages;
+    public List<HTTPClient.ChatMessage> sortedChatMessages;
 
     void Start()
     {
         // TODO: replace with loading the actual images of the users once backend api can handle
-        userImage = Resources.Load<Sprite>("Shapes/user_head");
-        otherUserImage = Resources.Load<Sprite>("Shapes/npc_head");
+        otherUserID = new Guid(PlayerPrefs.GetString("CollidedUserId"));
+
+        // Initialize user images
+        userImage = GetUserImage(currentUserId);
+        otherUserImage = GetUserImage(otherUserID);
+
+        Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
+        SignalRClient.Instance.RegisterSendMessageHandler(this);
         // TODO: Get current user information and the other user information
         BuildOtherUserProfile();
+        BuildChatHistory();
 
     }
-
+    
     // Update is called once per frame
     void Update()
     {
-        BuildChatHistory();
+        // Check if there is a received message to process
+        if (!string.IsNullOrEmpty(SignalRClient.SenderId))
+        {
+            Debug.Log("Got message, going to generate GCMO");
+            // Create a ChatMessage object and reset the static variables
+            GenerateChatMessageObject(new HTTPClient.ChatMessage
+            {
+                SenderId = new Guid(SignalRClient.SenderId),
+                ReceiverId = currentUserId,
+                Content = StringParser.ParseInput(SignalRClient.Message),
+                IsGroupChat = false,
+                CreatedTime = DateTime.UtcNow
+            });
+
+
+            // Reset the static variables to indicate that the message has been processed
+            SignalRClient.SenderId = null;
+            SignalRClient.Message = null;
+        }
+    }
+
+
+
+    Sprite GetUserImage(Guid userId)
+    {
+        if (userId.ToString() == yodaID.ToString()) {
+            return Resources.Load<Sprite>("Shapes/master_yoda_head");
+        } else if (userId.ToString() == georgeWashID.ToString())
+        {
+            return Resources.Load<Sprite>("Shapes/george_washington_head");
+        } else if (userId.ToString() == currentUserId.ToString()) {
+            return Resources.Load<Sprite>("Shapes/user_head");
+        }
+        else {
+            return Resources.Load<Sprite>("Shapes/npc_head");
+        }
     }
 
     public async void BuildOtherUserProfile()
     {
         // TODO: Replace code with actual code to get user information
-        // HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
-        HTTPClient.UserData otherUser = new HTTPClient.UserData();
-        otherUser.firstName = "John";
-        otherUser.lastName = "Doe";
+        HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
         if (otherUser == null){
             return;
         }
-        otherUserName.GetComponent<Text>().text = otherUser.firstName + " " + otherUser.lastName;
+        cardUsername.GetComponent<Text>().text = otherUser.firstName + " " + otherUser.lastName;
+        cardProfileImage.sprite = otherUserImage;
     }
 
     // TODO: This is a temporary method for frontend testing
     // A method to add a new chat entry
-    public void AddNewChatEntry(Guid id, ChatMessage message)
+    public void AddNewChatEntry(Guid id, HTTPClient.ChatMessage message)
     {
         // Parse the existing JSON string into a JObject
         JArray chatsArray = JArray.Parse(chatTestJsonString);
@@ -144,72 +178,110 @@ public class ChatManager : MonoBehaviour
     // send message to backend
     public void onClickSendMessage() //add to unity button
     {
-        SendMessage(otherUserID, messageInputField.text);
-        Debug.Log("after adding new chat entry" + chatTestJsonString);
+
+        // TODO: Switch for backend API
+        // LocalSendChat(otherUserID, messageInputField.text);
+        SendChat(otherUserID, messageInputField.text);
+        // Debug.Log("after adding new chat entry" + chatTestJsonString);
         messageInputField.text = "";
     }
 
-    void BuildChatHistory()
+    async void BuildChatHistory()
     {
-        string chatJsonString = GetChatHistory(otherUserID);
-        sortedChatMessages = JsonHelper.ConvertJsonToChatList(chatJsonString);
-        foreach (ChatMessage chatMessage in sortedChatMessages)
+        sortedChatMessages = await httpClient.GetChatHistory(currentUserId, otherUserID);
+         if (sortedChatMessages == null) 
+        {
+            return;
+        }
+        sortedChatMessages.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime)); 
+        
+        // Sort the list based on the createdTime
+        foreach (HTTPClient.ChatMessage chatMessage in sortedChatMessages)
+        {
+            chatMessage.Content = StringParser.ParseInput(chatMessage.Content);
+
+            if (generatedMessageIds.Add(chatMessage.Id)) // if chatMessage has not been created yet
+            {
+                GenerateChatMessageObject(chatMessage);
+            }
+        }
+
+    }
+
+    // For local frontend testing
+    void LocalBuildChatHistory()
+    {
+        sortedChatMessages = JsonHelper.ConvertJsonToChatList(LocalGetChatHistory(otherUserID));
+        foreach (HTTPClient.ChatMessage chatMessage in sortedChatMessages)
         {
             if (generatedMessageIds.Add(chatMessage.Id)) // if chatMessage has not been created yet
             {
                 GenerateChatMessageObject(chatMessage);
-
             }
         }
-
-        // Debug.Log("BuildChatHistory called: " + sortedChatMessages);
     }
 
-    void GenerateChatMessageObject(ChatMessage chatMessage)
+    public void GenerateChatMessageObject(HTTPClient.ChatMessage chatMessage)
     {
+        // Debug.Log("Calling GCMO");
         GameObject chatGO = Instantiate(chatMessagePrefab, contentPanel);
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
+        string messageContent = StringParser.ParseInput(chatMessage.Content);
         if (chatMessage.SenderId == currentUserId)
         {
-            chatMessageComponent.SetChatDetails(userImage, chatMessage.Content);
+            chatMessageComponent.SetChatDetails(userImage, messageContent);
         }
         else
         {
-            chatMessageComponent.SetChatDetails(otherUserImage, chatMessage.Content);
+            chatMessageComponent.SetChatDetails(otherUserImage, messageContent);
         }
     }
 
     // TODO: replace this with backend api logic here
-    void SendMessage(Guid receiverId, string content)
+    async void SendChat(Guid receiverId, string content)
     {
         if (string.IsNullOrEmpty(content))
         {
             return;
         }
         
-        // TODO: Remove this after backend api is implemented
-        ChatMessage message =  new ChatMessage();
+        HTTPClient.ChatMessage message =  new HTTPClient.ChatMessage();
         message.SenderId = currentUserId;
         message.ReceiverId = receiverId;
         message.Content = content;
         message.IsGroupChat = false;
-        message.CreatedTime = DateTime.Now; // TODO: check if this is auto-generated on backend
-        AddNewChatEntry(Guid.NewGuid(), message);
+        message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
+        // AddNewChatEntry(Guid.NewGuid(), message);
 
-        // HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-        // HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
-        // if (response.IsSuccessStatusCode)
-        // {
-        //     string jsonResponse = await response.Content.ReadAsStringAsync();
-        //     SendMessageResponse messageResponse = JsonConvert.DeserializeObject<SendMessageResponse>(jsonResponse);
-        //     Debug.Log("User sent message successfully.);
-        //     return true; // Registration successful
-        // }
+        await SignalRClient.Instance.SendChat(otherUserID, content);
+
+        GenerateChatMessageObject(message);
     }
 
-    // TODO: replace this with backend api logic here
-    string GetChatHistory(Guid otherUserID)
+    // For local frontend testing
+    void LocalSendChat(Guid receiverId, string content)
     {
-        return chatTestJsonString;
+        if (string.IsNullOrEmpty(content))
+        {
+            return;
+        }
+        
+        // Uncomment this for local testing
+        HTTPClient.ChatMessage message =  new HTTPClient.ChatMessage();
+        message.SenderId = currentUserId;
+        message.ReceiverId = receiverId;
+        message.Content = content;
+        message.IsGroupChat = false;
+        message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
+        AddNewChatEntry(Guid.NewGuid(), message);
     }
+
+
+    // For local frontend testing
+    string LocalGetChatHistory(Guid otherUserID)
+    {
+        // return chatTestJsonString;
+        return chatTestJsonString; // replace this line with above for local testing
+    }
+}
 }
