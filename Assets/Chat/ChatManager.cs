@@ -26,7 +26,9 @@ public static class StringParser
 {
     public static string ParseInput(string input)
     {
-        var cleaned = System.Text.RegularExpressions.Regex.Replace(input, "[\"\n]", string.Empty);
+        Debug.Log("Input pre parse" + input);
+        string cleaned = input.Replace("\\n", "\n").Replace("\"", "").Replace("\\", "");
+        Debug.Log("Input post parse" + cleaned);
         return cleaned;
     }
 }
@@ -108,10 +110,11 @@ public class ChatManager : MonoBehaviour
             {
                 SenderId = new Guid(SignalRClient.SenderId),
                 ReceiverId = currentUserId,
-                Content = SignalRClient.Message,
+                Content = StringParser.ParseInput(SignalRClient.Message),
                 IsGroupChat = false,
                 CreatedTime = DateTime.UtcNow
             });
+
 
             // Reset the static variables to indicate that the message has been processed
             SignalRClient.SenderId = null;
@@ -195,6 +198,8 @@ public class ChatManager : MonoBehaviour
         // Sort the list based on the createdTime
         foreach (HTTPClient.ChatMessage chatMessage in sortedChatMessages)
         {
+            chatMessage.Content = StringParser.ParseInput(chatMessage.Content);
+
             if (generatedMessageIds.Add(chatMessage.Id)) // if chatMessage has not been created yet
             {
                 GenerateChatMessageObject(chatMessage);

@@ -105,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
             PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
 
             // Send the updated location to the server
-            await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
+            // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
         }
         else
         {

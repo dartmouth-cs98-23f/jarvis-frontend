@@ -9,6 +9,8 @@ public class GameClient : MonoBehaviour
 
     private Guid userId;
     public GameObject currentPlayerPrefab;
+    public GameObject georgePrefab;
+    public GameObject yodaPrefab;
     // public GameObject NPCPlayerPrefab;
     public SignalRClient signalRClient;
     public Transform mainMap;
@@ -39,7 +41,7 @@ public class GameClient : MonoBehaviour
             BuildAllCharacters(); // Call this method after user data is initialized
             await SignalRClient.Initialize(userId, currentUserData.firstName); // TODO: Change first name to user first name later
             signalRClient = SignalRClient.Instance;
-            signalRClient.RegisterUpdateLocationHandler(); // register updateLocation handler
+            // signalRClient.RegisterUpdateLocationHandler(); // register updateLocation handler
         }
         else
         {
@@ -83,7 +85,7 @@ public class GameClient : MonoBehaviour
         characterComponent.SetPosition(currentUserData.lastKnownX, currentUserData.lastKnownY, 0); // Add back httpClient.currentUserData if testing locally
 
 
-        GameObject georgeWashingtonGO = Instantiate(currentPlayerPrefab, mainMap);
+        GameObject georgeWashingtonGO = Instantiate(georgePrefab, mainMap);
         georgeWashingtonGO.tag = "Player";
         PlayerMovement georgeWashingtonMovementScript = georgeWashingtonGO.GetComponent<PlayerMovement>();
         Transform georgeMainCamera = georgeWashingtonGO.transform.Find("Main Camera");
@@ -104,7 +106,7 @@ public class GameClient : MonoBehaviour
 
 
 
-        GameObject yodaGO = Instantiate(currentPlayerPrefab, mainMap);
+        GameObject yodaGO = Instantiate(yodaPrefab, mainMap);
         yodaGO.tag = "Player";
         PlayerMovement yodaMovementScript = yodaGO.GetComponent<PlayerMovement>();
         Transform yodaMainCamera = yodaGO.transform.Find("Main Camera");
