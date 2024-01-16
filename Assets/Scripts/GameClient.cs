@@ -21,7 +21,7 @@ public class GameClient : MonoBehaviour
     void Awake()
     {
         httpClient = HTTPClient.Instance; // get httpClient
-        userId = httpClient.MyId; // TODO: Uncomment and delete line below
+        userId = httpClient.MyId;
         InitializeGame();
 
     }

@@ -50,6 +50,35 @@ public class ChatManager : MonoBehaviour
 
     private Sprite userImage; // TODO: replace with actual image of user once backend api can handle it
     private Sprite otherUserImage; // TODO: replace with actual image of other user once backend api can handle it
+
+    private string chatTestJsonString = @"
+    [
+        {
+            ""id"": ""44dcb24a-3fb6-4533-be6f-7c56eb259c89"",
+            ""senderId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
+            ""receiverId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
+            ""content"": ""This is old text"",
+            ""isGroupChat"": false,
+            ""createdTime"": ""2022-05-21T08:20:00Z""
+        },
+        {
+            ""id"": ""21526023-eb1b-4b1a-be79-beb0d714dc45"",
+            ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
+            ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
+            ""content"": ""This is the newest text"",
+            ""isGroupChat"": false,
+            ""createdTime"": ""2023-11-07T14:45:30Z""
+        },
+        {
+            ""id"": ""e23ae41c-b1da-4679-982f-2e38154b217b"",
+            ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
+            ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
+            ""content"": ""This is new textThis is new text\nThis is new textThis is new text\nThis is new text\nThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new text"",
+            ""isGroupChat"": false,
+            ""createdTime"": ""2023-11-07T13:45:30Z""
+        },
+    ]";
+
     public List<HTTPClient.ChatMessage> sortedChatMessages;
 
     void Start()
@@ -207,7 +236,6 @@ public class ChatManager : MonoBehaviour
         }
     }
 
-    // TODO: replace this with backend api logic here
     async void SendChat(Guid receiverId, string content)
     {
         if (string.IsNullOrEmpty(content))
