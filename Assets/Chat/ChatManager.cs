@@ -50,35 +50,6 @@ public class ChatManager : MonoBehaviour
 
     private Sprite userImage; // TODO: replace with actual image of user once backend api can handle it
     private Sprite otherUserImage; // TODO: replace with actual image of other user once backend api can handle it
-
-    private string chatTestJsonString = @"
-    [
-        {
-            ""id"": ""44dcb24a-3fb6-4533-be6f-7c56eb259c89"",
-            ""senderId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
-            ""receiverId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
-            ""content"": ""This is old text"",
-            ""isGroupChat"": false,
-            ""createdTime"": ""2022-05-21T08:20:00Z""
-        },
-        {
-            ""id"": ""21526023-eb1b-4b1a-be79-beb0d714dc45"",
-            ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
-            ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
-            ""content"": ""This is the newest text"",
-            ""isGroupChat"": false,
-            ""createdTime"": ""2023-11-07T14:45:30Z""
-        },
-        {
-            ""id"": ""e23ae41c-b1da-4679-982f-2e38154b217b"",
-            ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
-            ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
-            ""content"": ""This is new textThis is new text\nThis is new textThis is new text\nThis is new text\nThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new text"",
-            ""isGroupChat"": false,
-            ""createdTime"": ""2023-11-07T13:45:30Z""
-        },
-    ]";
-
     public List<HTTPClient.ChatMessage> sortedChatMessages;
 
     void Start()
@@ -92,7 +63,6 @@ public class ChatManager : MonoBehaviour
 
         Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
         SignalRClient.Instance.RegisterSendMessageHandler(this);
-        // TODO: Get current user information and the other user information
         BuildOtherUserProfile();
         BuildChatHistory();
 
@@ -141,7 +111,7 @@ public class ChatManager : MonoBehaviour
 
     public async void BuildOtherUserProfile()
     {
-        // TODO: Replace code with actual code to get user information
+
         HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
         if (otherUser == null){
             return;
@@ -245,13 +215,13 @@ public class ChatManager : MonoBehaviour
             return;
         }
         
-        HTTPClient.ChatMessage message =  new HTTPClient.ChatMessage();
+        HTTPClient.ChatMessage message = new HTTPClient.ChatMessage();
         message.SenderId = currentUserId;
         message.ReceiverId = receiverId;
         message.Content = content;
         message.IsGroupChat = false;
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
-        // AddNewChatEntry(Guid.NewGuid(), message);
+        // AddNewChatEntry(Guid.NewGuid(), message); 
 
         await SignalRClient.Instance.SendChat(otherUserID, content);
 
