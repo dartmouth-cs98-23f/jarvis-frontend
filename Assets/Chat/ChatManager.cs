@@ -92,7 +92,6 @@ public class ChatManager : MonoBehaviour
 
         Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
         SignalRClient.Instance.RegisterSendMessageHandler(this);
-        // TODO: Get current user information and the other user information
         BuildOtherUserProfile();
         BuildChatHistory();
 
@@ -141,7 +140,7 @@ public class ChatManager : MonoBehaviour
 
     public async void BuildOtherUserProfile()
     {
-        // TODO: Replace code with actual code to get user information
+
         HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
         if (otherUser == null){
             return;
@@ -237,7 +236,6 @@ public class ChatManager : MonoBehaviour
         }
     }
 
-    // TODO: replace this with backend api logic here
     async void SendChat(Guid receiverId, string content)
     {
         if (string.IsNullOrEmpty(content))
@@ -245,13 +243,13 @@ public class ChatManager : MonoBehaviour
             return;
         }
         
-        HTTPClient.ChatMessage message =  new HTTPClient.ChatMessage();
+        HTTPClient.ChatMessage message = new HTTPClient.ChatMessage();
         message.SenderId = currentUserId;
         message.ReceiverId = receiverId;
         message.Content = content;
         message.IsGroupChat = false;
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
-        // AddNewChatEntry(Guid.NewGuid(), message);
+        // AddNewChatEntry(Guid.NewGuid(), message); 
 
         await SignalRClient.Instance.SendChat(otherUserID, content);
 

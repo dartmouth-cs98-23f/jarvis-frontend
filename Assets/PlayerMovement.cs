@@ -175,6 +175,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             // Store the collidedUserId in PlayerPrefs
+            // TODO: Do this without using PlayerPrefs
             PlayerPrefs.SetString("CollidedUserId", collidedUserId.ToString());
         }
     }

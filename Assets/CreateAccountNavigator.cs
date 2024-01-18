@@ -21,7 +21,6 @@ public class CreateAccountNavigator : MonoBehaviour
     {
         RegisterPanel.SetActive(true);
         QuestionPanels.SetActive(false);
-        // InitializeSignalRClient(); // TODO: Delete this line
     }
 
     public async void OnCreateAccountButtonClicked()
@@ -60,7 +59,6 @@ public class CreateAccountNavigator : MonoBehaviour
         }
     }
 
-    // TODO: this is a temporary method that should be calling the backend's create account method instead
     // returns true if the account was successfully created, false otherwise
     // "successful"
     // "error: email already exists"
@@ -71,7 +69,6 @@ public class CreateAccountNavigator : MonoBehaviour
 {
     HTTPClient httpClient = HTTPClient.Instance;
     bool registrationSuccessful = await httpClient.RegisterUser(firstName, lastName, email, password);
-    // bool registrationSuccessful = await httpClient.Login(email, password);
     if (registrationSuccessful){
         return true;
     }
@@ -86,25 +83,4 @@ public class CreateAccountNavigator : MonoBehaviour
         RegisterPanel.SetActive(false);
         QuestionPanels.SetActive(true);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // if (SignalRClient.IsConnected())
-        // {
-        //     Debug.Log("SignalRClient is connected in createAccount");
-        // }
-        // else
-        // {
-        //     Debug.Log("SignalRClient is not connected in createAccount");
-        // }
-    }
-
-    // // TODO: Delete this method and use normal CreateAccount shi
-    // // Doing this rn so we can skip create account screen
-    // async void InitializeSignalRClient(){
-    //     Debug.Log("calling initializeSignalRClient in CreateAccountNavigator");
-    //     await SignalRClient.Initialize("SimU", "http://localhost:5087/unity?userId=091cd9c9-7ae0-4766-9a3b-1e43f9f255ce");
-    // }
-
 }

@@ -56,28 +56,7 @@ public class SignalRClient
             else{
                 Debug.Log("I am not actually connected :(");
             }
-        } 
-        // TODO: Delete code below
-        // else 
-        // {
-        //     Debug.Log("Called Initialize but SignalRClient Instance already exist");
-        //     if (IsConnected())
-        //     {
-        //         Debug.Log("IM ACTUALLY CONNECTED and Instance is not null");
-        //     }
-        //     else{
-        //         Debug.Log("I am not actually connected :( and Instance is not null. I'm gonna try reconnecting...");
-        //         instance = new SignalRClient("Vico1", url);
-        //         await instance.ConnectAsync();
-        //         if (instance._connection.State == HubConnectionState.Connected)
-        //         {
-        //             Debug.Log("I reconnected");
-        //         }
-        //         else{
-        //             Debug.Log("I failed to reconnect");
-        //         }
-        //     }
-        // }
+        }         
     }
 
     public static bool IsConnected()
