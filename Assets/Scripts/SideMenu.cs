@@ -13,8 +13,6 @@ public class SideMenu : MonoBehaviour
     public GameObject hatchedPanel;
     public GameObject incubatingPanel;
     public GameObject swipePrefab;
-    
-
     void Start()
     {
         // Disable the submenu initially
@@ -65,5 +63,4 @@ public class SideMenu : MonoBehaviour
         incubatingPanel.SetActive(!incubatingPanel.activeSelf);
         swipePrefab.SetActive(!swipePrefab.activeSelf);
     }
-
 }
