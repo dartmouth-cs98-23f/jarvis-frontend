@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class SideMenu : MonoBehaviour
 {
@@ -7,12 +8,23 @@ public class SideMenu : MonoBehaviour
     public GameObject charactersSubMenu;
     public GameObject hamburgerIcon;
 
+    public GameObject worldSettingsPanel;
+    public GameObject playersListPanel;
+    public GameObject hatchedPanel;
+    public GameObject incubatingPanel;
+    public GameObject swipePrefab;
+    
 
     void Start()
     {
         // Disable the submenu initially
         menuPanel.SetActive(false);
         charactersSubMenu.SetActive(false);
+        worldSettingsPanel.SetActive(false);
+        playersListPanel.SetActive(false);
+        hatchedPanel.SetActive(false);
+        incubatingPanel.SetActive(false);
+        swipePrefab.SetActive(false);
     }
 
     public void ToggleMenu()
@@ -36,4 +48,22 @@ public class SideMenu : MonoBehaviour
         // Hide the original "Characters" button when the submenu is active
         menuPanel.SetActive(!menuPanel.activeSelf);
     }
+
+    public void ToggleWorldSettingsPanel()
+    {
+        worldSettingsPanel.SetActive(!worldSettingsPanel.activeSelf);
+    }
+
+    public void TogglePlayersListPanel()
+    {
+        playersListPanel.SetActive(!playersListPanel.activeSelf);
+    }
+
+    public void ToggleHatchedPanel()
+    {
+        hatchedPanel.SetActive(!hatchedPanel.activeSelf);
+        incubatingPanel.SetActive(!incubatingPanel.activeSelf);
+        swipePrefab.SetActive(!swipePrefab.activeSelf);
+    }
+
 }
