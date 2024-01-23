@@ -16,7 +16,7 @@ public class PlayerInfoComponent : MonoBehaviour
     public void SetPlayerDetails(bool isOnline, Sprite profileImage, string username)
     {
         // Set online/offline indicator
-        onlineIndicator.SetActive(isOnline);
+        // onlineIndicator.SetActive(isOnline);
         displayUserImage.sprite = profileImage;
         usernameTMP.text = username;
     }

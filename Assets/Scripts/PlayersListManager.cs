@@ -62,13 +62,16 @@ public class PlayersListManager : MonoBehaviour
             playerInfoComponent.SetPlayerDetails(playerInfo.isOnline, playerInfo.spriteHead, playerInfo.username);
 
             // Change color based on online/offline status
-            if (onlineIndicator.activeSelf)
+            if (playerInfo.isOnline)
             {
                 onlineIndicator.GetComponent<Image>().color = Color.green; // Online (filled)
+                onlineIndicator.GetComponent<Outline>().enabled = false;
             }
             else
             {
-                onlineIndicator.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f); // Offline (gray)
+                onlineIndicator.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f); // Offline (gray)
+                onlineIndicator.GetComponent<Outline>().enabled = true;
+                onlineIndicator.GetComponent<Outline>().effectColor = Color.gray;
             }
 
             // Adjust position for each player
