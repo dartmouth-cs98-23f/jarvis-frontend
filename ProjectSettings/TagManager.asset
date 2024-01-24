@@ -6,6 +6,7 @@ TagManager:
   tags:
   - NPC
   - PlayerInfoPrefab
+  - HatchedInfoPrefab
   layers:
   - Default
   - TransparentFX

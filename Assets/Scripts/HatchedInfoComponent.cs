@@ -6,9 +6,8 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public class PlayerInfoComponent : MonoBehaviour
+public class HatchedInfoComponent : MonoBehaviour
 {
-    public GameObject onlineIndicator;
     public TextMeshProUGUI usernameTMP;
     public Image displayUserImage;
 

@@ -19,7 +19,9 @@ public class PlayersListManager : MonoBehaviour
 
     public List<PlayerInfo> playerList;
     public GameObject playerInfoPrefab;
-
+    public GameObject existingContent;
+    public GameObject existingViewport;
+    public GameObject playersListPanel;
     public void localDisplayPlayersList()
     {
         List<PlayerInfo> dummyPlayerList = new List<PlayerInfo>();
@@ -44,6 +46,27 @@ public class PlayersListManager : MonoBehaviour
         player3.spriteHead = Resources.Load<Sprite>("Shapes/user_head");
         player3.username = "PlayerThree";
         dummyPlayerList.Add(player3);
+
+        // Dummy player 4 (Online)
+        PlayerInfo player4 = new PlayerInfo();
+        player4.isOnline = true;
+        player4.spriteHead = Resources.Load<Sprite>("Shapes/master_yoda_head");
+        player4.username = "PlayerOne";
+        dummyPlayerList.Add(player4);
+
+        // Dummy player 5 (Offline)
+        PlayerInfo player5 = new PlayerInfo();
+        player5.isOnline = false;
+        player5.spriteHead = Resources.Load<Sprite>("Shapes/george_washington_head");
+        player5.username = "PlayerTwo";
+        dummyPlayerList.Add(player5);
+
+        // Dummy player 6 (Online)
+        PlayerInfo player6 = new PlayerInfo();
+        player6.isOnline = true;
+        player6.spriteHead = Resources.Load<Sprite>("Shapes/user_head");
+        player6.username = "PlayerThree";
+        dummyPlayerList.Add(player6);
         
 
         for (int i = 0; i < dummyPlayerList.Count; i++)
@@ -59,7 +82,7 @@ public class PlayersListManager : MonoBehaviour
             GameObject onlineIndicator = playerInfoComponent.onlineIndicator; // Access the child GameObject
 
             // Set player details dynamically
-            playerInfoComponent.SetPlayerDetails(playerInfo.isOnline, playerInfo.spriteHead, playerInfo.username);
+            playerInfoComponent.SetPlayerDetails(playerInfo.spriteHead, playerInfo.username);
 
             // Change color based on online/offline status
             if (playerInfo.isOnline)
@@ -78,6 +101,17 @@ public class PlayersListManager : MonoBehaviour
             float yOffset = i * 150f; // Adjust this value as needed
             playersListGO.GetComponent<RectTransform>().anchoredPosition += new Vector2(0f, -yOffset);
         }
+    }
+
+    public void addScrollRect()
+    {
+        ScrollRect scrollRect = playersListPanel.AddComponent<ScrollRect>();
+
+        scrollRect.viewport = existingViewport.GetComponent<RectTransform>();
+
+        scrollRect.content = existingContent.GetComponent<RectTransform>();
+
+        scrollRect.horizontal = false;
     }
 
     // Deletes instantiations of the prefab that shows up on the players list when the panel is closed out
