@@ -13,6 +13,7 @@ public class CreateAccountNavigator : MonoBehaviour
     public InputField emailInput;
     public InputField passwordInput;
     public InputField confirmPasswordInput;
+    public GameObject LandingPanel;
     public GameObject RegisterPanel;
     public GameObject QuestionPanels;
     // Start is called before the first frame update
@@ -56,6 +57,12 @@ public class CreateAccountNavigator : MonoBehaviour
         {
             Debug.Log("Failed to create account due to backend error");
         }
+    }
+
+    public void OnBackButtonPressed()
+    {
+        RegisterPanel.SetActive(false);
+        LandingPanel.SetActive(true);
     }
 
     // returns true if the account was successfully created, false otherwise

@@ -7,16 +7,16 @@ public class SceneNavigator : MonoBehaviour
 {
 
     // Start is called before the first frame update
-    public void LoadCreateAccount()
+    public static void LoadCreateAccount()
     {
         SceneManager.LoadScene("CreateAccount");
     }
 
-    public void LoadGame()
+    public static void LoadGame()
     {
         SceneManager.LoadScene("MainMap");
     }
-    public void LoadChat()
+    public static void LoadChat()
     {
         SceneManager.LoadScene("Chat");
     }

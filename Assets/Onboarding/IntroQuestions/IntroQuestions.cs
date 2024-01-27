@@ -17,7 +17,7 @@ public class IntroQuestions : MonoBehaviour
     public List<string> answers = new List<string>();
 
     
-public async void OnQuestionClicked()
+public async void OnNextPressed()
 {
     clickCount++; // Increment the counter every time the function is called
 
@@ -42,9 +42,9 @@ public async void OnQuestionClicked()
         clickCount = 0;
 
         HTTPClient httpClient = HTTPClient.Instance;
-        bool registrationSuccessful = await httpClient.PostResponses(answers);
+        bool postAnswersSuccessful = await httpClient.PostResponses(answers);
 
-        if (registrationSuccessful)
+        if (postAnswersSuccessful)
         {
             Debug.Log("Successfully posted responses");
         }
