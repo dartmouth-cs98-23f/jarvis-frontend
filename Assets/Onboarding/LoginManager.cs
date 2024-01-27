@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using Clients;
+using System.Text.RegularExpressions;
 
 public class LoginManager : MonoBehaviour
 {
@@ -12,30 +13,32 @@ public class LoginManager : MonoBehaviour
     public GameObject LoginPanel;
     public GameObject LandingPanel;
 
+    public Text emailErrorText;
+    public Text passwordErrorText;
+
+    void Start()
+    {
+        emailInput.onValueChanged.AddListener(delegate { ValidateEmail(); });
+        passwordInput.onValueChanged.AddListener(delegate { ValidatePassword(); });
+    }
+
     public async void OnLoginButtonPressed()
     {   
-        string email = emailInput.text;
-        string password = passwordInput.text;
-
-        // TODO: Add an UI error message for users
-        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-        {
-            Debug.Log("Please fill out all fields");
-            return;
-        }
-
-        bool loginSuccessful = true;
-        // TODO: Replace this with signin API call
-        // bool loginSuccessful = await SignIn(email, password);
-
-        if (loginSuccessful)
-        {
-            SceneNavigator.LoadGame();
-            Debug.Log("Successfully logged in with email: " + email + " and password: " + password);
-        }
-        else // TODO: Add UI error message for users
-        {
-            Debug.Log("Failed to login due to backend error");
+        bool emailIsValid = ValidateEmail();
+        bool passwordIsValid = ValidatePassword();
+        if (emailIsValid && passwordIsValid) {
+            // TODO: Replace this with signin API call
+            bool loginSuccessful = true;
+            // bool loginSuccessful = await SignIn(email, password);
+            if (loginSuccessful)
+            {
+                SceneNavigator.LoadGame(); // TODO: Replace this with navigating to logged in user's worlds scene
+                Debug.Log("Successfully logged in with email: " + emailInput.text + " and password: " + passwordInput.text);
+            }
+            else // TODO: Add UI error message for users
+            {
+                Debug.Log("Failed to login due to backend error");
+            }
         }
     }
 
@@ -43,6 +46,32 @@ public class LoginManager : MonoBehaviour
     {
         LoginPanel.SetActive(false);
         LandingPanel.SetActive(true);
+    }
+
+    bool ValidateEmail()
+    {
+        string emailError = InputValidation.ValidateEmail(emailInput.text);
+        emailErrorText.text = emailError;
+        if (string.IsNullOrEmpty(emailError)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    bool ValidatePassword()
+    {
+        string passwordError = InputValidation.ValidatePassword(passwordInput.text);
+        passwordErrorText.text = passwordError;
+        if (string.IsNullOrEmpty(passwordError)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 
     private async Task<bool> SignIn(string email, string password)

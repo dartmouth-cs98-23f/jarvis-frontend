@@ -16,11 +16,76 @@ public class CreateAccountNavigator : MonoBehaviour
     public GameObject LandingPanel;
     public GameObject RegisterPanel;
     public GameObject QuestionPanels;
-    // Start is called before the first frame update
+    public Text usernameErrorText;
+    public Text emailErrorText;
+    public Text passwordErrorText;
+    public Text confirmPasswordErrorText;
+
+
     void Start()
     {
         RegisterPanel.SetActive(true);
         QuestionPanels.SetActive(false);
+        usernameInput.onValueChanged.AddListener(delegate { ValidateUsername(); });
+        emailInput.onValueChanged.AddListener(delegate { ValidateEmail(); });
+        passwordInput.onValueChanged.AddListener(delegate { ValidatePassword(); });
+        confirmPasswordInput.onValueChanged.AddListener(delegate { ValidateConfirmPassword(); });
+
+    }
+
+
+    bool ValidateUsername()
+    {
+        string username = usernameInput.text;
+        string error = InputValidation.ValidateUsername(username);
+        usernameErrorText.text = error;
+        if (string.IsNullOrEmpty(error)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+    bool ValidateEmail()
+    {
+        string email = emailInput.text;
+        string emailError = InputValidation.ValidateEmail(email);
+        emailErrorText.text = emailError;
+        if (string.IsNullOrEmpty(emailError)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    bool ValidatePassword()
+    {
+        string password = passwordInput.text;
+        string passwordError = InputValidation.ValidatePassword(password);
+        passwordErrorText.text = passwordError;
+        if (string.IsNullOrEmpty(passwordError)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    bool ValidateConfirmPassword()
+    {
+        string error = InputValidation.ValidateConfirmPassword(passwordInput.text, confirmPasswordInput.text);
+        confirmPasswordErrorText.text = error;
+        if (string.IsNullOrEmpty(error)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 
     public async void OnCreateAccountButtonClicked()
@@ -29,33 +94,27 @@ public class CreateAccountNavigator : MonoBehaviour
         string email = emailInput.text;
         string password = passwordInput.text;
         string confirmPassword = confirmPasswordInput.text;
+        
+        bool usernameIsValid = ValidateUsername();
+        bool emailIsValid = ValidateEmail();
+        bool passwordIsValid = ValidatePassword();
+        bool confirmPasswordIsValid = ValidateConfirmPassword();
 
-        // TODO: Add an UI error message for users
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
+        if (usernameIsValid && emailIsValid && passwordIsValid && confirmPasswordIsValid) 
         {
-            Debug.Log("Please fill out all fields");
-            return;
-        }
+            // TODO: Get error message from backend and display it
+            bool registrationSuccessful = true;
+            // bool registrationSuccessful = await CreateAccount(username, email, password, confirmPassword);
 
-        // TODO: Add UI error message for users
-        if (password != confirmPassword)
-        {
-            Debug.Log("Passwords do not match");
-            return;
-        }
-
-        // TODO: Get error message from backend and display it
-        // bool registrationSuccessful = true;
-        bool registrationSuccessful = await CreateAccount(username, email, password, confirmPassword);
-
-        if (registrationSuccessful)
-        {
-            NavigateToQuestionPanels();
-            Debug.Log("Successfully created account with username: " + username + " email: " + email + " and password: " + password + "");
-        }
-        else
-        {
-            Debug.Log("Failed to create account due to backend error");
+            if (registrationSuccessful)
+            {
+                NavigateToQuestionPanels();
+                Debug.Log("Successfully created account with username: " + username + " email: " + email + " and password: " + password + "");
+            }
+            else
+            {
+                Debug.Log("Failed to create account due to backend error");
+            }
         }
     }
 
@@ -78,7 +137,7 @@ public class CreateAccountNavigator : MonoBehaviour
         // bool registrationSuccessful = await httpClient.RegisterUser(firstname, lastname, email, password); // TODO: update firstname lastname with username and uncomment
         if (registrationSuccessful){
             return true;
-        }
+    }
         else{
             return false; 
         }
