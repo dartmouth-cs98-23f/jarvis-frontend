@@ -70,26 +70,12 @@ public class InputValidation : MonoBehaviour
         return ""; // No error
     }
 
-    // Example usage
-    public void CheckInputs(string email, string password)
+    public static string CheckEmpty(string input)
     {
-        string emailError = ValidateEmail(email);
-        string passwordError = ValidatePassword(password);
-
-        if (!string.IsNullOrEmpty(emailError))
+        if (string.IsNullOrEmpty(input))
         {
-            Debug.Log("Email Error: " + emailError);
+            return "This field is required.";
         }
-
-        if (!string.IsNullOrEmpty(passwordError))
-        {
-            Debug.Log("Password Error: " + passwordError);
-        }
-
-        if (string.IsNullOrEmpty(emailError) && string.IsNullOrEmpty(passwordError))
-        {
-            Debug.Log("All inputs are valid.");
-            // Proceed with further processing (e.g., login, registration)
-        }
+        return ""; // No error
     }
 }

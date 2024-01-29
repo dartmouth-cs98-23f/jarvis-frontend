@@ -8,69 +8,79 @@ using UnityEngine.SceneManagement;
 
 public class IntroQuestions : MonoBehaviour
 {
-    
-    public InputField question1Input;
-    public InputField question2Input;
-    public InputField question3Input;
-    public InputField question4Input;
-    private int clickCount = 0; // Counter variable to keep track of OnQuestionClicked calls
+    public GameObject[] questionPanels;
+    public GameObject questionPanel;
+    public GameObject characterSummaryPanel;
+
+    public List<Text> errorTexts = new List<Text>();
+
+    public List<InputField> questionInputFields = new List<InputField>();
+    private int questionIdx = 0; // index of the current question. Note: 0th-index refers to design character question panel
     public List<string> answers = new List<string>();
 
-    
-public async void OnNextPressed()
-{
-    clickCount++; // Increment the counter every time the function is called
-
-    string currentAnswer = GetAnswerForQuestion(clickCount);
-    
-    // Check the count and validate answers accordingly
-    if (string.IsNullOrEmpty(currentAnswer))
+    public void OnBackPressed()
     {
-        // TODO: Add UI error message for users, make sure button doesn't let them advance with empty response
-        Debug.Log($"Please provide an answer for question {clickCount} before proceeding.");
-        return;
-    }
-    else if (clickCount >= 4)
-    {
-        Debug.Log("All answers provided:");
-        answers.Add(GetAnswerForQuestion(1));
-        answers.Add(GetAnswerForQuestion(2));
-        answers.Add(GetAnswerForQuestion(3));
-        answers.Add(GetAnswerForQuestion(4));
-        
-        // Reset the click count for future use if needed
-        clickCount = 0;
-
-        HTTPClient httpClient = HTTPClient.Instance;
-        bool postAnswersSuccessful = await httpClient.PostResponses(answers);
-
-        if (postAnswersSuccessful)
+        if (questionIdx > 0)
         {
-            Debug.Log("Successfully posted responses");
+            questionPanels[questionIdx].SetActive(false);
+            questionIdx--;
+            questionPanels[questionIdx].SetActive(true);
         }
+    }
+    
+    public async void OnNextPressed()
+    {
+        string currentAnswer = questionInputFields[questionIdx].text;
+    
+        if (string.IsNullOrEmpty(currentAnswer))
+        {
+            errorTexts[questionIdx].text = "Please field in the blank.";
+        }
+        else if (questionIdx >= questionInputFields.Count-1)
+        {
+            for (int i = 0; i < questionInputFields.Count; i++)
+            {
+                answers.Add(questionInputFields[i].text);
+            }
+            
+            // Reset the question count for future use if needed
+            questionIdx = 0;
+
+            // TODO: Comment this out when backend is ready
+            bool postAnswerSuccessful = true;
+            // HTTPClient httpClient = HTTPClient.Instance;
+            // bool postAnswerSuccessful = await httpClient.PostResponses(answers);
+
+            if (postAnswerSuccessful)
+            {
+                Debug.Log("Successfully posted answers to backend");
+                NavigateToCharacterSummaryPanel();
+            }
+            else
+            {
+                Debug.Log("Failed to post responses due to backend error");
+            }
+        } 
         else
         {
-            Debug.Log("Failed to post responses due to backend error");
+            errorTexts[questionIdx].text = ""; // clear current error message
+            NavigateToNextPanel();
         }
     }
 
-    // Helper function to get the answer based on the click count
-    string GetAnswerForQuestion(int questionNumber)
+    void NavigateToNextPanel()
     {
-        switch (questionNumber)
-        {
-            case 1:
-                return question1Input.text;
-            case 2:
-                return question2Input.text;
-            case 3:
-                return question3Input.text;
-            case 4:
-                return question4Input.text;
-            default:
-                return null;
-        }
+        questionPanels[questionIdx].SetActive(false);
+        questionIdx++;
+        questionPanels[questionIdx].SetActive(true);
     }
-}
+
+    void NavigateToCharacterSummaryPanel()
+    {
+        // hide both the question panel container and the last question
+        questionPanel.SetActive(false);
+        questionPanels[questionIdx].SetActive(false);
+        characterSummaryPanel.SetActive(true);
+    }
 
 }

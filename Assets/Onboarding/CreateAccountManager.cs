@@ -15,7 +15,7 @@ public class CreateAccountNavigator : MonoBehaviour
     public InputField confirmPasswordInput;
     public GameObject LandingPanel;
     public GameObject RegisterPanel;
-    public GameObject QuestionPanels;
+    public GameObject InfoPanel;
     public Text usernameErrorText;
     public Text emailErrorText;
     public Text passwordErrorText;
@@ -25,7 +25,6 @@ public class CreateAccountNavigator : MonoBehaviour
     void Start()
     {
         RegisterPanel.SetActive(true);
-        QuestionPanels.SetActive(false);
         usernameInput.onValueChanged.AddListener(delegate { ValidateUsername(); });
         emailInput.onValueChanged.AddListener(delegate { ValidateEmail(); });
         passwordInput.onValueChanged.AddListener(delegate { ValidatePassword(); });
@@ -94,7 +93,7 @@ public class CreateAccountNavigator : MonoBehaviour
         string email = emailInput.text;
         string password = passwordInput.text;
         string confirmPassword = confirmPasswordInput.text;
-        
+
         bool usernameIsValid = ValidateUsername();
         bool emailIsValid = ValidateEmail();
         bool passwordIsValid = ValidatePassword();
@@ -108,7 +107,7 @@ public class CreateAccountNavigator : MonoBehaviour
 
             if (registrationSuccessful)
             {
-                NavigateToQuestionPanels();
+                NavigateToInfoPanel();
                 Debug.Log("Successfully created account with username: " + username + " email: " + email + " and password: " + password + "");
             }
             else
@@ -144,9 +143,9 @@ public class CreateAccountNavigator : MonoBehaviour
     }
 
 
-    private void NavigateToQuestionPanels()
+    private void NavigateToInfoPanel()
     {
         RegisterPanel.SetActive(false);
-        QuestionPanels.SetActive(true);
+        InfoPanel.SetActive(true);
     }
 }
