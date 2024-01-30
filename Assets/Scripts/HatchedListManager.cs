@@ -83,7 +83,7 @@ public class HatchedListManager : MonoBehaviour
     // Deletes instantiations of the prefab that shows up on the hatched list when the panel is closed out
     public void CloseHatchedListPanel()
     {
-        // Iterate through each child of the PlayerListPanel
+        // Iterate through each child of the HatchedListPanel
         foreach (Transform child in content.transform)
         {
             // Check if the child has the specified tag
