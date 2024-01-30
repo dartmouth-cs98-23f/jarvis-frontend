@@ -13,6 +13,7 @@ public class SideMenu : MonoBehaviour
     public GameObject hatchedPanel;
     public GameObject incubatingPanel;
     public GameObject swipePrefab;
+    public GameObject createAgentPanel;
     void Start()
     {
         // Disable the submenu initially
@@ -23,6 +24,7 @@ public class SideMenu : MonoBehaviour
         hatchedPanel.SetActive(false);
         incubatingPanel.SetActive(false);
         swipePrefab.SetActive(false);
+        createAgentPanel.SetActive(false);
     }
 
     public void ToggleMenu()
@@ -62,5 +64,9 @@ public class SideMenu : MonoBehaviour
         hatchedPanel.SetActive(!hatchedPanel.activeSelf);
         incubatingPanel.SetActive(!incubatingPanel.activeSelf);
         swipePrefab.SetActive(!swipePrefab.activeSelf);
+    }
+
+    public void ToggleCreateAgentPanel(){
+        createAgentPanel.SetActive(!createAgentPanel.activeSelf);
     }
 }

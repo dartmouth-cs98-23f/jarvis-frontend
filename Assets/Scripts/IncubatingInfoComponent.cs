@@ -28,8 +28,6 @@ public class IncubatingInfoComponent : MonoBehaviour
     // Set the progress value of the slider
     public void SetProgress(float progress)
     {
-        // Ensure progress is within the range [0, 1]
-        progress = Mathf.Clamp01(progress);
-        slider.value = progress * slider.maxValue;
+        slider.value = progress;
     }
 }

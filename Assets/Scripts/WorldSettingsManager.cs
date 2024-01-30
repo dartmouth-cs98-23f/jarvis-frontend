@@ -21,7 +21,7 @@ public class WorldSettingsManager : MonoBehaviour
     public void localDisplayWorldDesc(){
         string desc = "For users who love to partyyyy";
 
-        worldDescText.text = "Description: " + desc;
+        worldDescText.text = "Description: \n" + desc;
     }
 
     // For local testing
