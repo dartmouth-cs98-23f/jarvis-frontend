@@ -13,7 +13,8 @@ public class CreateAgentManager : MonoBehaviour
     public GameObject confirmNameObject;
     public GameObject confirmDescObject;
     public GameObject confirmIncObject;
-
+    public TextMeshProUGUI sliderValueText;
+    public RectTransform handleRect;
     private string name;
     private string desc;
     private float incubation;
@@ -74,11 +75,29 @@ public class CreateAgentManager : MonoBehaviour
 
     public void FillConfirmCreateFields(){
         AgentData agent = new AgentData();
-        agent.sprite_URL = "Assets/Sprites/master_yoda";
+        agent.sprite_URL = "Sprites/master_yoda";
         confirmSpriteObject.GetComponent<Image>().sprite = Resources.Load<Sprite>(agent.sprite_URL);
         confirmNameObject.GetComponent<TextMeshProUGUI>().text = name;
         confirmDescObject.GetComponent<TextMeshProUGUI>().text = desc;
-        confirmIncObject.GetComponent<TextMeshProUGUI>().text = incubation.ToString() + "h";
+        confirmIncObject.GetComponent<TextMeshProUGUI>().text = "Incubation Time: " + incubation.ToString("F0") + "h";
+    }
+
+    public void UpdateSliderValueText()
+    {
+        // Update the text of the Text component with the value of the slider
+        sliderValueText.text = incubationTime.value.ToString() + "h"; 
+    }
+
+    private void Update()
+    {
+        // Update the position of the text component to follow the position of the slider handle
+        Vector3 handlePosition = handleRect.position;
+        Vector3 textPosition = new Vector3(handlePosition.x, handlePosition.y - 2.5f, handlePosition.z); // Adjust the offset as needed
+        sliderValueText.transform.position = textPosition;
+    }
+
+    public void SendAgentInfo(){
+        // TODO: Send info about agent to backend upon clicking confirm on confirm create screen
     }
 
 }
