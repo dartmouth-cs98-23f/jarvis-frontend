@@ -19,6 +19,7 @@ public class IncubatingListManager : MonoBehaviour
 
     public List<IncubatingInfo> incubatingList;
     public GameObject incubatingInfoPrefab;
+    public GameObject trainAgentPanel;
 
     public void localDisplayIncubatingList()
     {
@@ -85,6 +86,8 @@ public class IncubatingListManager : MonoBehaviour
             TextMeshProUGUI username = incubatingInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             incubatingInfoComponent.SetMaxValue(incubatingInfo.totalDuration);
             incubatingInfoComponent.SetProgress(incubatingInfo.totalDuration - incubatingInfo.timeRemaining);
+            incubatingInfoComponent.trainAgentPanel = trainAgentPanel;
+
 
             // Set player details dynamically
             incubatingInfoComponent.SetPlayerDetails(incubatingInfo.spriteHead, incubatingInfo.username);

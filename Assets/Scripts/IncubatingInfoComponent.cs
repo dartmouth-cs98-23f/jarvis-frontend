@@ -10,6 +10,7 @@ public class IncubatingInfoComponent : MonoBehaviour
 {
     public TextMeshProUGUI usernameTMP;
     public Image displayUserImage;
+    public GameObject trainAgentPanel;
     public Slider slider;
 
     // A method to set the player details
@@ -29,5 +30,18 @@ public class IncubatingInfoComponent : MonoBehaviour
     public void SetProgress(float progress)
     {
         slider.value = progress;
+    }
+
+    public void ClickPrefab()
+    {
+        // Toggle the panel visibility
+        if (trainAgentPanel != null)
+        {
+            trainAgentPanel.SetActive(!trainAgentPanel.activeSelf);
+        }
+        else
+        {
+            Debug.LogError("Train Agent Panel reference is not set.");
+        }
     }
 }

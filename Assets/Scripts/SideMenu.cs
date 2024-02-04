@@ -16,6 +16,8 @@ public class SideMenu : MonoBehaviour
     public GameObject createAgentPanel;
     public GameObject visualDescPanel; // for asking "what does your bot look like?"
     public GameObject confirmCreatePanel;
+    public GameObject agentInfoPanel;
+    public GameObject trainAgentPanel;
     void Start()
     {
         // Disable the submenu initially
@@ -29,6 +31,8 @@ public class SideMenu : MonoBehaviour
         createAgentPanel.SetActive(false);
         visualDescPanel.SetActive(false);
         confirmCreatePanel.SetActive(false);
+        agentInfoPanel.SetActive(false);
+        trainAgentPanel.SetActive(false);
     }
 
     public void ToggleMenu()
@@ -80,5 +84,11 @@ public class SideMenu : MonoBehaviour
 
     public void ToggleConfirmCreatePanel(){
         confirmCreatePanel.SetActive(!confirmCreatePanel.activeSelf);
+    }
+    public void ToggleAgentInfoPanel(){
+        agentInfoPanel.SetActive(!agentInfoPanel.activeSelf);
+    }
+    public void ToggleTrainAgentPanel(){
+        trainAgentPanel.SetActive(!trainAgentPanel.activeSelf);
     }
 }
