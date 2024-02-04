@@ -274,6 +274,13 @@ public class UserData
         public DateTime CreatedTime { get; set; }
     }
 
+    public class UserWorld
+    {
+        public Guid id;
+        public string name;
+        public string description;
+        public string thumbnail_url;
+    }
     public Guid MyId
     {
         get { return myId; }

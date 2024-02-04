@@ -19,7 +19,6 @@ public static class JsonHelper
         chatList.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));           // Sort the list based on the createdTime
         return chatList;
     }
-
 }
 
 public static class StringParser
