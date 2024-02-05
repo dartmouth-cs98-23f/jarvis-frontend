@@ -10,11 +10,15 @@ public class NavbarManager : MonoBehaviour
 
     public GameObject currentPanel;
     public GameObject userProfilePanel;
+    public GameObject navbarPanel;
 
     // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
-        
+        navbarPanel.SetActive(true);
+        userIcon.SetActive(true);
+        backIcon.SetActive(false);
+        currentPanel = myWorldsPanel;
     }
 
     public void OnPressUserButton()
@@ -40,6 +44,17 @@ public class NavbarManager : MonoBehaviour
         {
             userIcon.SetActive(false);
             backIcon.SetActive(true);
+        } else
+        {
+            userIcon.SetActive(true);
+            backIcon.SetActive(false);
         }
+    }
+
+    public void NavigateBackToMyWorlds()
+    {
+        navbarPanel.SetActive(true);
+        Debug.Log("Navigating back to my worlds");
+        SetCurrentPanel(myWorldsPanel);
     }
 }

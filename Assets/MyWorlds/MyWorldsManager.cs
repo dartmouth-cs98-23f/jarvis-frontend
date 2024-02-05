@@ -46,9 +46,9 @@ public class MyWorldsManager : MonoBehaviour
         currentWorldObject.SetActive(true);
         // TODO: Get from backend API
         userWorlds = LocalGetUserWorlds();
-        Debug.Log("User Worlds: " + userWorlds.Count);
         worldSwiper = currentWorldObject.GetComponent<ImageSwiper>();
         navbarManager = navBarObject.GetComponent<NavbarManager>();
+        navbarManager.SetCurrentPanel(myWorldsPanel);
     }
 
     List<HTTPClient.UserWorld> LocalGetUserWorlds()
@@ -106,7 +106,7 @@ public class MyWorldsManager : MonoBehaviour
         );
 
         // TODO: Add backend api. get the worldId from response and add to userWorlds
-        // bool addWorldSuccessful = await AddUserWorld(worldCode);
+        // bool addWorldSuccessful = await AddUserWorld(userId, worldCode);
 
         bool addWorldSuccessful = true; // comment out this line to connect with backend API.
         if (addWorldSuccessful)

@@ -9,6 +9,7 @@ public class AddWorldManager : MonoBehaviour
     public GameObject myWorldsPanel;
     public InputField worldCodeInputField;
     private MyWorldsManager myWorldsManager;
+    public GameObject navbarPanel;
 
     // Start is called before the first frame update
     void OnEnable()
@@ -25,6 +26,7 @@ public class AddWorldManager : MonoBehaviour
         {
             addWorldPanel.SetActive(false);
             myWorldsPanel.SetActive(true);
+            navbarPanel.GetComponent<NavbarManager>().NavigateBackToMyWorlds();
         } else 
         {
             // TODO: Add UI error message on failure to add world
