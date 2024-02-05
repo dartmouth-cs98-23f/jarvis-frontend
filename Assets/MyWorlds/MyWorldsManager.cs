@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,9 +10,12 @@ public class MyWorldsManager : MonoBehaviour
 {
     public GameObject myWorldsPanel;
     public GameObject createWorldPanel;
+    public GameObject addWorldPanel;
 
     public List<HTTPClient.UserWorld> userWorlds;
     public GameObject currentWorldObject;
+    public GameObject navBarObject;
+    private NavbarManager navbarManager;
     private ImageSwiper worldSwiper;
 
     private string LOCAL_USER_WORLDS = @"
@@ -44,6 +48,7 @@ public class MyWorldsManager : MonoBehaviour
         userWorlds = LocalGetUserWorlds();
         Debug.Log("User Worlds: " + userWorlds.Count);
         worldSwiper = currentWorldObject.GetComponent<ImageSwiper>();
+        navbarManager = navBarObject.GetComponent<NavbarManager>();
     }
 
     List<HTTPClient.UserWorld> LocalGetUserWorlds()
@@ -74,6 +79,45 @@ public class MyWorldsManager : MonoBehaviour
     {
         myWorldsPanel.SetActive(false);
         createWorldPanel.SetActive(true);
+        navbarManager.SetCurrentPanel(createWorldPanel);
+    }
+
+    public void OnPressAddNewWorld()
+    {
+        myWorldsPanel.SetActive(false);
+        addWorldPanel.SetActive(true);
+        navbarManager.SetCurrentPanel(addWorldPanel);
+    }
+
+    public bool AddWorld(string worldCode)
+    {
+
+        Debug.Log("Adding world" + " " + worldCode);
+        // TODO: This is for local testing only. Comment out for deploy.
+        Guid worldId = Guid.NewGuid();
+        userWorlds.Add(
+            new HTTPClient.UserWorld
+            {
+                id = worldId,
+                name = "Existing world",
+                description = "string",
+                thumbnail_url = "https://picsum.photos/201"
+            }
+        );
+
+        // TODO: Add backend api. get the worldId from response and add to userWorlds
+        // bool addWorldSuccessful = await AddUserWorld(worldCode);
+
+        bool addWorldSuccessful = true; // comment out this line to connect with backend API.
+        if (addWorldSuccessful)
+        {
+            worldSwiper.AddWorld();
+            return true;
+        } else {
+            return false;
+        }
+
+
     }
 
     public void LeaveWorld(string worldId)

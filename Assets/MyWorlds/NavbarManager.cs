@@ -21,8 +21,7 @@ public class NavbarManager : MonoBehaviour
     {
         myWorldsPanel.SetActive(false);
         userProfilePanel.SetActive(true);
-        userIcon.SetActive(false);
-        backIcon.SetActive(true);
+        SetCurrentPanel(userProfilePanel);
     }
 
     public void OnPressBackButton()
@@ -30,7 +29,17 @@ public class NavbarManager : MonoBehaviour
         myWorldsPanel.SetActive(true);
         userIcon.SetActive(true);
         backIcon.SetActive(false);
+        currentPanel.SetActive(false);
+        SetCurrentPanel(myWorldsPanel);
     }
 
-
+    public void SetCurrentPanel(GameObject panel)
+    {
+        currentPanel = panel;
+        if (currentPanel != myWorldsPanel) // for all cases where they are not MyWorldsPanel, always make it available to go back
+        {
+            userIcon.SetActive(false);
+            backIcon.SetActive(true);
+        }
+    }
 }

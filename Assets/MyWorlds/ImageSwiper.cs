@@ -205,6 +205,13 @@ public class ImageSwiper : MonoBehaviour
         return ""; // or string.Empty if you prefer
     }
 
+    public void AddWorld()
+    {
+        myWorldsPanel.SetActive(true);
+        StartLoadingUserWorlds(); 
+        UpdateWorldsDisplay();
+    }
+
     public void RemoveWorld()
     {
         currentIndex = currentIndex % userWorlds.Count; // Wrap to the beginning if at the end
@@ -220,7 +227,6 @@ public class ImageSwiper : MonoBehaviour
         {   // TODO: Add a UI for no worlds
             displayImage.sprite = null;
             displayWorldName.text = "";
-
         }
     }
 }
