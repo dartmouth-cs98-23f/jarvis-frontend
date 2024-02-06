@@ -8,6 +8,7 @@ TagManager:
   - PlayerInfoPrefab
   - HatchedInfoPrefab
   - IncubatingInfoPrefab
+  - CollabInfoPrefab
   layers:
   - Default
   - TransparentFX

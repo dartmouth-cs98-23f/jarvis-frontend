@@ -18,6 +18,9 @@ public class SideMenu : MonoBehaviour
     public GameObject confirmCreatePanel;
     public GameObject agentInfoPanel;
     public GameObject trainAgentPanel;
+    public GameObject agentCollabPanel;
+    public GameObject viewAnswersPanel;
+    public GameObject typeAnswerPanel;
     void Start()
     {
         // Disable the submenu initially
@@ -33,6 +36,9 @@ public class SideMenu : MonoBehaviour
         confirmCreatePanel.SetActive(false);
         agentInfoPanel.SetActive(false);
         trainAgentPanel.SetActive(false);
+        agentCollabPanel.SetActive(false);
+        viewAnswersPanel.SetActive(false);
+        typeAnswerPanel.SetActive(false);
     }
 
     public void ToggleMenu()
@@ -90,5 +96,14 @@ public class SideMenu : MonoBehaviour
     }
     public void ToggleTrainAgentPanel(){
         trainAgentPanel.SetActive(!trainAgentPanel.activeSelf);
+    }
+    public void ToggleAgentCollabPanel(){
+        agentCollabPanel.SetActive(!agentCollabPanel.activeSelf);
+    }
+    public void ToggleViewAnswersPanel(){
+        viewAnswersPanel.SetActive(!viewAnswersPanel.activeSelf);
+    }
+    public void ToggleTypeAnswerPanel(){
+        typeAnswerPanel.SetActive(!typeAnswerPanel.activeSelf);
     }
 }
