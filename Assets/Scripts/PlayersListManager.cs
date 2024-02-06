@@ -19,9 +19,6 @@ public class PlayersListManager : MonoBehaviour
 
     public List<PlayerInfo> playerList;
     public GameObject playerInfoPrefab;
-    public GameObject existingContent;
-    public GameObject existingViewport;
-    public GameObject playersListPanel;
     public void localDisplayPlayersList()
     {
         List<PlayerInfo> dummyPlayerList = new List<PlayerInfo>();
@@ -101,17 +98,6 @@ public class PlayersListManager : MonoBehaviour
             float yOffset = i * 150f; // Adjust this value as needed
             playersListGO.GetComponent<RectTransform>().anchoredPosition += new Vector2(0f, -yOffset);
         }
-    }
-
-    public void addScrollRect()
-    {
-        ScrollRect scrollRect = playersListPanel.AddComponent<ScrollRect>();
-
-        scrollRect.viewport = existingViewport.GetComponent<RectTransform>();
-
-        scrollRect.content = existingContent.GetComponent<RectTransform>();
-
-        scrollRect.horizontal = false;
     }
 
     // Deletes instantiations of the prefab that shows up on the players list when the panel is closed out
