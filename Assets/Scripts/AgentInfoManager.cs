@@ -43,13 +43,13 @@ public class AgentInfoManager : MonoBehaviour
         agent.username = "Master Yoda";
         agent.creatorId = "00000000-0000-0000-0000-000000000000"; // Should call get user with this id to display creator name
         agent.createdTime = DateTime.Parse("2023-11-04T22:54:19.911Z");
-        agent.summary = "Master Yoda is a jedi beast.";
+        agent.summary = "Master Yoda is a jedi beast. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size.";
 
         agentInfoSprite.GetComponent<Image>().sprite = Resources.Load<Sprite>(agent.sprite_headshot_URL);
         agentInfoName.GetComponent<TextMeshProUGUI>().text = agent.username;
         agentInfoCreatedBy.GetComponent<TextMeshProUGUI>().text = "Created by: " + "Evan Phillips";
         agentInfoCreatedOn.GetComponent<TextMeshProUGUI>().text = "Created on: " + agent.createdTime.ToString("MM/dd/yy");
-        agentInfoSummary.GetComponent<TextMeshProUGUI>().text = agent.summary;
+        agentInfoSummary.GetComponent<TextMeshProUGUI>().text = "Summary:\n" + agent.summary;
     }
 
     private void Update(){
