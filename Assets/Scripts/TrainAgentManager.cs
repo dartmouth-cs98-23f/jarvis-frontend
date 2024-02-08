@@ -44,7 +44,7 @@ public class TrainAgentManager : MonoBehaviour
         agent.creatorId = "00000000-0000-0000-0000-000000000000"; // Should call get user with this id to display creator name
         agent.createdTime = DateTime.Parse("2024-02-04T02:54:19.911Z");
         agent.hatchTime = DateTime.Parse("2024-02-11T12:54:19.911Z");
-        agent.description = "Master Yoda is that mf boy.";
+        agent.description = "Master Yoda is that mf boy. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll.";
 
         trainAgentSprite.GetComponent<Image>().sprite = Resources.Load<Sprite>(agent.sprite_headshot_URL);
         trainAgentName.GetComponent<TextMeshProUGUI>().text = agent.username;

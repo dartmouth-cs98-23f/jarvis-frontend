@@ -13,6 +13,7 @@ public class CreateAgentManager : MonoBehaviour
     public GameObject confirmNameObject;
     public GameObject confirmDescObject;
     public GameObject confirmIncObject;
+    public GameObject confirmCreateContent;
     public TextMeshProUGUI sliderValueText;
     public RectTransform handleRect;
     private string name;
@@ -98,6 +99,14 @@ public class CreateAgentManager : MonoBehaviour
 
     public void SendAgentInfo(){
         // TODO: Send info about agent to backend upon clicking confirm on confirm create screen
+    }
+
+    // Adjusts size of scrollable description on the confirm create panel
+    public void adjustDescHeight(){
+        float preferredHeight = confirmDescObject.GetComponent<TextMeshProUGUI>().preferredHeight;
+        RectTransform contentRectTransform = confirmCreateContent.GetComponent<RectTransform>();
+
+        contentRectTransform.sizeDelta = new Vector2(contentRectTransform.sizeDelta.x, preferredHeight);
     }
 
 }
