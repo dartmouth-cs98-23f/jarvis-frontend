@@ -36,10 +36,10 @@ public class GameClient : MonoBehaviour
         currentUserData = await HTTPClient.Instance.GetUser(userId);
         if (currentUserData != null)
         {
-            Debug.Log("InitializeGame: " + currentUserData.firstName);
-            Debug.Log("InitializeGame: " + currentUserData.lastKnownX + ", " + currentUserData.lastKnownY);
+            Debug.Log("InitializeGame: " + currentUserData.username);
+            Debug.Log("InitializeGame: " + currentUserData.location.coordX + ", " + currentUserData.location.coordY);
             BuildAllCharacters(); // Call this method after user data is initialized
-            await SignalRClient.Initialize(userId, currentUserData.firstName); // TODO: Change first name to user first name later
+            await SignalRClient.Initialize(userId, currentUserData.username); // TODO: Change first name to user first name later
             signalRClient = SignalRClient.Instance;
             // signalRClient.RegisterUpdateLocationHandler(); // register updateLocation handler
         }
@@ -57,10 +57,10 @@ public class GameClient : MonoBehaviour
         // TODO: Uncomment below for local testing
         //////////////////////////////////////////////////
 
-        string xCoordinateString = PlayerPrefs.GetString("lastKnownX", "0");
-        string yCoordinateString = PlayerPrefs.GetString("lastKnownY", "0");
-        currentUserData.lastKnownX = int.Parse(xCoordinateString);
-        currentUserData.lastKnownY = int.Parse(yCoordinateString);
+        string xCoordinateString = PlayerPrefs.GetString("coordX", "0");
+        string yCoordinateString = PlayerPrefs.GetString("coordY", "0");
+        currentUserData.location.coordX = int.Parse(xCoordinateString);
+        currentUserData.location.coordY = int.Parse(yCoordinateString);
 
         //////////////////////////////////////////////////
 
@@ -82,7 +82,7 @@ public class GameClient : MonoBehaviour
         playerMovementScript.InteractButton.SetActive(false);
         playerMovementScript.SetTilemap(tilemap);
         CharacterComponent characterComponent = currentUserGO.GetComponent<CharacterComponent>();
-        characterComponent.SetPosition(currentUserData.lastKnownX, currentUserData.lastKnownY, 0); // Add back httpClient.currentUserData if testing locally
+        characterComponent.SetPosition(currentUserData.location.coordX, currentUserData.location.coordY, 0); // Add back httpClient.currentUserData if testing locally
 
 
         GameObject georgeWashingtonGO = Instantiate(georgePrefab, mainMap);

@@ -210,18 +210,18 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
 
 
 
-[System.Serializable]
-public class UserData
-{
-    public string firstName;
-    public string lastName;
-    public string email;
-    public int lastKnownX;
-    public int lastKnownY;
-    public bool isLoggedIn;
-    public DateTime createdTime;
-    public DateTime lastActiveTime;
-}
+    [System.Serializable]
+    public class UserData
+    {
+        public Guid id;
+        public string username;
+        public string email;
+        public Location location;
+        public string createdTime;
+        public bool isOnline;
+        public string sprite_URL;
+        public string sprite_headshot_URL;
+    }
 
     [System.Serializable]
     public class UserRegistrationData
@@ -249,7 +249,10 @@ public class UserData
     [System.Serializable]
     public class Location
     {
+
+        [JsonProperty("x_coord")]
         public int coordX;
+        [JsonProperty("y_coord")]
         public int coordY;
     }
     [System.Serializable]
@@ -269,9 +272,12 @@ public class UserData
 
         [JsonProperty("isGroupChat")]
         public bool IsGroupChat { get; set; }
+        [JsonProperty("isOnline")]
+        public bool IsOnline { get; set; }
 
         [JsonProperty("createdTime")]
         public DateTime CreatedTime { get; set; }
+
     }
 
     public class UserWorld

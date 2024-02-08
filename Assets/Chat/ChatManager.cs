@@ -36,8 +36,12 @@ namespace ChatManager{
 public class ChatManager : MonoBehaviour
 {
     private HTTPClient httpClient = HTTPClient.Instance;
-    public Guid currentUserId = HTTPClient.Instance.MyId;
-    private Guid otherUserID; 
+    // public Guid currentUserId = HTTPClient.Instance.MyId; // TODO: uncomment for actual backend testing
+    // private Guid otherUserID; 
+
+    public Guid currentUserId = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559"); // TODO: Comment for backend testing
+    public Guid otherUserID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41"); // TODO: Comment for backend testing
+
     private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
     private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
     public InputField messageInputField;
@@ -46,9 +50,10 @@ public class ChatManager : MonoBehaviour
     public Text cardUsername;
     public Image cardProfileImage;
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
-
     private Sprite userImage; // TODO: replace with actual image of user once backend api can handle it
     private Sprite otherUserImage; // TODO: replace with actual image of other user once backend api can handle it
+    private HTTPClient.UserData currentUserData;
+    private HTTPClient.UserData otherUserData;
 
     private string chatTestJsonString = @"
     [
@@ -56,6 +61,7 @@ public class ChatManager : MonoBehaviour
             ""id"": ""44dcb24a-3fb6-4533-be6f-7c56eb259c89"",
             ""senderId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
             ""receiverId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
+            ""isOnline"": true,
             ""content"": ""This is old text"",
             ""isGroupChat"": false,
             ""createdTime"": ""2022-05-21T08:20:00Z""
@@ -65,6 +71,7 @@ public class ChatManager : MonoBehaviour
             ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
             ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
             ""content"": ""This is the newest text"",
+            ""isOnline"": false,
             ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T14:45:30Z""
         },
@@ -73,6 +80,7 @@ public class ChatManager : MonoBehaviour
             ""senderId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
             ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
             ""content"": ""This is new textThis is new text\nThis is new textThis is new text\nThis is new text\nThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new text"",
+            ""isOnline"": true,
             ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T13:45:30Z""
         },
@@ -80,44 +88,97 @@ public class ChatManager : MonoBehaviour
 
     public List<HTTPClient.ChatMessage> sortedChatMessages;
 
-    void Start()
+    async void Start()
     {
         // TODO: replace with loading the actual images of the users once backend api can handle
-        otherUserID = new Guid(PlayerPrefs.GetString("CollidedUserId"));
+        // otherUserID = new Guid(PlayerPrefs.GetString("CollidedUserId"));
+        
+        // TODO: Comment for backend
+        currentUserData = await LocalGetUser(currentUserId);
+        otherUserData = await LocalGetUser(otherUserID);
+
+        // TODO: Uncomment for backend
+        // currentUserData = await GetUser(currentUserId);
+        // otherUserData = await GetUser(otherUserID);
 
         // Initialize user images
         userImage = GetUserImage(currentUserId);
         otherUserImage = GetUserImage(otherUserID);
 
         Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
-        SignalRClient.Instance.RegisterSendMessageHandler(this);
+        // SignalRClient.Instance.RegisterSendMessageHandler(this);
         BuildOtherUserProfile();
-        BuildChatHistory();
+        LocalBuildChatHistory();
 
+    }
+
+    public async Task<HTTPClient.UserData> LocalGetUser(Guid userId)
+    {
+        // Simulate a delay to mimic network request time
+        await Task.Delay(1000);
+
+        // Return a fake user based on the userId
+        if (userId == currentUserId)
+        {
+            return new HTTPClient.UserData
+            {
+                id = currentUserId,
+                username = "Current User",
+                email = "currentuser@example.com",
+                location = new HTTPClient.Location { coordX = 10, coordY = 20 },
+                createdTime = "2024-01-01T00:01:00Z",
+                isOnline = true,
+                sprite_URL = "https://example.com/currentuser_sprite.png",
+                sprite_headshot_URL = "https://example.com/currentuser_headshot.png"
+            };
+        }
+        else if (userId == otherUserID)
+        {
+            return new HTTPClient.UserData
+            {
+                id = otherUserID,
+                username = "Other User",
+                email = "otheruser@example.com",
+                location = new HTTPClient.Location { coordX = 30, coordY = 40 },
+                createdTime = "2024-01-02T00:01:00Z",
+                isOnline = false,
+                sprite_URL = "https://example.com/otheruser_sprite.png",
+                sprite_headshot_URL = "https://example.com/otheruser_headshot.png"
+            };
+        }
+
+        // Return null or throw an exception if the userId does not match
+        Debug.LogWarning($"User with ID {userId} not found.");
+        return null;
+    }
+
+    private async Task<HTTPClient.UserData> GetUser(Guid userId)
+    {
+        return await httpClient.GetUser(userId);
     }
     
     // Update is called once per frame
     void Update()
     {
         // Check if there is a received message to process
-        if (!string.IsNullOrEmpty(SignalRClient.SenderId))
-        {
-            Debug.Log("Got message, going to generate GCMO");
-            // Create a ChatMessage object and reset the static variables
-            GenerateChatMessageObject(new HTTPClient.ChatMessage
-            {
-                SenderId = new Guid(SignalRClient.SenderId),
-                ReceiverId = currentUserId,
-                Content = StringParser.ParseInput(SignalRClient.Message),
-                IsGroupChat = false,
-                CreatedTime = DateTime.UtcNow
-            });
+        // if (!string.IsNullOrEmpty(SignalRClient.SenderId))
+        // {
+        //     Debug.Log("Got message, going to generate GCMO");
+        //     // Create a ChatMessage object and reset the static variables
+            // GenerateChatMessageObject(new HTTPClient.ChatMessage
+            // {
+            //     SenderId = new Guid(SignalRClient.SenderId),
+            //     ReceiverId = currentUserId,
+            //     Content = StringParser.ParseInput(SignalRClient.Message),
+            //     IsGroupChat = false,
+            //     CreatedTime = DateTime.UtcNow
+            // });
 
 
-            // Reset the static variables to indicate that the message has been processed
-            SignalRClient.SenderId = null;
-            SignalRClient.Message = null;
-        }
+        //     // Reset the static variables to indicate that the message has been processed
+        //     SignalRClient.SenderId = null;
+        //     SignalRClient.Message = null;
+        // }
     }
 
 
@@ -144,7 +205,7 @@ public class ChatManager : MonoBehaviour
         if (otherUser == null){
             return;
         }
-        cardUsername.GetComponent<Text>().text = otherUser.firstName + " " + otherUser.lastName;
+        cardUsername.GetComponent<Text>().text = otherUser.username;
         cardProfileImage.sprite = otherUserImage;
     }
 
@@ -227,11 +288,11 @@ public class ChatManager : MonoBehaviour
         string messageContent = StringParser.ParseInput(chatMessage.Content);
         if (chatMessage.SenderId == currentUserId)
         {
-            chatMessageComponent.SetChatDetails(userImage, messageContent);
+            chatMessageComponent.SetChatDetails(currentUserData.username, messageContent, chatMessage.IsOnline);
         }
         else
         {
-            chatMessageComponent.SetChatDetails(otherUserImage, messageContent);
+            chatMessageComponent.SetChatDetails(otherUserData.username, messageContent, chatMessage.IsOnline);
         }
     }
 
@@ -247,6 +308,7 @@ public class ChatManager : MonoBehaviour
         message.ReceiverId = receiverId;
         message.Content = content;
         message.IsGroupChat = false;
+        message.IsOnline = true; // TODO: Check if this is auto-generated on backend
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
         // AddNewChatEntry(Guid.NewGuid(), message); 
 
@@ -269,6 +331,7 @@ public class ChatManager : MonoBehaviour
         message.ReceiverId = receiverId;
         message.Content = content;
         message.IsGroupChat = false;
+        message.IsOnline = true; // TODO: Check logic of this and if this is generated on backend
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
         AddNewChatEntry(Guid.NewGuid(), message);
     }

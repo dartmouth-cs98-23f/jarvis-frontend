@@ -101,8 +101,8 @@ public class PlayerMovement : MonoBehaviour
             int yCoordinate = Mathf.RoundToInt(transform.position.y);
 
             // TODO: Comment out when backend works
-            PlayerPrefs.SetString("lastKnownX", xCoordinate.ToString());
-            PlayerPrefs.SetString("lastKnownY", yCoordinate.ToString()); 
+            PlayerPrefs.SetString("coordX", xCoordinate.ToString());
+            PlayerPrefs.SetString("coordY", yCoordinate.ToString()); 
 
             // Send the updated location to the server
             // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);

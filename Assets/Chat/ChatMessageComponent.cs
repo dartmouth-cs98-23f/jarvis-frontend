@@ -10,12 +10,20 @@ public class ChatMessageComponent : MonoBehaviour
 {
     // public TextMeshProUGUI senderNameGO;
     public TextMeshProUGUI displayContentGO;
-    public Image displayUserImage;
+    public Text displayUsername;
+    public Image userOnlineStatus;
 
     // A method to set the chat details
-    public void SetChatDetails(Sprite profileImage, string content)
+    public void SetChatDetails(string username, string content, bool isOnline)
     {
-        displayUserImage.sprite = profileImage;
-        displayContentGO.text = content; // TODO: get sender name from backend instead of Guid
+        displayUsername.text = username;
+        displayContentGO.text = content;
+        if (isOnline)
+        {
+            userOnlineStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
+        } else
+        {
+            userOnlineStatus.sprite = Resources.Load<Sprite>("Shapes/hollow_circle");
+        }
     }
 }
