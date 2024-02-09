@@ -11,16 +11,6 @@ public class PlayersListManager : MonoBehaviour
 {
     public TextMeshProUGUI playerCountText;
     public GameObject content;
-
-    [System.Serializable]
-    public class PlayerInfo // TODO: Delete when backend testing works
-    {
-        public bool isOnline;
-        public Sprite spriteHead;
-        public string username;
-    }
-
-    public List<PlayerInfo> playerList;
     public GameObject playerInfoPrefab;
     private HTTPClient httpClient = HTTPClient.Instance;
     public SpriteLoader spriteLoader;
@@ -123,18 +113,31 @@ public class PlayersListManager : MonoBehaviour
             // Change color based on online/offline status
             if (playerInfo.isOnline)
             {
-                onlineIndicator.GetComponent<Image>().color = Color.green;
+                Color color = onlineIndicator.GetComponent<Image>().color;
+                color = Color.green;
+                color.a = 1;
+                onlineIndicator.GetComponent<Image>().color = color;
+                Outline outline = onlineIndicator.GetComponent<Outline>();
+                Color outlineColor = outline.effectColor;
+                outlineColor.a = 0.5f;
+                outline.effectColor = outlineColor;
                 onlineIndicator.GetComponent<Outline>().enabled = false;
+
             }
             else
             {
-                onlineIndicator.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+                Color color = onlineIndicator.GetComponent<Image>().color;
+                color = new Color(0f, 0f, 0f, 0f);
+                onlineIndicator.GetComponent<Image>().color = color;
+                Outline outline = onlineIndicator.GetComponent<Outline>();
+                Color outlineColor = outline.effectColor;
+                outlineColor = Color.gray;
+                outlineColor.a = 0.5f;
+                outline.effectColor = outlineColor;
                 onlineIndicator.GetComponent<Outline>().enabled = true;
-                onlineIndicator.GetComponent<Outline>().effectColor = Color.gray;
             }
         });
     }
-    await Task.Delay(500);
     sideMenuManager.TogglePlayersListPanel();
 }
 

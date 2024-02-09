@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using TMPro;
+using Clients;
 
 public class CreateAgentManager : MonoBehaviour
 {
@@ -20,6 +21,9 @@ public class CreateAgentManager : MonoBehaviour
     private string desc;
     private float incubation;
     private string visual;
+    private HTTPClient httpClient = HTTPClient.Instance;
+    public SideMenu sideMenuManager;
+    public IncubatingListManager incubatingListManager;
 
     [Serializable]
     public class AgentData
@@ -97,8 +101,21 @@ public class CreateAgentManager : MonoBehaviour
         sliderValueText.transform.position = textPosition;
     }
 
-    public void SendAgentInfo(){
-        // TODO: Send info about agent to backend upon clicking confirm on confirm create screen
+    public async void SendAgentInfo()
+    {
+        // TODO: Get error message from backend and display it
+        bool createAgentSuccessful = await httpClient.CreateAgent(name, desc, httpClient.MyId, (int)incubation);
+
+        if (createAgentSuccessful)
+        {
+            sideMenuManager.ToggleConfirmCreatePanel();
+            incubatingListManager.CloseIncubatingListPanel();
+            incubatingListManager.localDisplayIncubatingList(); // TODO: Change to non-local when backend working
+        }
+        else
+        {
+            Debug.Log("Failed to create agent due to backend error");
+        }
     }
 
     // Adjusts size of scrollable description on the confirm create panel

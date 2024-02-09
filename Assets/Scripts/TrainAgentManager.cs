@@ -55,7 +55,7 @@ public class TrainAgentManager : MonoBehaviour
         double totalHours = total.TotalHours;
         double remainingHours = remaining.TotalHours;
         int hours = (int)remainingHours;
-        int minutes = (int)((remainingHours - hours) * 60); // to calculate minutes to display in the tex box
+        int minutes = (int)((remainingHours - hours) * 60); // to calculate minutes to display in the text box
 
         trainAgentTimeRemaining.GetComponent<TextMeshProUGUI>().text = $"Time Remaining: {hours}h {minutes}m";
         trainAgentSlider.GetComponent<Slider>().maxValue = (float)totalHours;

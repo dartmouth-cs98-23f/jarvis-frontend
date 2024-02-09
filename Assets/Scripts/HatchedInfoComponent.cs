@@ -19,6 +19,9 @@ public class HatchedInfoComponent : MonoBehaviour
     public void SetPlayerDetails(Sprite profileImage, string username)
     {
         displayUserImage.sprite = profileImage;
+        Color color = displayUserImage.color;
+        color.a = 1;
+        displayUserImage.color = color;
         usernameTMP.text = username;
     }
 

@@ -20,7 +20,7 @@ public class HTTPClient
 
     private readonly HttpClient httpClient = new HttpClient();
     // private const string url = "http://localhost:5087";  
-    private const string url = "https://simyou.azurewebsites.net/";  
+    private const string url = "https://api.simugameservice.lekina.me/";  
 
     private Guid myId;
     private Guid worldId; // TODO: Check if this is the right way to store world id
@@ -244,7 +244,23 @@ public async Task<List<HatchedData>> GetHatched(Guid worldId) {
         return null; // May need to change null
     }
 }
+// Gets a list of incubating agent ids
+public async Task<List<IncubatingData>> GetIncubating(Guid worldId) {
+    string apiUrl = $"{url}/worlds/{worldId}/agents/incubating";
 
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<IncubatingData> incubatingAgents = JsonConvert.DeserializeObject<List<IncubatingData>>(jsonResponse);
+    
+        return incubatingAgents;
+
+    } else {
+        Debug.LogError("GetIncubating Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
 
 public async Task<AgentData> GetAgent(Guid agentId) {
     string apiUrl = $"{url}/agents/{agentId}";
@@ -262,103 +278,163 @@ public async Task<AgentData> GetAgent(Guid agentId) {
     }
 }
 
+public async Task<bool> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
+{
+    string apiUrl = $"{url}/agents";
 
-    [System.Serializable]
-    public class UserData
+    try
     {
-        public string id;
-        public string username;
-        public Location location;
-        public bool isOnline;
-        public bool isCreator;
-        public string sprite_URL;
-        public string sprite_headshot_URL;
-    }
+        CreateAgentData createAgentData = new CreateAgentData
+        {
+            Username = username,
+            Description = description,
+            CreatorId = creatorId,
+            IncubationDurationInHours = incubationDurationInHours
+        };
 
-    [System.Serializable]
-    public class Location
+        string jsonRequest = JsonConvert.SerializeObject(createAgentData);
+        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            CreateAgentResponse createAgentResponse = JsonConvert.DeserializeObject<CreateAgentResponse>(jsonResponse);
+            Debug.Log("Agent created successfully, with ID: " + createAgentResponse.agentId);
+            return true; // Create agent successful
+        }
+        else
+        {
+            Debug.LogError("Create Agent Error: " + response.StatusCode);
+            return false; // Create agent failed
+        }
+    }
+    catch (HttpRequestException e)
     {
-        public int x_coord;
-        public int y_coord;
+        // Handle other exceptions if needed
+        Debug.LogError("Login HTTP Request Exception: " + e.Message);
+        return false; // Registration failed due to exception
     }
+}
 
-    [System.Serializable]
-    public class UserRegistrationData
-    {
-        public string FirstName;
-        public string LastName;
-        public string Password;
-        public string Email;
-    }
+[System.Serializable]
+public class UserData
+{
+    public string id;
+    public string username;
+    public Location location;
+    public bool isOnline;
+    public bool isCreator;
+    public string sprite_URL;
+    public string sprite_headshot_URL;
+}
 
- [System.Serializable]
-    public class UserLoginData
-    {
-        public string Password;
-        public string Email;
-    }
+[System.Serializable]
+public class Location
+{
+    public int x_coord;
+    public int y_coord;
+}
 
-    [System.Serializable]
-    public class UserRegistrationResponse
-    {
-        public Guid userId;
-        public string responseString;
-    }
+[System.Serializable]
+public class UserRegistrationData
+{
+    public string FirstName;
+    public string LastName;
+    public string Password;
+    public string Email;
+}
 
-    [System.Serializable]
-    public class ChatMessage
-    {
-        [JsonProperty("id")]
-        public Guid Id { get; set; }
+[System.Serializable]
+public class UserLoginData
+{
+    public string Password;
+    public string Email;
+}
 
-        [JsonProperty("senderId")]
-        public Guid SenderId { get; set; }
+[System.Serializable]
+public class UserRegistrationResponse
+{
+    public Guid userId;
+    public string responseString;
+}
 
-        [JsonProperty("receiverId")]
-        public Guid ReceiverId { get; set; }
+[System.Serializable]
+public class ChatMessage
+{
+    [JsonProperty("id")]
+    public Guid Id { get; set; }
 
-        [JsonProperty("content")]
-        public string Content { get; set; }
+    [JsonProperty("senderId")]
+    public Guid SenderId { get; set; }
 
-        [JsonProperty("isGroupChat")]
-        public bool IsGroupChat { get; set; }
+    [JsonProperty("receiverId")]
+    public Guid ReceiverId { get; set; }
 
-        [JsonProperty("createdTime")]
-        public DateTime CreatedTime { get; set; }
-    }
+    [JsonProperty("content")]
+    public string Content { get; set; }
 
-    [System.Serializable]
-    public class HatchedData
-    {
-        public Guid id;
-        public DateTime hatchTime;
-    }
+    [JsonProperty("isGroupChat")]
+    public bool IsGroupChat { get; set; }
 
-    [System.Serializable]
-    public class AgentData
-    {
-        public Guid id;
-        public string username;
-        public string description;
-        public string summary;
-        public Location location;
-        public string creatorId;
-        public bool isHatched;
-        public string sprite_URL;
-        public string sprite_headshot_URL;
-        public DateTime createdTime;
-        public DateTime hatchTime;
-    }
+    [JsonProperty("createdTime")]
+    public DateTime CreatedTime { get; set; }
+}
 
-    public Guid MyId
-    {
-        get { return myId; }
-    }
+[System.Serializable]
+public class HatchedData
+{
+    public Guid id;
+    public DateTime hatchTime;
+}
 
-    public Guid WorldId
-    {
-        get { return worldId; }
-    }
+[System.Serializable]
+public class IncubatingData
+{
+    public Guid id;
+    public DateTime hatchTime;
+}
+
+[System.Serializable]
+public class AgentData
+{
+    public Guid id;
+    public string username;
+    public string description;
+    public string summary;
+    public Location location;
+    public string creatorId;
+    public bool isHatched;
+    public string sprite_URL;
+    public string sprite_headshot_URL;
+    public DateTime createdTime;
+    public DateTime hatchTime;
+}
+
+[System.Serializable]
+public class CreateAgentData
+{
+    public string Username;
+    public string Description;
+    public Guid CreatorId;
+    public int IncubationDurationInHours;
+}
+
+[System.Serializable]
+public class CreateAgentResponse
+{
+    public Guid agentId;
+}
+public Guid MyId
+{
+    get { return myId; }
+}
+
+public Guid WorldId
+{
+    get { return worldId; }
+}
 
 }
 }

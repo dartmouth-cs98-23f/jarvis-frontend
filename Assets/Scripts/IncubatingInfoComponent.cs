@@ -12,6 +12,7 @@ public class IncubatingInfoComponent : MonoBehaviour
     public Image displayUserImage;
     public GameObject trainAgentPanel;
     public Slider slider;
+    public Guid incubatingId;
 
     // A method to set the player details
     public void SetPlayerDetails(Sprite profileImage, string username)

@@ -11,15 +11,6 @@ using System;
 public class HatchedListManager : MonoBehaviour
 {
     public GameObject content;
-
-    [System.Serializable]
-    public class HatchedInfo // TODO: Delete when backend is working
-    {
-        public Sprite spriteHead;
-        public string username;
-    }
-
-    public List<HatchedInfo> hatchedList;
     public GameObject hatchedInfoPrefab;
     public GameObject agentInfoPanel;
     private HTTPClient httpClient = HTTPClient.Instance;
@@ -202,7 +193,6 @@ public class HatchedListManager : MonoBehaviour
                 hatchedInfoComponent.SetPlayerDetails(sprite, hatchedInfo.username);
             });
         }
-        await Task.Delay(500);
         sideMenuManager.ToggleHatchedPanel();
     }
 
@@ -232,8 +222,6 @@ public class HatchedListManager : MonoBehaviour
             TextMeshProUGUI username = hatchedInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             hatchedInfoComponent.agentInfoPanel = agentInfoPanel;
             hatchedInfoComponent.hatchedId = hatchedData.id;
-
-            spriteLoader = GameObject.FindObjectOfType<SpriteLoader>();
 
             // Call the LoadSprite method with the desired URL
             spriteLoader.LoadSprite(agentData.sprite_headshot_URL, (sprite) => {
