@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Clients;
+using System.Threading.Tasks;
 
 public class PlayersListManager : MonoBehaviour
 {
@@ -10,7 +12,7 @@ public class PlayersListManager : MonoBehaviour
     public GameObject content;
 
     [System.Serializable]
-    public class PlayerInfo
+    public class PlayerInfo // TODO: Delete when backend testing works
     {
         public bool isOnline;
         public Sprite spriteHead;
@@ -19,7 +21,10 @@ public class PlayersListManager : MonoBehaviour
 
     public List<PlayerInfo> playerList;
     public GameObject playerInfoPrefab;
-    public void localDisplayPlayersList()
+    private HTTPClient httpClient = HTTPClient.Instance;
+    private SpriteLoader spriteLoader;
+    public SideMenu sideMenuManager;
+    public async void localDisplayPlayersList()
     {
         List<PlayerInfo> dummyPlayerList = new List<PlayerInfo>();
 
@@ -66,9 +71,56 @@ public class PlayersListManager : MonoBehaviour
         dummyPlayerList.Add(player6);
         
 
-        for (int i = 0; i < dummyPlayerList.Count; i++)
+    for (int i = 0; i < dummyPlayerList.Count; i++)
+    {
+        PlayerInfo playerInfo = dummyPlayerList[i];
+        GameObject playersListGO = Instantiate(playerInfoPrefab, content.transform);
+        playersListGO.tag = "PlayerInfoPrefab";
+
+        PlayerInfoComponent playerInfoComponent = playersListGO.GetComponent<PlayerInfoComponent>();
+        Image spriteHead = playerInfoComponent.displayUserImage;
+        TextMeshProUGUI username = playerInfoComponent.usernameTMP;
+        GameObject onlineIndicator = playerInfoComponent.onlineIndicator;
+
+        spriteLoader = GameObject.FindObjectOfType<SpriteLoader>();
+
+        spriteLoader.LoadSprite("https://picsum.photos/200", (sprite) => {
+            // Set player details dynamically
+            playerInfoComponent.SetPlayerDetails(sprite, playerInfo.username);
+
+            // Change color based on online/offline status
+            if (playerInfo.isOnline)
+            {
+                onlineIndicator.GetComponent<Image>().color = Color.green;
+                onlineIndicator.GetComponent<Outline>().enabled = false;
+            }
+            else
+            {
+                onlineIndicator.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+                onlineIndicator.GetComponent<Outline>().enabled = true;
+                onlineIndicator.GetComponent<Outline>().effectColor = Color.gray;
+            }
+        });
+    }
+    await Task.Delay(500);
+    sideMenuManager.TogglePlayersListPanel();
+}
+
+    public async void DisplayPlayersList(){
+        List<HTTPClient.UserData> playerList = await httpClient.GetWorldUsers(httpClient.WorldId);
+        int playerCount = playerList.Count;
+
+        if (playerCountText != null)
         {
-            PlayerInfo playerInfo = dummyPlayerList[i];
+            playerCountText.text = "Player Count: " + playerCount;
+        }
+        else
+        {
+            Debug.Log("Player Count Text component not assigned.");
+        }
+
+        foreach (HTTPClient.UserData playerInfo in playerList)
+        {
             GameObject playersListGO = Instantiate(playerInfoPrefab, content.transform);
             playersListGO.tag = "PlayerInfoPrefab";
 
@@ -78,26 +130,29 @@ public class PlayersListManager : MonoBehaviour
             TextMeshProUGUI username = playerInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             GameObject onlineIndicator = playerInfoComponent.onlineIndicator; // Access the child GameObject
 
+            spriteLoader = GameObject.FindObjectOfType<SpriteLoader>();
+
+            // Call the LoadSprite method with the desired URL
+            spriteLoader.LoadSprite(playerInfo.sprite_headshot_URL, (sprite) => {
             // Set player details dynamically
-            playerInfoComponent.SetPlayerDetails(playerInfo.spriteHead, playerInfo.username);
+            playerInfoComponent.SetPlayerDetails(sprite, playerInfo.username);
 
             // Change color based on online/offline status
             if (playerInfo.isOnline)
             {
-                onlineIndicator.GetComponent<Image>().color = Color.green; // Online (filled)
+                onlineIndicator.GetComponent<Image>().color = Color.green;
                 onlineIndicator.GetComponent<Outline>().enabled = false;
             }
             else
             {
-                onlineIndicator.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f); // Offline (gray)
+                onlineIndicator.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
                 onlineIndicator.GetComponent<Outline>().enabled = true;
                 onlineIndicator.GetComponent<Outline>().effectColor = Color.gray;
             }
-
-            // Adjust position for each player
-            float yOffset = i * 150f; // Adjust this value as needed
-            playersListGO.GetComponent<RectTransform>().anchoredPosition += new Vector2(0f, -yOffset);
-        }
+        });
+    }
+    await Task.Delay(500);
+    sideMenuManager.TogglePlayersListPanel();
     }
 
     // Deletes instantiations of the prefab that shows up on the players list when the panel is closed out

@@ -145,7 +145,7 @@ public class ChatManager : MonoBehaviour
         if (otherUser == null){
             return;
         }
-        cardUsername.GetComponent<Text>().text = otherUser.firstName + " " + otherUser.lastName;
+        cardUsername.GetComponent<Text>().text = otherUser.username;
         cardProfileImage.sprite = otherUserImage;
     }
 

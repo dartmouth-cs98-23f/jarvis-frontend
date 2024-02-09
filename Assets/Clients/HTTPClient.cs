@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 
 
 namespace Clients {
@@ -21,6 +23,7 @@ public class HTTPClient
     private const string url = "https://simyou.azurewebsites.net/";  
 
     private Guid myId;
+    private Guid worldId; // TODO: Check if this is the right way to store world id
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
     private HTTPClient() { }
@@ -207,21 +210,43 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
     }
     
 }
+// Gets the users that are in the world
+public async Task<List<UserData>> GetWorldUsers(Guid id) {
+    string apiUrl = $"{url}/worlds/{id}/users";
 
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
-
-[System.Serializable]
-public class UserData
-{
-    public string firstName;
-    public string lastName;
-    public string email;
-    public int lastKnownX;
-    public int lastKnownY;
-    public bool isLoggedIn;
-    public DateTime createdTime;
-    public DateTime lastActiveTime;
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<UserData> worldUsers = JsonConvert.DeserializeObject<List<UserData>>(jsonResponse);
+    
+        return worldUsers;
+    } else {
+        Debug.LogError("GetWorldUsers Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+    
 }
+
+
+    [System.Serializable]
+    public class UserData
+    {
+        public string id;
+        public string username;
+        public Location location;
+        public bool isOnline;
+        public bool isCreator;
+        public string sprite_URL;
+        public string sprite_headshot_URL;
+    }
+
+    [System.Serializable]
+    public class Location
+    {
+        public int x_coord;
+        public int y_coord;
+    }
 
     [System.Serializable]
     public class UserRegistrationData
@@ -247,12 +272,6 @@ public class UserData
     }
 
     [System.Serializable]
-    public class Location
-    {
-        public int coordX;
-        public int coordY;
-    }
-    [System.Serializable]
     public class ChatMessage
     {
         [JsonProperty("id")]
@@ -277,6 +296,11 @@ public class UserData
     public Guid MyId
     {
         get { return myId; }
+    }
+
+    public Guid WorldId
+    {
+        get { return worldId; }
     }
 
 }
