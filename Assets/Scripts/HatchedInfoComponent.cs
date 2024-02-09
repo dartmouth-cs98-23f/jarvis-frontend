@@ -12,7 +12,7 @@ public class HatchedInfoComponent : MonoBehaviour
     public TextMeshProUGUI usernameTMP;
     public Image displayUserImage;
     public GameObject agentInfoPanel;
-    public string hatchedId;
+    public Guid hatchedId;
 
 
     // A method to set the player details

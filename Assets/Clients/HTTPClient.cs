@@ -211,8 +211,8 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
     
 }
 // Gets the users that are in the world
-public async Task<List<UserData>> GetWorldUsers(Guid id) {
-    string apiUrl = $"{url}/worlds/{id}/users";
+public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
+    string apiUrl = $"{url}/worlds/{worldId}/users";
 
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
@@ -226,6 +226,40 @@ public async Task<List<UserData>> GetWorldUsers(Guid id) {
         return null; // May need to change null
     }
     
+}
+
+// Gets a list of hatched agent ids
+public async Task<List<HatchedData>> GetHatched(Guid worldId) {
+    string apiUrl = $"{url}/worlds/{worldId}/agents/hatched";
+
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<HatchedData> hatchedAgents = JsonConvert.DeserializeObject<List<HatchedData>>(jsonResponse);
+    
+        return hatchedAgents;
+    } else {
+        Debug.LogError("GetHatched Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+
+
+public async Task<AgentData> GetAgent(Guid agentId) {
+    string apiUrl = $"{url}/agents/{agentId}";
+
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        AgentData agent = JsonConvert.DeserializeObject<AgentData>(jsonResponse);
+    
+        return agent;
+    } else {
+        Debug.LogError("GetAgent Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
 }
 
 
@@ -291,6 +325,29 @@ public async Task<List<UserData>> GetWorldUsers(Guid id) {
 
         [JsonProperty("createdTime")]
         public DateTime CreatedTime { get; set; }
+    }
+
+    [System.Serializable]
+    public class HatchedData
+    {
+        public Guid id;
+        public DateTime hatchTime;
+    }
+
+    [System.Serializable]
+    public class AgentData
+    {
+        public Guid id;
+        public string username;
+        public string description;
+        public string summary;
+        public Location location;
+        public string creatorId;
+        public bool isHatched;
+        public string sprite_URL;
+        public string sprite_headshot_URL;
+        public DateTime createdTime;
+        public DateTime hatchTime;
     }
 
     public Guid MyId
