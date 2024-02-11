@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 
 
 namespace Clients {
@@ -18,9 +20,10 @@ public class HTTPClient
 
     private readonly HttpClient httpClient = new HttpClient();
     // private const string url = "http://localhost:5087";  
-    private const string url = "https://simyou.azurewebsites.net/";  
+    private const string url = "https://api.simugameservice.lekina.me/";  
 
     private Guid myId;
+    private Guid worldId;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
     private HTTPClient() { }
@@ -207,6 +210,113 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
     }
     
 }
+// Gets the users that are in the world
+public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
+    string apiUrl = $"{url}/worlds/{worldId}/users";
+
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<UserData> worldUsers = JsonConvert.DeserializeObject<List<UserData>>(jsonResponse);
+    
+        return worldUsers;
+    } else {
+        Debug.LogError("GetWorldUsers Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+    
+}
+
+// Gets a list of hatched agent ids
+public async Task<List<HatchedData>> GetHatched(Guid worldId) {
+    string apiUrl = $"{url}/worlds/{worldId}/agents/hatched";
+
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<HatchedData> hatchedAgents = JsonConvert.DeserializeObject<List<HatchedData>>(jsonResponse);
+    
+        return hatchedAgents;
+    } else {
+        Debug.LogError("GetHatched Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+// Gets a list of incubating agent ids
+public async Task<List<IncubatingData>> GetIncubating(Guid worldId) {
+    string apiUrl = $"{url}/worlds/{worldId}/agents/incubating";
+
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<IncubatingData> incubatingAgents = JsonConvert.DeserializeObject<List<IncubatingData>>(jsonResponse);
+    
+        return incubatingAgents;
+
+    } else {
+        Debug.LogError("GetIncubating Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+
+public async Task<AgentData> GetAgent(Guid agentId) {
+    string apiUrl = $"{url}/agents/{agentId}";
+
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        AgentData agent = JsonConvert.DeserializeObject<AgentData>(jsonResponse);
+    
+        return agent;
+    } else {
+        Debug.LogError("GetAgent Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+
+public async Task<bool> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
+{
+    string apiUrl = $"{url}/agents";
+
+    try
+    {
+        CreateAgentData createAgentData = new CreateAgentData
+        {
+            Username = username,
+            Description = description,
+            CreatorId = creatorId,
+            IncubationDurationInHours = incubationDurationInHours
+        };
+
+        string jsonRequest = JsonConvert.SerializeObject(createAgentData);
+        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            CreateAgentResponse createAgentResponse = JsonConvert.DeserializeObject<CreateAgentResponse>(jsonResponse);
+            Debug.Log("Agent created successfully, with ID: " + createAgentResponse.agentId);
+            return true; // Create agent successful
+        }
+        else
+        {
+            Debug.LogError("Create Agent Error: " + response.StatusCode);
+            return false; // Create agent failed
+        }
+    }
+    catch (HttpRequestException e)
+    {
+        // Handle other exceptions if needed
+        Debug.LogError("Login HTTP Request Exception: " + e.Message);
+        return false; // Registration failed due to exception
+    }
+}
 
 
 
@@ -236,28 +346,31 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
         public bool isOnline;
     }
 
-    [System.Serializable]
-    public class UserRegistrationData
-    {
-        public string FirstName;
-        public string LastName;
-        public string Password;
-        public string Email;
-    }
+[System.Serializable]
+public class CreateAgentData
+{
+    public string Username;
+    public string Description;
+    public Guid CreatorId;
+    public int IncubationDurationInHours;
+}
 
- [System.Serializable]
-    public class UserLoginData
-    {
-        public string Password;
-        public string Email;
-    }
+[System.Serializable]
+public class CreateAgentResponse
+{
+    public Guid agentId;
+}
 
-    [System.Serializable]
-    public class UserRegistrationResponse
-    {
-        public Guid userId;
-        public string responseString;
-    }
+[System.Serializable]
+public class UpdateSprite
+{
+    public string Description;
+    public bool isURL;
+}
+public Guid MyId
+{
+    get { return myId; }
+}
 
     [System.Serializable]
     public class Location
