@@ -29,10 +29,10 @@ public class LoginManager : MonoBehaviour
         if (emailIsValid && passwordIsValid) {
             // TODO: Replace this with signin API call
             bool loginSuccessful = true;
-            // bool loginSuccessful = await SignIn(email, password);
+            // bool loginSuccessful = await Login(email, password);
             if (loginSuccessful)
             {
-                SceneNavigator.LoadGame(); // TODO: Replace this with navigating to logged in user's worlds scene
+                SceneNavigator.LoadMyWorlds(); // TODO: Replace this with navigating to logged in user's worlds scene
                 Debug.Log("Successfully logged in with email: " + emailInput.text + " and password: " + passwordInput.text);
             }
             else // TODO: Add UI error message for users

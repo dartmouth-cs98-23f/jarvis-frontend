@@ -29,7 +29,6 @@ public class CreateAccountNavigator : MonoBehaviour
         emailInput.onValueChanged.AddListener(delegate { ValidateEmail(); });
         passwordInput.onValueChanged.AddListener(delegate { ValidatePassword(); });
         confirmPasswordInput.onValueChanged.AddListener(delegate { ValidateConfirmPassword(); });
-
     }
 
 

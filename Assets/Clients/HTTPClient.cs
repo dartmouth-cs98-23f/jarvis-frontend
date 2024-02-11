@@ -91,7 +91,7 @@ public class HTTPClient
 
     public async Task<bool> Login(string email, string password)
 {
-    string apiUrl = $"{url}/Authentication/login";
+    string apiUrl = $"{url}/authentication/login";
 
     Debug.Log("login called");
     try
@@ -318,7 +318,42 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
     }
 }
 
+    public async Task<List<UserQuestion>> GetUserQuestions()
+    {
+        string apiUrl = $"{url}/questions/users";
 
+        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            List<UserQuestion> userQuestions = JsonConvert.DeserializeObject<List<UserQuestion>>(jsonResponse);
+            return userQuestions;
+        }
+        else
+        {
+            Debug.LogError("GetUserQuestions Error: " + response.StatusCode);
+            return null;
+        }
+    }
+
+    public class UserQuestion
+    {
+        public Guid id;
+        public string question;
+    }
+
+    public class HatchedData
+    {
+        public Guid id;
+        public DateTime hatchTime;
+    }
+
+    public class IncubatingData
+    {
+        public Guid id;
+        public DateTime hatchTime;
+    }
 
     public class CharacterData
     {
@@ -355,11 +390,11 @@ public class CreateAgentData
     public int IncubationDurationInHours;
 }
 
-[System.Serializable]
-public class CreateAgentResponse
-{
-    public Guid agentId;
-}
+    [System.Serializable]
+    public class CreateAgentResponse
+    {
+        public Guid agentId;
+    }
 
     [System.Serializable]
     public class UpdateSprite
@@ -412,6 +447,11 @@ public class CreateAgentResponse
     public Guid MyId
     {
         get { return myId; }
+    }
+
+    public Guid CurrentWorldId
+    {
+        get { return worldId; }
     }
 
 }

@@ -583,7 +583,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000015258789, y: 494}
+  m_AnchoredPosition: {x: -0.000015258789, y: 568}
   m_SizeDelta: {x: 811.2568, y: 124.0519}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &142073733
@@ -639,12 +639,12 @@ GameObject:
   - component: {fileID: 154294889}
   - component: {fileID: 154294890}
   m_Layer: 5
-  m_Name: QuestionPanels
+  m_Name: QuestionPanelsContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &154294889
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1739,7 +1739,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &322716902
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1760,7 +1760,7 @@ RectTransform:
   m_Father: {fileID: 516323488}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -5089,7 +5089,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -64, y: -1031}
-  m_SizeDelta: {x: -0, y: 55}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1211542309
 MonoBehaviour:
@@ -5381,7 +5381,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3625930352639008222, guid: 90b725aba9ecd4337a3a321fe56dbb64, type: 3}
       propertyPath: m_Text
-      value: How do you handle stress?
+      value: What is your occupation?
       objectReference: {fileID: 0}
     - target: {fileID: 4029988986112410873, guid: 90b725aba9ecd4337a3a321fe56dbb64, type: 3}
       propertyPath: m_Text
@@ -6859,7 +6859,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -71, y: -1027}
-  m_SizeDelta: {x: 0, y: 55}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!1 &1462814378
 GameObject:
@@ -7359,7 +7359,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -29}
-  m_SizeDelta: {x: 1050, y: 1350}
+  m_SizeDelta: {x: 1050, y: 1500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1537480332
 MonoBehaviour:
@@ -8309,7 +8309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.5624, y: 41}
+  m_AnchoredPosition: {x: 2.5624, y: 18}
   m_SizeDelta: {x: 920.5955, y: 836.7651}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1712633398
@@ -8345,9 +8345,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.1
-  m_Text: "The following questions are used to generate your player persona. Please
-    answer with as much or as little detail that willing to provide. You may be completely
-    truthful or lie through your teeth. It\u2019s all up to you."
+  m_Text: The following questions are used to generate your AI alter-ego. Your AI
+    alter-ego will be available to your friends to chat with while you're offline.
+    You can answer these questions honestly, humorously, or you can just make things
+    up. It's up to you!
 --- !u!222 &1712633399
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9108,7 +9109,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2505974918002839354, guid: 90b725aba9ecd4337a3a321fe56dbb64, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 145
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3227030363884710766, guid: 90b725aba9ecd4337a3a321fe56dbb64, type: 3}
       propertyPath: m_LineType
@@ -9116,7 +9117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3625930352639008222, guid: 90b725aba9ecd4337a3a321fe56dbb64, type: 3}
       propertyPath: m_Text
-      value: What are your passions and interests?
+      value: How old are you?
       objectReference: {fileID: 0}
     - target: {fileID: 4029988986112410873, guid: 90b725aba9ecd4337a3a321fe56dbb64, type: 3}
       propertyPath: m_Text
@@ -9208,7 +9209,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5890740902249973694, guid: 90b725aba9ecd4337a3a321fe56dbb64, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6308592216960732539, guid: 90b725aba9ecd4337a3a321fe56dbb64, type: 3}
       propertyPath: m_FontData.m_Font
@@ -9330,7 +9331,7 @@ GameObject:
   - component: {fileID: 1904336154}
   - component: {fileID: 1904336156}
   m_Layer: 5
-  m_Name: Image
+  m_Name: BackgroundImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9834,7 +9835,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 30, y: -56}
-  m_SizeDelta: {x: 1050, y: 1350}
+  m_SizeDelta: {x: 1050, y: 1500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2072831486
 MonoBehaviour:
@@ -10392,7 +10393,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2592597953796810546, guid: ec05bd7ae03f04a38b069255fa70cc39, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -505
+      value: -572
       objectReference: {fileID: 0}
     - target: {fileID: 2592597953796810546, guid: ec05bd7ae03f04a38b069255fa70cc39, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

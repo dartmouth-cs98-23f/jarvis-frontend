@@ -17,6 +17,7 @@ public class MyWorldsManager : MonoBehaviour
     public GameObject navBarObject;
     private NavbarManager navbarManager;
     private ImageSwiper worldSwiper;
+    private HTTPClient httpClient = HTTPClient.Instance;
 
     private string LOCAL_USER_WORLDS = @"
     [
@@ -64,15 +65,12 @@ public class MyWorldsManager : MonoBehaviour
         List<HTTPClient.UserWorld> userWorldList = JsonConvert.DeserializeObject<List<HTTPClient.UserWorld>>(LOCAL_USER_WORLDS);
         return userWorldList;
     }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void OnPressEnter()
     {
-        // TODO: Load World scene.
+        // Set current world id and navigate to game
+        httpClient.CurrentWorldId = worldSwiper.GetCurrentWorldId();
+        SceneNavigator.LoadGame();
     }
 
     public void OnPressCreateWorld()
@@ -116,8 +114,6 @@ public class MyWorldsManager : MonoBehaviour
         } else {
             return false;
         }
-
-
     }
 
     public void LeaveWorld(string worldId)

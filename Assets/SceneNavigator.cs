@@ -12,6 +12,11 @@ public class SceneNavigator : MonoBehaviour
         SceneManager.LoadScene("CreateAccount");
     }
 
+    public static void LoadMyWorlds()
+    {
+        SceneManager.LoadScene("MyWorlds");
+    }
+
     public static void LoadGame()
     {
         SceneManager.LoadScene("MainMap");
