@@ -42,28 +42,32 @@ public class MyWorldsManager : MonoBehaviour
     ]";
 
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
         currentWorldObject.SetActive(true);
         // TODO: Get from backend API
-        userWorlds = LocalGetUserWorlds();
+        userWorlds = await LocalGetUserWorlds();
+        // userWorlds = await GetUserWorlds();
+
         worldSwiper = currentWorldObject.GetComponent<ImageSwiper>();
         navbarManager = navBarObject.GetComponent<NavbarManager>();
         navbarManager.SetCurrentPanel(myWorldsPanel);
     }
 
-    List<HTTPClient.UserWorld> LocalGetUserWorlds()
+    async List<HTTPClient.UserWorld> LocalGetUserWorlds()
     {
+        await Task.Delay(1000);
         List<HTTPClient.UserWorld> userWorldList = JsonConvert.DeserializeObject<List<HTTPClient.UserWorld>>(LOCAL_USER_WORLDS);
         return userWorldList;
     }
 
 
-    List<HTTPClient.UserWorld> GetUserWorlds()
+    async List<HTTPClient.UserWorld> GetUserWorlds()
     {
         // TODO: Convert this into sending a request to the backend API.
         List<HTTPClient.UserWorld> userWorldList = JsonConvert.DeserializeObject<List<HTTPClient.UserWorld>>(LOCAL_USER_WORLDS);
         return userWorldList;
+        // return await httpClient.GetUserWorlds();
     }
 
     public void OnPressEnter()
