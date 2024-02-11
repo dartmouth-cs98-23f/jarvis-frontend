@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -44,14 +45,14 @@ public class ChatManager : MonoBehaviour
 
     private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
     private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
+    public GameObject BumpButton;
     public InputField messageInputField;
     public Transform contentPanel;
     public GameObject chatMessagePrefab;
-    public Text cardUsername;
-    public Image cardProfileImage;
+    public Text displayOtherUsername;
+    public Image displayOtherUserHeadImage;
+    public Image displayOtherUserActivityStatus;
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
-    private Sprite userImage; // TODO: replace with actual image of user once backend api can handle it
-    private Sprite otherUserImage; // TODO: replace with actual image of other user once backend api can handle it
     private HTTPClient.UserData currentUserData;
     private HTTPClient.UserData otherUserData;
 
@@ -101,15 +102,26 @@ public class ChatManager : MonoBehaviour
         // currentUserData = await GetUser(currentUserId);
         // otherUserData = await GetUser(otherUserID);
 
-        // Initialize user images
-        userImage = GetUserImage(currentUserId);
-        otherUserImage = GetUserImage(otherUserID);
+        // Initialize other user's head sprite
+
+        StartCoroutine(GetUserHeadSprite(otherUserData.sprite_headshot_URL, userHeadSprite => {
+            BuildOtherUserProfile(otherUserData.username, userHeadSprite);
+        }));
 
         Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
         // SignalRClient.Instance.RegisterSendMessageHandler(this);
-        BuildOtherUserProfile();
         LocalBuildChatHistory();
 
+    }
+
+    public async void OnPressBumpResponse()
+    {
+        // TODO: Add backend API call to send bump response
+        Debug.Log("bumping");
+        BumpButton.SetActive(false);
+        await Task.Delay(20000);
+        Debug.Log("after bumping");
+        BumpButton.SetActive(true);
     }
 
     public async Task<HTTPClient.UserData> LocalGetUser(Guid userId)
@@ -129,7 +141,7 @@ public class ChatManager : MonoBehaviour
                 createdTime = "2024-01-01T00:01:00Z",
                 isOnline = true,
                 sprite_URL = "https://example.com/currentuser_sprite.png",
-                sprite_headshot_URL = "https://example.com/currentuser_headshot.png"
+                sprite_headshot_URL = "https://ibb.co/XZYT5xg"
             };
         }
         else if (userId == otherUserID)
@@ -143,7 +155,7 @@ public class ChatManager : MonoBehaviour
                 createdTime = "2024-01-02T00:01:00Z",
                 isOnline = false,
                 sprite_URL = "https://example.com/otheruser_sprite.png",
-                sprite_headshot_URL = "https://example.com/otheruser_headshot.png"
+                sprite_headshot_URL = "https://picsum.photos/id/237/200"
             };
         }
 
@@ -183,30 +195,62 @@ public class ChatManager : MonoBehaviour
 
 
 
-    Sprite GetUserImage(Guid userId)
+    // Sprite GetUserImage(Guid userId)
+    // {
+    //     if (userId.ToString() == yodaID.ToString()) {
+    //         return Resources.Load<Sprite>("Shapes/master_yoda_head");
+    //     } else if (userId.ToString() == georgeWashID.ToString())
+    //     {
+    //         return Resources.Load<Sprite>("Shapes/george_washington_head");
+    //     } else if (userId.ToString() == currentUserId.ToString()) {
+    //         return Resources.Load<Sprite>("Shapes/user_head");
+    //     }
+    //     else {
+    //         return Resources.Load<Sprite>("Shapes/npc_head");
+    //     }
+
+
+    // }
+
+    IEnumerator GetUserHeadSprite(string url, System.Action<Sprite> onCompleted)
     {
-        if (userId.ToString() == yodaID.ToString()) {
-            return Resources.Load<Sprite>("Shapes/master_yoda_head");
-        } else if (userId.ToString() == georgeWashID.ToString())
+        UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
+        yield return uwr.SendWebRequest();
+        Debug.Log("GetuserHeadSprite URL: " + url);
+        if (uwr.result == UnityWebRequest.Result.Success)
         {
-            return Resources.Load<Sprite>("Shapes/george_washington_head");
-        } else if (userId.ToString() == currentUserId.ToString()) {
-            return Resources.Load<Sprite>("Shapes/user_head");
+            Debug.Log("Setting user head sprite");
+            Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+            Sprite userHeadSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            onCompleted?.Invoke(userHeadSprite); // Invoke the callback with the loaded sprite
         }
-        else {
-            return Resources.Load<Sprite>("Shapes/npc_head");
+        else
+        {
+            Debug.LogError("Failed to download image: " + uwr.error);
+            onCompleted?.Invoke(null);
         }
+        uwr.Dispose();
     }
 
-    public async void BuildOtherUserProfile()
+    public async void BuildOtherUserProfile(string username, Sprite userHeadSprite)
     {
 
-        HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
-        if (otherUser == null){
+        // HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
+        if (otherUserData == null){
             return;
         }
-        cardUsername.GetComponent<Text>().text = otherUser.username;
-        cardProfileImage.sprite = otherUserImage;
+        
+        Debug.Log("In buildotheruserprofile");
+        displayOtherUsername.GetComponent<Text>().text = username;
+        displayOtherUserHeadImage.sprite = userHeadSprite;
+        if (otherUserData.isOnline)
+        {
+            displayOtherUserActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
+        }
+        else
+        {
+            displayOtherUserActivityStatus.sprite = Resources.Load<Sprite>("Shapes/red_circle");
+        }
     }
 
     // TODO: This is a temporary method for frontend testing
@@ -224,6 +268,7 @@ public class ChatManager : MonoBehaviour
             ["receiverId"] = message.ReceiverId.ToString(),
             ["content"] = message.Content,
             ["isGroupChat"] = message.IsGroupChat,
+            ["isOnline"] = message.IsOnline,
             ["createdTime"] = message.CreatedTime.ToString("o")  // "o" for round-trip date/time pattern
         };
 
@@ -239,8 +284,8 @@ public class ChatManager : MonoBehaviour
     {
 
         // TODO: Switch for backend API
-        // LocalSendChat(otherUserID, messageInputField.text);
-        SendChat(otherUserID, messageInputField.text);
+        LocalSendChat(otherUserID, messageInputField.text);
+        // SendChat(otherUserID, messageInputField.text);
         // Debug.Log("after adding new chat entry" + chatTestJsonString);
         messageInputField.text = "";
     }
@@ -310,7 +355,6 @@ public class ChatManager : MonoBehaviour
         message.IsGroupChat = false;
         message.IsOnline = true; // TODO: Check if this is auto-generated on backend
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
-        // AddNewChatEntry(Guid.NewGuid(), message); 
 
         await SignalRClient.Instance.SendChat(otherUserID, content);
 
