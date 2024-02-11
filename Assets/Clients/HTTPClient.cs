@@ -23,7 +23,7 @@ public class HTTPClient
     private const string url = "https://api.simugameservice.lekina.me/";  
 
     private Guid myId;
-    private Guid worldId; // TODO: Check if this is the right way to store world id
+    private Guid worldId;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
     private HTTPClient() { }
@@ -318,6 +318,8 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
     }
 }
 
+
+
 [System.Serializable]
 public class UserData
 {
@@ -425,6 +427,13 @@ public class CreateAgentData
 public class CreateAgentResponse
 {
     public Guid agentId;
+}
+
+[System.Serializable]
+public class UpdateSprite
+{
+    public string Description;
+    public bool isURL;
 }
 public Guid MyId
 {
