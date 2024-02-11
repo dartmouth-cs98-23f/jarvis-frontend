@@ -210,17 +210,30 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
 
 
 
-    [System.Serializable]
-    public class UserData
+    public class CharacterData
     {
         public Guid id;
         public string username;
-        public string email;
+        public string summary;
         public Location location;
-        public string createdTime;
-        public bool isOnline;
         public string sprite_URL;
         public string sprite_headshot_URL;
+        public string createdTime;
+    }
+    [System.Serializable]
+    public class AgentData : CharacterData
+    {
+        public string description;
+        public Guid creatorId;
+        public bool isHatched;
+        public string hatchTime;
+    }
+
+    [System.Serializable]
+    public class UserData : CharacterData
+    {
+        public string email;
+        public bool isOnline;
     }
 
     [System.Serializable]

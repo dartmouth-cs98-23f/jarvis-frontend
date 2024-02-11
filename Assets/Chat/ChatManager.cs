@@ -10,6 +10,12 @@ using Newtonsoft.Json.Linq;
 using Clients;
 using System.Threading.Tasks;
 
+
+// For testing:
+// agent uuids:
+//      yoda: f7dd290b-faab-4c15-b8b9-38cff0895559
+//      george washington: 55cd50d5-7775-4dd2-b632-a502a031ac41
+// user uuids:
 [Serializable]
 
 public static class JsonHelper
@@ -38,23 +44,24 @@ public class ChatManager : MonoBehaviour
 {
     private HTTPClient httpClient = HTTPClient.Instance;
     // public Guid currentUserId = HTTPClient.Instance.MyId; // TODO: uncomment for actual backend testing
-    // private Guid otherUserID; 
+    // private Guid otherCharacterId; 
 
-    public Guid currentUserId = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559"); // TODO: Comment for backend testing
-    public Guid otherUserID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41"); // TODO: Comment for backend testing
+    public Guid currentUserId = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41"); // TODO: Comment for backend testing
+    public Guid otherCharacterId = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559"); // TODO: Comment for backend testing
 
     private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
     private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
-    public GameObject BumpButton;
+    public GameObject AskMeQuestionButton;
     public InputField messageInputField;
     public Transform contentPanel;
     public GameObject chatMessagePrefab;
-    public Text displayOtherUsername;
-    public Image displayOtherUserHeadImage;
-    public Image displayOtherUserActivityStatus;
+    public Text displayOtherCharacterName;
+    public Image displayOtherCharacterHeadImage;
+    public Image displayOtherCharacterActivityStatus;
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
     private HTTPClient.UserData currentUserData;
-    private HTTPClient.UserData otherUserData;
+    private HTTPClient.CharacterData otherCharacterData;
+    private string otherCharacterType; // check if the otehr character is user or agent
 
     private string chatTestJsonString = @"
     [
@@ -91,40 +98,56 @@ public class ChatManager : MonoBehaviour
 
     async void Start()
     {
-        // TODO: replace with loading the actual images of the users once backend api can handle
-        // otherUserID = new Guid(PlayerPrefs.GetString("CollidedUserId"));
-        
+        // TODO: Uncomment these when connecting with main game map to get Ids and type accordingly
+        // otherCharacterId = new Guid(PlayerPrefs.GetString("CollidedCharacterId"));
+        // otherCharacterType = PlayerPrefs.GetString("CollidedCharacterType");
+        string otherCharacterType = "agent";
+        if (otherCharacterType == "user")
+        {
+            // TODO: Comment for backend
+            otherCharacterData = await LocalGetUser(otherCharacterId);
+            HTTPClient.UserData otherUserData = otherCharacterData as HTTPClient.UserData;
+            if (otherUserData != null && otherUserData.isOnline)
+            {
+                AskMeQuestionButton.SetActive(false);
+            } else { // if other user is offline, display button
+                AskMeQuestionButton.SetActive(true);
+            }
+            // TODO: Uncomment for backend
+            // otherCharacterData = await GetUser(otherCharacterId);
+
+        } else { // if the other character is an agent
+            otherCharacterData = await LocalGetAgent(otherCharacterId);
+            // otherCharacterData = await GetAgent(otherCharacterId);
+            AskMeQuestionButton.SetActive(true);
+        }
+
         // TODO: Comment for backend
         currentUserData = await LocalGetUser(currentUserId);
-        otherUserData = await LocalGetUser(otherUserID);
 
         // TODO: Uncomment for backend
         // currentUserData = await GetUser(currentUserId);
-        // otherUserData = await GetUser(otherUserID);
 
         // Initialize other user's head sprite
 
-        StartCoroutine(GetUserHeadSprite(otherUserData.sprite_headshot_URL, userHeadSprite => {
-            BuildOtherUserProfile(otherUserData.username, userHeadSprite);
+        StartCoroutine(GetCharacterHeadSprite(otherCharacterData.sprite_headshot_URL, userHeadSprite => {
+            BuildOtherCharacterProfile(otherCharacterData.username, userHeadSprite);
         }));
 
-        Debug.Log("In chat manager, otherUserID: " + otherUserID.ToString());
+        Debug.Log("In chat manager, otherCharacterId: " + otherCharacterId.ToString());
         // SignalRClient.Instance.RegisterSendMessageHandler(this);
         LocalBuildChatHistory();
-
     }
 
-    public async void OnPressBumpResponse()
+    public async void OnPressAskMeQuestion()
     {
         // TODO: Add backend API call to send bump response
-        Debug.Log("bumping");
-        BumpButton.SetActive(false);
-        await Task.Delay(20000);
-        Debug.Log("after bumping");
-        BumpButton.SetActive(true);
+        AskMeQuestionButton.SetActive(false);
+        await Task.Delay(15000); // delay showing the button again to prevent users from spamming
+        AskMeQuestionButton.SetActive(true);
     }
 
-    public async Task<HTTPClient.UserData> LocalGetUser(Guid userId)
+    private async Task<HTTPClient.UserData> LocalGetUser(Guid userId)
     {
         // Simulate a delay to mimic network request time
         await Task.Delay(1000);
@@ -144,16 +167,16 @@ public class ChatManager : MonoBehaviour
                 sprite_headshot_URL = "https://ibb.co/XZYT5xg"
             };
         }
-        else if (userId == otherUserID)
+        else if (userId == otherCharacterId)
         {
             return new HTTPClient.UserData
             {
-                id = otherUserID,
+                id = otherCharacterId,
                 username = "Other User",
                 email = "otheruser@example.com",
                 location = new HTTPClient.Location { coordX = 30, coordY = 40 },
                 createdTime = "2024-01-02T00:01:00Z",
-                isOnline = false,
+                isOnline = true,
                 sprite_URL = "https://example.com/otheruser_sprite.png",
                 sprite_headshot_URL = "https://picsum.photos/id/237/200"
             };
@@ -168,10 +191,61 @@ public class ChatManager : MonoBehaviour
     {
         return await httpClient.GetUser(userId);
     }
+
+    private async Task<HTTPClient.AgentData> LocalGetAgent(Guid agentId)
+    {
+        // Simulate a delay to mimic network request time
+        await Task.Delay(1000);
+        if (agentId == yodaID)
+        {
+            return new HTTPClient.AgentData
+            {
+                id = yodaID,
+                username = "Yoda",
+                description = "Yoda is a fictional character in the Star Wars universe, first appearing in the 1980 film The Empire Strikes Back. He is a small, green humanoid alien who is powerful with the Force. In his first appearance in the original trilogy, Yoda is described as the Jedi master of Obi-Wan Kenobi and subsequently trains Luke Skywalker to use the Force.",
+                summary = "Jedi Master",
+                location = new HTTPClient.Location { coordX = 10, coordY = 20 },
+                creatorId = currentUserId,
+                createdTime = "2024-01-01T00:01:00Z",
+                sprite_URL = "https://example.com/yoda_sprite.png",
+                sprite_headshot_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRy-nPenacnE-7cGk5y6w7X_5OEU72JWVlgu-8L3xCl5Q&s",
+                isHatched = true,
+                hatchTime = "2024-01-01T00:01:00Z"
+            };
+        } else if (agentId == georgeWashID)
+        {
+            return new HTTPClient.AgentData
+            {
+                id = georgeWashID,
+                username = "George Washington",
+                description = "George Washington was an American political leader, military general, statesman, and Founding Father who served as the first president of the United States from 1789 to 1797. Previously, he led Patriot forces to victory in the nation's War for Independence. He presided at the Constitutional Convention of 1787, which established the U.S. Constitution and a federal government. Washington has been called the 'Father of His Country' for his manifold leadership in the formative days of the new nation.",
+                summary = "First President of the United States",
+                location = new HTTPClient.Location { coordX = 10, coordY = 20 },
+                creatorId = currentUserId,
+                createdTime = "2024-01-01T00:01:00Z",
+                sprite_URL = "https://example.com/gw_sprite.png",
+                sprite_headshot_URL = "https://media.istockphoto.com/id/1362881287/vector/portrait-of-george-washington.jpg?s=1024x1024&w=is&k=20&c=4_Pgre2yHXslO_bisQGltoPS6dpt2Vbfz_khojcj-Po=",
+                isHatched = true,
+                hatchTime = "2024-01-01T00:01:00Z"
+            }; 
+        } else {
+            Debug.LogWarning($"Agent with ID {agentId} not found.");
+            return null;
+        }
+    }
+
+
+    // TODO: Write the actual method for backend API
+    private async Task<HTTPClient.AgentData> GetAgent(Guid agentId)
+    {
+        // return await httpClient.GetAgent(agentId);
+        return null;
+    }
     
     // Update is called once per frame
     void Update()
     {
+        // TODO: Uncomment for signalR client connection
         // Check if there is a received message to process
         // if (!string.IsNullOrEmpty(SignalRClient.SenderId))
         // {
@@ -193,36 +267,17 @@ public class ChatManager : MonoBehaviour
         // }
     }
 
-
-
-    // Sprite GetUserImage(Guid userId)
-    // {
-    //     if (userId.ToString() == yodaID.ToString()) {
-    //         return Resources.Load<Sprite>("Shapes/master_yoda_head");
-    //     } else if (userId.ToString() == georgeWashID.ToString())
-    //     {
-    //         return Resources.Load<Sprite>("Shapes/george_washington_head");
-    //     } else if (userId.ToString() == currentUserId.ToString()) {
-    //         return Resources.Load<Sprite>("Shapes/user_head");
-    //     }
-    //     else {
-    //         return Resources.Load<Sprite>("Shapes/npc_head");
-    //     }
-
-
-    // }
-
-    IEnumerator GetUserHeadSprite(string url, System.Action<Sprite> onCompleted)
+    IEnumerator GetCharacterHeadSprite(string url, System.Action<Sprite> onCompleted)
     {
         UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
         yield return uwr.SendWebRequest();
-        Debug.Log("GetuserHeadSprite URL: " + url);
+        Debug.Log("GetCharHeadSprite URL: " + url);
         if (uwr.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("Setting user head sprite");
+            Debug.Log("Setting char head sprite");
             Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
-            Sprite userHeadSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            onCompleted?.Invoke(userHeadSprite); // Invoke the callback with the loaded sprite
+            Sprite characterHeadSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            onCompleted?.Invoke(characterHeadSprite); // Invoke the callback with the loaded sprite
         }
         else
         {
@@ -232,24 +287,28 @@ public class ChatManager : MonoBehaviour
         uwr.Dispose();
     }
 
-    public async void BuildOtherUserProfile(string username, Sprite userHeadSprite)
+    private async void BuildOtherCharacterProfile(string username, Sprite charHeadSprite)
     {
-
-        // HTTPClient.UserData otherUser = await httpClient.GetUser(otherUserID);
-        if (otherUserData == null){
+        if (otherCharacterData == null){
             return;
         }
-        
-        Debug.Log("In buildotheruserprofile");
-        displayOtherUsername.GetComponent<Text>().text = username;
-        displayOtherUserHeadImage.sprite = userHeadSprite;
-        if (otherUserData.isOnline)
-        {
-            displayOtherUserActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
-        }
-        else
-        {
-            displayOtherUserActivityStatus.sprite = Resources.Load<Sprite>("Shapes/red_circle");
+
+        displayOtherCharacterName.GetComponent<Text>().text = username;
+        displayOtherCharacterHeadImage.sprite = charHeadSprite;
+
+        // set activity status
+        if (otherCharacterType == "user") {
+            HTTPClient.UserData otherUserData = otherCharacterData as HTTPClient.UserData;
+            if (otherUserData != null && otherUserData.isOnline)
+            {
+                displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
+            }
+            else
+            {
+                displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/red_circle");
+            }
+        } else { // if is agent
+            displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/blue_circle");
         }
     }
 
@@ -272,11 +331,14 @@ public class ChatManager : MonoBehaviour
             ["createdTime"] = message.CreatedTime.ToString("o")  // "o" for round-trip date/time pattern
         };
 
+        Debug.Log("newChat: " + newChat.ToString());
+
         // Add the new chat entry to the chats object
         chatsArray.Add(newChat);
 
         // Serialize the JObject back to a string
         chatTestJsonString = chatsArray.ToString(Formatting.Indented); // If you want it pretty-printed
+        LocalBuildChatHistory();
     }
 
     // send message to backend
@@ -284,15 +346,15 @@ public class ChatManager : MonoBehaviour
     {
 
         // TODO: Switch for backend API
-        LocalSendChat(otherUserID, messageInputField.text);
-        // SendChat(otherUserID, messageInputField.text);
+        LocalSendChat(otherCharacterId, messageInputField.text);
+        // SendChat(otherCharacterId, messageInputField.text);
         // Debug.Log("after adding new chat entry" + chatTestJsonString);
         messageInputField.text = "";
     }
 
     async void BuildChatHistory()
     {
-        sortedChatMessages = await httpClient.GetChatHistory(currentUserId, otherUserID);
+        sortedChatMessages = await httpClient.GetChatHistory(currentUserId, otherCharacterId);
          if (sortedChatMessages == null) 
         {
             return;
@@ -315,7 +377,7 @@ public class ChatManager : MonoBehaviour
     // For local frontend testing
     void LocalBuildChatHistory()
     {
-        sortedChatMessages = JsonHelper.ConvertJsonToChatList(LocalGetChatHistory(otherUserID));
+        sortedChatMessages = JsonHelper.ConvertJsonToChatList(LocalGetChatHistory(otherCharacterId));
         foreach (HTTPClient.ChatMessage chatMessage in sortedChatMessages)
         {
             if (generatedMessageIds.Add(chatMessage.Id)) // if chatMessage has not been created yet
@@ -337,7 +399,7 @@ public class ChatManager : MonoBehaviour
         }
         else
         {
-            chatMessageComponent.SetChatDetails(otherUserData.username, messageContent, chatMessage.IsOnline);
+            chatMessageComponent.SetChatDetails(otherCharacterData.username, messageContent, chatMessage.IsOnline);
         }
     }
 
@@ -356,7 +418,7 @@ public class ChatManager : MonoBehaviour
         message.IsOnline = true; // TODO: Check if this is auto-generated on backend
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
 
-        await SignalRClient.Instance.SendChat(otherUserID, content);
+        await SignalRClient.Instance.SendChat(otherCharacterId, content);
 
         GenerateChatMessageObject(message);
     }
@@ -370,7 +432,7 @@ public class ChatManager : MonoBehaviour
         }
         
         // Uncomment this for local testing
-        HTTPClient.ChatMessage message =  new HTTPClient.ChatMessage();
+        HTTPClient.ChatMessage message = new HTTPClient.ChatMessage();
         message.SenderId = currentUserId;
         message.ReceiverId = receiverId;
         message.Content = content;
@@ -382,7 +444,7 @@ public class ChatManager : MonoBehaviour
 
 
     // For local frontend testing
-    string LocalGetChatHistory(Guid otherUserID)
+    string LocalGetChatHistory(Guid otherCharacterId)
     {
         // return chatTestJsonString;
         return chatTestJsonString; // replace this line with above for local testing

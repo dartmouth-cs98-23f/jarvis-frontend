@@ -152,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
     //         }
 
     //         // Store the collidedUserId in PlayerPrefs
-    //         PlayerPrefs.SetString("CollidedUserId", collidedUserId.ToString());
+    //         PlayerPrefs.SetString("CollidedCharacterId", collidedUserId.ToString());
     //     }
     // }
 
@@ -176,7 +176,8 @@ public class PlayerMovement : MonoBehaviour
 
             // Store the collidedUserId in PlayerPrefs
             // TODO: Do this without using PlayerPrefs
-            PlayerPrefs.SetString("CollidedUserId", collidedUserId.ToString());
+            PlayerPrefs.SetString("CollidedCharacterId", collidedUserId.ToString());
+            // PlayerPrefs.SetString("CollidedCharacterType", collided); // TODO: Add collision character type for Chat to handle
         }
     }
 }
