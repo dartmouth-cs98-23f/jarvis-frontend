@@ -5303,7 +5303,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3627451577773197952, guid: 498ae9174b74a44df843dc95f8632f9c, type: 3}
       propertyPath: m_FontData.m_HorizontalOverflow
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4554949913508605296, guid: 498ae9174b74a44df843dc95f8632f9c, type: 3}
       propertyPath: m_SizeDelta.y
@@ -9469,7 +9469,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3627451577773197952, guid: 498ae9174b74a44df843dc95f8632f9c, type: 3}
       propertyPath: m_FontData.m_HorizontalOverflow
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4554949913508605296, guid: 498ae9174b74a44df843dc95f8632f9c, type: 3}
       propertyPath: m_SizeDelta.y
@@ -31824,7 +31824,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3627451577773197952, guid: 498ae9174b74a44df843dc95f8632f9c, type: 3}
       propertyPath: m_FontData.m_HorizontalOverflow
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4554949913508605296, guid: 498ae9174b74a44df843dc95f8632f9c, type: 3}
       propertyPath: m_SizeDelta.y
@@ -33068,7 +33068,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 435.0107, y: -0.0026357952}
+  m_AnchoredPosition: {x: 435.0107, y: -0.0020905868}
   m_SizeDelta: {x: 744, y: 180}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1805675951

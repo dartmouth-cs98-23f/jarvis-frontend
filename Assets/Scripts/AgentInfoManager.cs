@@ -5,6 +5,7 @@ using System;
 using TMPro;
 using UnityEngine.UI;
 using Clients;
+using Newtonsoft.Json;
 
 public class AgentInfoManager : MonoBehaviour
 {
@@ -18,11 +19,11 @@ public class AgentInfoManager : MonoBehaviour
     private HTTPClient httpClient = HTTPClient.Instance;
 
     // Method to set the agent ID and fetch agent data
-    public void SetAgentID(string id)
+    public void SetAgentID(Guid id)
     {
-        agentID = id;
+        agentId = id;
         agentInfoPanel.SetActive(true); // Activate the agent info panel
-        FetchAgentData(agentID); // Fetch agent data based on the ID
+        FetchAgentInfo(agentId); // Fetch agent data based on the ID
     }
 
     // Local testing method
@@ -142,20 +143,20 @@ public class AgentInfoManager : MonoBehaviour
         ";
 
         HTTPClient.AgentData agentOb1 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent1);
-        HTTPClient.AgentData agentOb1 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent1);
-        HTTPClient.AgentData agentOb1 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent1);
-        HTTPClient.AgentData agentOb1 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent1);
-        HTTPClient.AgentData agentOb1 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent1);
-        HTTPClient.AgentData agentOb1 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent1);
+        HTTPClient.AgentData agentOb2 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent2);
+        HTTPClient.AgentData agentOb3 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent3);
+        HTTPClient.AgentData agentOb4 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent4);
+        HTTPClient.AgentData agentOb5 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent5);
+        HTTPClient.AgentData agentOb6 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent6);
 
     }
     
-    public void FetchAgentInfo(){
+    public async void FetchAgentInfo(Guid agentId){
         HTTPClient.AgentData agent = await httpClient.GetAgent(agentId);
     
         agent.sprite_headshot_URL = "Shapes/master_yoda_head";
         agent.username = "Master Yoda";
-        agent.creatorId = "00000000-0000-0000-0000-000000000000"; // Should call get user with this id to display creator name
+        agent.creatorId = new Guid("00000000-0000-0000-0000-000000000000"); // Should call get user with this id to display creator name
         agent.createdTime = DateTime.Parse("2023-11-04T22:54:19.911Z");
         agent.summary = "Master Yoda is a jedi beast. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size.";
 
