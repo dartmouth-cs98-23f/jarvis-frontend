@@ -361,16 +361,12 @@ public class CreateAgentResponse
     public Guid agentId;
 }
 
-[System.Serializable]
-public class UpdateSprite
-{
-    public string Description;
-    public bool isURL;
-}
-public Guid MyId
-{
-    get { return myId; }
-}
+    [System.Serializable]
+    public class UpdateSprite
+    {
+        public string Description;
+        public bool isURL;
+    }
 
     [System.Serializable]
     public class Location
