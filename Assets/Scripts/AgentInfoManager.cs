@@ -17,13 +17,14 @@ public class AgentInfoManager : MonoBehaviour
     public GameObject agentInfoSummary;
     private Guid agentId;
     private HTTPClient httpClient = HTTPClient.Instance;
+    public SpriteLoader spriteLoader;
 
     // Method to set the agent ID and fetch agent data
     public void SetAgentID(Guid id)
     {
         agentId = id;
-        agentInfoPanel.SetActive(true); // Activate the agent info panel
-        FetchAgentInfo(agentId); // Fetch agent data based on the ID
+        FillAgentInfoFields();
+        // FetchAgentInfo(); // Fetch agent data based on the ID, uncomment when testing with backend, and comment line above
     }
 
     // Local testing method
@@ -149,27 +150,44 @@ public class AgentInfoManager : MonoBehaviour
         HTTPClient.AgentData agentOb5 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent5);
         HTTPClient.AgentData agentOb6 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent6);
 
-    }
-    
-    public async void FetchAgentInfo(Guid agentId){
-        HTTPClient.AgentData agent = await httpClient.GetAgent(agentId);
-    
-        agent.sprite_headshot_URL = "Shapes/master_yoda_head";
-        agent.username = "Master Yoda";
-        agent.creatorId = new Guid("00000000-0000-0000-0000-000000000000"); // Should call get user with this id to display creator name
-        agent.createdTime = DateTime.Parse("2023-11-04T22:54:19.911Z");
-        agent.summary = "Master Yoda is a jedi beast. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size. Now let's spam some text to test the scroll size.";
+        Dictionary<Guid, HTTPClient.AgentData> myDictionary = new Dictionary<Guid, HTTPClient.AgentData>();
 
-        agentInfoSprite.GetComponent<Image>().sprite = Resources.Load<Sprite>(agent.sprite_headshot_URL);
-        agentInfoName.GetComponent<TextMeshProUGUI>().text = agent.username;
+        myDictionary[new Guid("11111111-1111-1111-1111-111111111111")] = agentOb1;
+        myDictionary[new Guid("22222222-2222-2222-2222-222222222222")] = agentOb2;
+        myDictionary[new Guid("33333333-3333-3333-3333-333333333333")] = agentOb3;
+        myDictionary[new Guid("44444444-4444-4444-4444-444444444444")] = agentOb4;
+        myDictionary[new Guid("55555555-5555-5555-5555-555555555555")] = agentOb5;
+        myDictionary[new Guid("66666666-6666-6666-6666-666666666666")] = agentOb6;
+
+        HTTPClient.AgentData curr = myDictionary[agentId];
+
+        agentInfoName.GetComponent<TextMeshProUGUI>().text = curr.username;
         agentInfoCreatedBy.GetComponent<TextMeshProUGUI>().text = "Created by: " + "Evan Phillips";
+        agentInfoCreatedOn.GetComponent<TextMeshProUGUI>().text = "Created on: " + curr.createdTime.ToString("MM/dd/yy");
+        agentInfoSummary.GetComponent<TextMeshProUGUI>().text = "Summary:\n" + curr.summary;
+
+        // Call the LoadSprite method with the desired URL
+        spriteLoader.LoadSprite(curr.sprite_headshot_URL, (sprite) => {
+
+                agentInfoSprite.GetComponent<Image>().sprite = sprite;
+            });
+            agentInfoPanel.SetActive(true);
+        }
+    
+    public async void FetchAgentInfo(){
+        HTTPClient.AgentData agent = await httpClient.GetAgent(agentId);
+        httpClient.UserData creator = await httpClient.GetUser(agent.creatorId);
+
+        agentInfoName.GetComponent<TextMeshProUGUI>().text = agent.username;
+        agentInfoCreatedBy.GetComponent<TextMeshProUGUI>().text = "Created by: " + creator.username;
         agentInfoCreatedOn.GetComponent<TextMeshProUGUI>().text = "Created on: " + agent.createdTime.ToString("MM/dd/yy");
         agentInfoSummary.GetComponent<TextMeshProUGUI>().text = "Summary:\n" + agent.summary;
-    }
 
-    private void Update(){
-        if (agentInfoPanel.activeSelf){
-            FillAgentInfoFields();
+        // Call the LoadSprite method with the desired URL
+        spriteLoader.LoadSprite(curr.sprite_headshot_URL, (sprite) => {
+
+                agentInfoSprite.GetComponent<Image>().sprite = sprite;
+            });
+            agentInfoPanel.SetActive(true);
         }
     }
-}
