@@ -155,7 +155,11 @@ public class HTTPClient
         try
         {
             // Serialize the list of answers directly to JSON
-            PostResponsesRequest req = new PostResponsesRequest(targetId, responderId, responses);
+            PostResponsesRequest req = new PostResponsesRequest{
+                targetId, 
+                responderId, 
+                responses
+            };
             string jsonRequest = JsonConvert.SerializeObject(req);
             HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 

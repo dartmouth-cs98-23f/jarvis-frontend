@@ -132,7 +132,7 @@ public class CreateAccountNavigator : MonoBehaviour
     {
         HTTPClient httpClient = HTTPClient.Instance;
         bool registrationSuccessful = true;         // comment out this line to connect with backend API.
-        // bool registrationSuccessful = await httpClient.RegisterUser(firstname, lastname, email, password); // TODO: update firstname lastname with username and uncomment
+        // bool registrationSuccessful = await httpClient.RegisterUser(username, email, password); // TODO: update firstname lastname with username and uncomment
         if (registrationSuccessful){
             return true;
     }
