@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Clients;
+using System;
 using System.Threading.Tasks;
 
 public class IntroQuestions : MonoBehaviour
@@ -10,14 +11,15 @@ public class IntroQuestions : MonoBehaviour
     
     public GameObject questionPanelsContainer;
     public List<GameObject> allQuestionPanels = new List<GameObject>();
+    private List<HTTPClient.UserQuestion> userQuestions = new List<HTTPClient.UserQuestion>();
     public GameObject questionPanelPrefab;
     public GameObject characterSummaryPanel;
     public List<Text> errorTexts = new List<Text>();
     public List<InputField> questionInputFields = new List<InputField>();
-    public List<string> answers = new List<string>();
+    public List<HTTPClient.PostResponse> answers = new List<HTTPClient.PostResponse>();
+    public GameObject loadingPanel;
     private HTTPClient httpClient = HTTPClient.Instance;
     private int questionIdx = 0; // index of the current question. Note: 0th-index refers to design character question panel
-
 
     void Start()
     {
@@ -27,8 +29,8 @@ public class IntroQuestions : MonoBehaviour
     async void GenerateQuestionPanels()
     {
         // TODO: Comment to connect to backend
-        List<HTTPClient.UserQuestion> userQuestions = await LocalGetUserQuestions();
-        // List<HTTPClient.UserQuestion> userQuestions = await GetUserQuestions();
+        userQuestions = await LocalGetUserQuestions();
+        // userQuestions = await GetUserQuestions();
 
         foreach (HTTPClient.UserQuestion question in userQuestions)
         {
@@ -125,35 +127,84 @@ public class IntroQuestions : MonoBehaviour
         {
             errorTexts[questionIdx].text = "Please field in the blank.";
         }
-        else if (questionIdx >= questionInputFields.Count-1)
+        else if (questionIdx >= questionInputFields.Count-1) // if is last question
         {
-            for (int i = 0; i < questionInputFields.Count; i++)
-            {
-                answers.Add(questionInputFields[i].text);
+            StartLoading();
+            bool saveSuccessful = await SaveAnswers(); // save answers to backend
+            if (saveSuccessful) {
+                // Reset the question count for future use if needed
+                questionIdx = 0;
+                try {
+                    HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
+                    // GetUser sprite to display
+                    string userSummary = await httpClient.GetUserSummary(httpClient.MyId);
+                    if (userData!= null && userSummary != null && userData.sprite_URL != null && userData.sprite_URL != "" && userSummary != "")
+                    {
+                        FinishLoading(userData.username, userData.sprite_URL, userSummary);
+                    } else {
+                        // TODO: Add UI Error message for users
+                        Debug.Log("Failed to get user data or user summary due to backend error");
+                    }
+                } catch (Exception e) {
+                    Debug.Log("Failed to get user data or user summary: " + e.Message); // TODO: Add UI error message on failure to create world
+                }
+            } else {
+                Debug.Log("Failed to save answers due to backend error");
             }
-            
-            // Reset the question count for future use if needed
-            questionIdx = 0;
 
-            // TODO: Comment this out when backend is ready
-            bool postAnswerSuccessful = true;
-            // bool postAnswerSuccessful = await httpClient.PostResponses(answers);
-
-            if (postAnswerSuccessful)
-            {
-                Debug.Log("Successfully posted answers to backend");
-                NavigateToCharacterSummaryPanel();
-            }
-            else
-            {
-                Debug.Log("Failed to post responses due to backend error");
-            }
         } 
         else
         {
             errorTexts[questionIdx].text = ""; // clear current error message
             NavigateToNextPanel();
         }
+    }
+
+    async void StartLoading()
+    {
+        loadingPanel.SetActive(true);
+
+        // hide both the question panel container and the last question
+        questionPanelsContainer.SetActive(false);
+        allQuestionPanels[questionIdx].SetActive(false);
+    }
+
+    async void FinishLoading(string username, string sprite_URL, string userSummary)
+    {
+        loadingPanel.SetActive(false);
+        characterSummaryPanel.GetComponent<CharacterSummaryManager>().SetCharacterSummary(username, sprite_URL, userSummary);
+        NavigateToCharacterSummaryPanel();
+    }
+
+    async Task<bool> SaveAnswers()
+    {
+        for (int i = 0; i < questionInputFields.Count; i++)
+        {
+            answers.Add(new HTTPClient.PostResponse {
+                questionId = userQuestions[i].id,
+                response = questionInputFields[i].text
+            });
+        }
+
+        // TODO: Comment this out when backend is ready. Check if PostAnswer returns true
+        bool postAnswerSuccessful = await LocalPostResponses();
+        // bool postAnswerSuccessful = httpClient.PostResponses(httpClient.MyId, httpClient.MyId, answers);
+
+        if (postAnswerSuccessful)
+        {
+            return true;
+        }
+        else
+        {
+            Debug.Log("Failed to post responses due to backend error");
+            return false;
+        }
+    }
+
+    async Task<bool> LocalPostResponses()
+    {
+        await Task.Delay(1000);
+        return true;
     }
 
     void NavigateToNextPanel()

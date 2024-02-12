@@ -135,35 +135,49 @@ public class HTTPClient
     }
 }
 
-    public async Task<bool> PostResponses(List<string> answers)
-{
-    string apiUrl = $"{url}/users/{myId}/responses";
-
-    try
+    public class PostResponsesRequest
     {
-        // Serialize the list of answers directly to JSON
-        string jsonRequest = JsonConvert.SerializeObject(answers);
-        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+        public Guid targetId;
+        public Guid responderId;
+        public List<PostResponse> responses;
+    }
 
-        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+    public class PostResponse
+    {
+        public Guid questionId;
+        public string response;
+    }
 
-        if (response.IsSuccessStatusCode)
+    public async Task<bool> PostResponses(Guid targetId, Guid responderId, List<PostResponse> responses)
+    {
+        string apiUrl = $"{url}/questions/responses";
+
+        try
         {
-            Debug.Log("Responses posted successfully.");
-            return true; // Responses posted successfully
+            // Serialize the list of answers directly to JSON
+            PostResponsesRequest req = new PostResponsesRequest(targetId, responderId, responses);
+            string jsonRequest = JsonConvert.SerializeObject(req);
+            HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Debug.Log("Responses posted successfully.");
+                return true; // Responses posted successfully
+            }
+            else
+            {
+                Debug.LogError("PostResponsesError: " + response.StatusCode);
+                return false; // Posting responses failed
+            }
         }
-        else
+        catch (HttpRequestException e)
         {
-            Debug.LogError("PostResponsesError: " + response.StatusCode);
-            return false; // Posting responses failed
+            Debug.LogError("PostResponses HTTP Request Exception: " + e.Message);
+            return false; // Posting responses failed due to exception
         }
     }
-    catch (HttpRequestException e)
-    {
-        Debug.LogError("PostResponses HTTP Request Exception: " + e.Message);
-        return false; // Posting responses failed due to exception
-    }
-}
 
 // TODO: This method should be called when in proximity to another character
 public async Task<UserData> GetUser(Guid userId)
@@ -193,6 +207,39 @@ public async Task<UserData> GetUser(Guid userId)
         return null; 
     }
 }
+
+public class UserSummary {
+    public string summary;
+}
+
+public async Task<string> GetUserSummary(Guid userId)
+{
+    Debug.Log("Called GetUser in httpClient userid: " + userId.ToString());
+    string apiUrl = $"{url}/users/{userId}/summary";
+
+    try
+    {
+        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            UserSummary userSummary = JsonConvert.DeserializeObject<UserSummary>(jsonResponse);
+            return userSummary.summary;
+        }
+        else
+        {
+            Debug.LogError("GetUserSummary Error: " + response.StatusCode);
+            return null;
+        }
+    }
+    catch (HttpRequestException e)
+    {
+        Debug.LogError("GetUserSummary HTTP Request Exception: " + e.Message);
+        return null; 
+    }
+}
+
 
 public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
     string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
@@ -449,10 +496,8 @@ public class CreateAgentData
         get { return myId; }
     }
 
-    public Guid CurrentWorldId
-    {
-        get { return worldId; }
-    }
+    public Guid CurrentWorldId { get; set; }
+
 
 }
 }

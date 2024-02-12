@@ -5,6 +5,8 @@ using UnityEngine;
 using Clients;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Threading.Tasks;
+
 
 public class MyWorldsManager : MonoBehaviour
 {
@@ -54,7 +56,7 @@ public class MyWorldsManager : MonoBehaviour
         navbarManager.SetCurrentPanel(myWorldsPanel);
     }
 
-    async List<HTTPClient.UserWorld> LocalGetUserWorlds()
+    async Task<List<HTTPClient.UserWorld>> LocalGetUserWorlds()
     {
         await Task.Delay(1000);
         List<HTTPClient.UserWorld> userWorldList = JsonConvert.DeserializeObject<List<HTTPClient.UserWorld>>(LOCAL_USER_WORLDS);
@@ -62,7 +64,7 @@ public class MyWorldsManager : MonoBehaviour
     }
 
 
-    async List<HTTPClient.UserWorld> GetUserWorlds()
+    async Task<List<HTTPClient.UserWorld>> GetUserWorlds()
     {
         // TODO: Convert this into sending a request to the backend API.
         List<HTTPClient.UserWorld> userWorldList = JsonConvert.DeserializeObject<List<HTTPClient.UserWorld>>(LOCAL_USER_WORLDS);
@@ -73,7 +75,7 @@ public class MyWorldsManager : MonoBehaviour
     public void OnPressEnter()
     {
         // Set current world id and navigate to game
-        httpClient.CurrentWorldId = worldSwiper.GetCurrentWorldId();
+        httpClient.CurrentWorldId = new Guid(worldSwiper.GetCurrentWorldId());
         SceneNavigator.LoadGame();
     }
 
