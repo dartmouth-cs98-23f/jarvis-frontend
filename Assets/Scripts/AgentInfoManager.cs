@@ -15,20 +15,18 @@ public class AgentInfoManager : MonoBehaviour
     public GameObject agentInfoCreatedBy;
     public GameObject agentInfoCreatedOn;
     public GameObject agentInfoSummary;
-    private Guid agentId;
     private HTTPClient httpClient = HTTPClient.Instance;
     public SpriteLoader spriteLoader;
 
     // Method to set the agent ID and fetch agent data
-    public void SetAgentID(Guid id)
+    public void SetAgentID(Guid agentId)
     {
-        agentId = id;
-        FillAgentInfoFields();
-        // FetchAgentInfo(); // Fetch agent data based on the ID, uncomment when testing with backend, and comment line above
+        FillAgentInfoFields(agentId);
+        // FetchAgentInfo(agentId); // Fetch agent data based on the ID, uncomment when testing with backend, and comment line above
     }
 
     // Local testing method
-    public void FillAgentInfoFields(){
+    public void FillAgentInfoFields(Guid agentId){
         string agent1 = @"
         {
             ""id"": ""11111111-1111-1111-1111-111111111111"",
@@ -174,9 +172,9 @@ public class AgentInfoManager : MonoBehaviour
             agentInfoPanel.SetActive(true);
         }
     
-    public async void FetchAgentInfo(){
+    public async void FetchAgentInfo(Guid agentId){
         HTTPClient.AgentData agent = await httpClient.GetAgent(agentId);
-        httpClient.UserData creator = await httpClient.GetUser(agent.creatorId);
+        HTTPClient.UserData creator = await httpClient.GetUser(agent.creatorId);
 
         agentInfoName.GetComponent<TextMeshProUGUI>().text = agent.username;
         agentInfoCreatedBy.GetComponent<TextMeshProUGUI>().text = "Created by: " + creator.username;
@@ -184,7 +182,7 @@ public class AgentInfoManager : MonoBehaviour
         agentInfoSummary.GetComponent<TextMeshProUGUI>().text = "Summary:\n" + agent.summary;
 
         // Call the LoadSprite method with the desired URL
-        spriteLoader.LoadSprite(curr.sprite_headshot_URL, (sprite) => {
+        spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
 
                 agentInfoSprite.GetComponent<Image>().sprite = sprite;
             });

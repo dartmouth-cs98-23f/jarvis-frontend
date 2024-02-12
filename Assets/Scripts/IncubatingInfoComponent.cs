@@ -13,6 +13,7 @@ public class IncubatingInfoComponent : MonoBehaviour
     public GameObject trainAgentPanel;
     public Slider slider;
     public Guid incubatingId;
+    public TrainAgentManager trainAgentManager;
 
     // A method to set the player details
     public void SetPlayerDetails(Sprite profileImage, string username)
@@ -35,14 +36,6 @@ public class IncubatingInfoComponent : MonoBehaviour
 
     public void ClickPrefab()
     {
-        // Toggle the panel visibility
-        if (trainAgentPanel != null)
-        {
-            trainAgentPanel.SetActive(!trainAgentPanel.activeSelf);
-        }
-        else
-        {
-            Debug.LogError("Train Agent Panel reference is not set.");
-        }
+        trainAgentManager.SetAgentID(incubatingId);
     }
 }

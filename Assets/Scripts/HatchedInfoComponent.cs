@@ -29,16 +29,6 @@ public class HatchedInfoComponent : MonoBehaviour
 
     public void ClickPrefab()
     {
-        Debug.Log(hatchedId);
         agentInfoManager.SetAgentID(hatchedId);
-        // // Toggle the panel visibility
-        // if (agentInfoPanel != null)
-        // {
-        //     agentInfoPanel.SetActive(!agentInfoPanel.activeSelf);
-        // }
-        // else
-        // {
-        //     Debug.LogError("Agent Info Panel reference is not set.");
-        // }
     }
 }
