@@ -161,7 +161,7 @@ public class ChatManager : MonoBehaviour
                 username = "Current User",
                 email = "currentuser@example.com",
                 location = new HTTPClient.Location { coordX = 10, coordY = 20 },
-                createdTime = "2024-01-01T00:01:00Z",
+                createdTime = DateTime.Parse("2024-01-01T00:01:00Z"),
                 isOnline = true,
                 sprite_URL = "https://example.com/currentuser_sprite.png",
                 sprite_headshot_URL = "https://ibb.co/XZYT5xg"
@@ -175,7 +175,7 @@ public class ChatManager : MonoBehaviour
                 username = "Other User",
                 email = "otheruser@example.com",
                 location = new HTTPClient.Location { coordX = 30, coordY = 40 },
-                createdTime = "2024-01-02T00:01:00Z",
+                createdTime = DateTime.Parse("2024-01-02T00:01:00Z"),
                 isOnline = true,
                 sprite_URL = "https://example.com/otheruser_sprite.png",
                 sprite_headshot_URL = "https://picsum.photos/id/237/200"
@@ -206,11 +206,11 @@ public class ChatManager : MonoBehaviour
                 summary = "Jedi Master",
                 location = new HTTPClient.Location { coordX = 10, coordY = 20 },
                 creatorId = currentUserId,
-                createdTime = "2024-01-01T00:01:00Z",
+                createdTime = DateTime.Parse("2024-01-01T00:01:00Z"),
                 sprite_URL = "https://example.com/yoda_sprite.png",
                 sprite_headshot_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRy-nPenacnE-7cGk5y6w7X_5OEU72JWVlgu-8L3xCl5Q&s",
                 isHatched = true,
-                hatchTime = "2024-01-01T00:01:00Z"
+                hatchTime = DateTime.Parse("2024-01-01T00:01:00Z")
             };
         } else if (agentId == georgeWashID)
         {
@@ -222,11 +222,11 @@ public class ChatManager : MonoBehaviour
                 summary = "First President of the United States",
                 location = new HTTPClient.Location { coordX = 10, coordY = 20 },
                 creatorId = currentUserId,
-                createdTime = "2024-01-01T00:01:00Z",
+                createdTime = DateTime.Parse("2024-01-01T00:01:00Z"),
                 sprite_URL = "https://example.com/gw_sprite.png",
                 sprite_headshot_URL = "https://media.istockphoto.com/id/1362881287/vector/portrait-of-george-washington.jpg?s=1024x1024&w=is&k=20&c=4_Pgre2yHXslO_bisQGltoPS6dpt2Vbfz_khojcj-Po=",
                 isHatched = true,
-                hatchTime = "2024-01-01T00:01:00Z"
+                hatchTime = DateTime.Parse("2024-01-01T00:01:00Z")
             }; 
         } else {
             Debug.LogWarning($"Agent with ID {agentId} not found.");

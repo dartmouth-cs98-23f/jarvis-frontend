@@ -230,7 +230,6 @@ public class HatchedListManager : MonoBehaviour
                 hatchedInfoComponent.SetPlayerDetails(sprite, agentData.username);
             });
         }
-        await Task.Delay(500);
         sideMenuManager.ToggleHatchedPanel();
     }
 
