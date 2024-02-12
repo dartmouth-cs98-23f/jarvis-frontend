@@ -154,11 +154,10 @@ public class HTTPClient
 
         try
         {
-            // Serialize the list of answers directly to JSON
             PostResponsesRequest req = new PostResponsesRequest{
-                targetId, 
-                responderId, 
-                responses
+                targetId = targetId, 
+                responderId = responderId, 
+                responses = responses,
             };
             string jsonRequest = JsonConvert.SerializeObject(req);
             HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
@@ -392,18 +391,6 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
     {
         public Guid id;
         public string question;
-    }
-
-    public class HatchedData
-    {
-        public Guid id;
-        public DateTime hatchTime;
-    }
-
-    public class IncubatingData
-    {
-        public Guid id;
-        public DateTime hatchTime;
     }
 
     public class CharacterData

@@ -38,15 +38,19 @@ public class IntroQuestions : MonoBehaviour
             GameObject newQuestionPanel = Instantiate(questionPanelPrefab, questionPanelsContainerTransform);
             newQuestionPanel.SetActive(false);
             allQuestionPanels.Add(newQuestionPanel);
+
+            // Set the question text
+            Transform questionTextTransform = FindDeepChildHelper(newQuestionPanel.transform, "Question");
+            questionTextTransform.GetComponent<Text>().text = question.question;
             
-            // Find the InputField in the instantiated panel
+            // Find and store pointers to the InputField in the instantiated panel
             InputField inputField = newQuestionPanel.GetComponentInChildren<InputField>();
             if (inputField != null)
             {
                 questionInputFields.Add(inputField);
             }
 
-            // Find and collect error Text components
+            // Find and store pointers to the error Text components
             Text[] texts = newQuestionPanel.GetComponentsInChildren<Text>(true); // 'true' to include inactive children
             foreach (Text txt in texts)
             {
@@ -74,6 +78,32 @@ public class IntroQuestions : MonoBehaviour
                 }
             }
             allQuestionPanels[0].SetActive(true);
+
+            InitializeButtonListeners();
+        }
+
+
+    }
+
+    void InitializeButtonListeners()
+    {
+        foreach (GameObject panel in allQuestionPanels)
+        {
+            // set next button listeners
+            Transform nextButtonTransform = FindDeepChildHelper(panel.transform, "NextButton");
+            if (nextButtonTransform != null)
+            {
+                Button nextButton = nextButtonTransform.GetComponent<Button>();
+                nextButton.onClick.AddListener(OnNextPressed);
+            }
+
+            // set back button listeners
+            Transform backButtonTransform = FindDeepChildHelper(panel.transform, "BackButton");
+            if (backButtonTransform != null)
+            {
+                Button backButton = backButtonTransform.GetComponent<Button>();
+                backButton.onClick.AddListener(OnBackPressed);
+            }
         }
     }
 
@@ -105,7 +135,7 @@ public class IntroQuestions : MonoBehaviour
             new HTTPClient.UserQuestion
             {
                 id = new System.Guid(),
-                question = "How would you describe your communication style? Funny? Serious? Formal? Do you speak in riddles or poems?"
+                question = "How would you describe your communication style?"
             },
         };
     }
@@ -125,6 +155,7 @@ public class IntroQuestions : MonoBehaviour
     
         if (string.IsNullOrEmpty(currentAnswer))
         {
+            Debug.Log("Setting error text: " + questionIdx);
             errorTexts[questionIdx].text = "Please field in the blank.";
         }
         else if (questionIdx >= questionInputFields.Count-1) // if is last question
@@ -204,6 +235,7 @@ public class IntroQuestions : MonoBehaviour
     async Task<bool> LocalPostResponses()
     {
         await Task.Delay(1000);
+        Debug.Log("Successfully posted responses: " + answers);
         return true;
     }
 

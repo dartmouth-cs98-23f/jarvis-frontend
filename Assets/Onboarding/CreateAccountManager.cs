@@ -141,7 +141,6 @@ public class CreateAccountNavigator : MonoBehaviour
         }
     }
 
-
     private void NavigateToInfoPanel()
     {
         RegisterPanel.SetActive(false);
