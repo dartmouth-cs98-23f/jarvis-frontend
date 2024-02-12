@@ -414,7 +414,7 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
         public Location location;
         public string sprite_URL;
         public string sprite_headshot_URL;
-        public string createdTime;
+        public DateTime createdTime;
     }
     [System.Serializable]
     public class AgentData : CharacterData
@@ -422,7 +422,7 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
         public string description;
         public Guid creatorId;
         public bool isHatched;
-        public string hatchTime;
+        public DateTime hatchTime;
     }
 
     [System.Serializable]
@@ -430,6 +430,29 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
     {
         public string email;
         public bool isOnline;
+    }
+
+[System.Serializable]
+    public class UserRegistrationData
+    {
+        public string FirstName;
+        public string LastName;
+        public string Password;
+        public string Email;
+    }
+
+ [System.Serializable]
+    public class UserLoginData
+    {
+        public string Password;
+        public string Email;
+    }
+
+    [System.Serializable]
+    public class UserRegistrationResponse
+    {
+        public Guid userId;
+        public string responseString;
     }
 
 [System.Serializable]
@@ -441,18 +464,30 @@ public class CreateAgentData
     public int IncubationDurationInHours;
 }
 
-    [System.Serializable]
-    public class CreateAgentResponse
-    {
-        public Guid agentId;
-    }
+[System.Serializable]
+public class CreateAgentResponse
+{
+    public Guid agentId;
+}
+[System.Serializable]
+public class HatchedData
+{
+    public Guid id;
+    public DateTime hatchedTime;
+}
+[System.Serializable]
+public class IncubatingData
+{
+    public Guid id;
+    public DateTime hatchedTime;
+}
 
-    [System.Serializable]
-    public class UpdateSprite
-    {
-        public string Description;
-        public bool isURL;
-    }
+[System.Serializable]
+public class UpdateSprite
+{
+    public string Description;
+    public bool isURL;
+}
 
     [System.Serializable]
     public class Location
@@ -498,6 +533,10 @@ public class CreateAgentData
     public Guid MyId
     {
         get { return myId; }
+    }
+    public Guid WorldId
+    {
+        get { return worldId; }
     }
 
     public Guid CurrentWorldId { get; set; }
