@@ -15,6 +15,7 @@ public class SceneNavigator : MonoBehaviour
     public static void LoadMyWorlds()
     {
         SceneManager.LoadScene("MyWorlds");
+        Debug.Log("Loading MyWorlds");
     }
 
     public static void LoadGame()

@@ -24,6 +24,7 @@ public class HTTPClient
 
     private Guid myId;
     private Guid worldId;
+    private string authToken;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
     private HTTPClient() { }
@@ -46,18 +47,17 @@ public class HTTPClient
     //     httpClient.Dispose();
     // }
 
-    public async Task<bool> RegisterUser(string firstName, string lastName, string email, string password)
+    public async Task<bool> RegisterUser(string username, string email, string password)
 {
-    string apiUrl = $"{url}/Authentication/register";
+    string apiUrl = $"{url}/authentication/register";
 
     try
     {
         UserRegistrationData userData = new UserRegistrationData
-        {
-            FirstName = firstName,
-            LastName = lastName,
-            Email = email,
-            Password = password
+        {   
+            username = username,
+            email = email,
+            password = password
         };
 
         string jsonRequest = JsonConvert.SerializeObject(userData);
@@ -69,9 +69,9 @@ public class HTTPClient
         {
             string jsonResponse = await response.Content.ReadAsStringAsync();
             UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
-            Debug.Log("User registered successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.responseString);
+            Debug.Log("User registered successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.authToken);
             myId = registrationResponse.userId;
-
+            authToken = registrationResponse.authToken;
             return true; // Registration successful
         }
         else
@@ -89,51 +89,47 @@ public class HTTPClient
     }
 }
 
-    public async Task<bool> Login(string email, string password)
-{
-    string apiUrl = $"{url}/authentication/login";
-
-    Debug.Log("login called");
-    try
+    public async Task<bool> LoginUser(string email, string password)
     {
-        UserLoginData loginData = new UserLoginData
+        string apiUrl = $"{url}/authentication/login";
+
+        Debug.Log("login called");
+        try
         {
-            Email = email,
-            Password = password
-        };
+            UserLoginData loginData = new UserLoginData
+            {
+                email = email,
+                password = password
+            };
 
-        string jsonRequest = JsonConvert.SerializeObject(loginData);
-        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            string jsonRequest = JsonConvert.SerializeObject(loginData);
+            HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
-        Debug.Log("before response");
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                UserLoginResponse loginResponse = JsonConvert.DeserializeObject<UserLoginResponse>(jsonResponse);
+                Debug.Log("User logged in successfully. ID: " + loginResponse.userId + ", Response String: " + loginResponse.authToken);
+                myId = loginResponse.userId;
+                authToken = loginResponse.authToken;
 
-        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
-        Debug.Log("after response" + response);
-
-        if (response.IsSuccessStatusCode)
-        {
-            Debug.Log("response is success status code");
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
-            Debug.Log("User logged in successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.responseString);
-            myId = registrationResponse.userId;
-
-            return true; // Registration successful
+                return true; // Registration successful
+            }
+            else
+            {
+                // Handle other HTTP status codes if needed
+                Debug.LogError("Login Error: " + response.StatusCode);
+                return false; // Registration failed
+            }
         }
-        else
+        catch (HttpRequestException e)
         {
-            // Handle other HTTP status codes if needed
-            Debug.LogError("Login Error: " + response.StatusCode);
-            return false; // Registration failed
+            // Handle other exceptions if needed
+            Debug.LogError("Login HTTP Request Exception: " + e.Message);
+            return false; // Registration failed due to exception
         }
     }
-    catch (HttpRequestException e)
-    {
-        // Handle other exceptions if needed
-        Debug.LogError("Login HTTP Request Exception: " + e.Message);
-        return false; // Registration failed due to exception
-    }
-}
 
     public class PostResponsesRequest
     {
@@ -161,6 +157,7 @@ public class HTTPClient
             };
             string jsonRequest = JsonConvert.SerializeObject(req);
             HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
 
             HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
@@ -422,24 +419,30 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
 [System.Serializable]
     public class UserRegistrationData
     {
-        public string FirstName;
-        public string LastName;
-        public string Password;
-        public string Email;
+        public string username;
+        public string email;
+        public string password;
     }
 
  [System.Serializable]
     public class UserLoginData
     {
-        public string Password;
-        public string Email;
+        public string email;
+        public string password;
     }
 
     [System.Serializable]
     public class UserRegistrationResponse
     {
         public Guid userId;
-        public string responseString;
+        public string authToken;
+    }
+
+    [System.Serializable]
+    public class UserLoginResponse
+    {
+        public Guid userId;
+        public string authToken;
     }
 
 [System.Serializable]
@@ -524,6 +527,11 @@ public class UpdateSprite
     public Guid WorldId
     {
         get { return worldId; }
+    }
+
+    public string AuthToken
+    {
+        get { return authToken; }
     }
 
     public Guid CurrentWorldId { get; set; }

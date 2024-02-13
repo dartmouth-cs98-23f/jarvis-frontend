@@ -163,12 +163,19 @@ public class IntroQuestions : MonoBehaviour
             StartLoading();
             bool saveSuccessful = await SaveAnswers(); // save answers to backend
             if (saveSuccessful) {
+
                 // Reset the question count for future use if needed
                 questionIdx = 0;
+
                 try {
-                    HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
-                    // GetUser sprite to display
-                    string userSummary = await httpClient.GetUserSummary(httpClient.MyId);
+                    // TODO: Switch for backend api connection to userData
+                    HTTPClient.UserData userData = await LocalGetUser();
+                    // HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
+
+                    // TODO: Switch for backend api connection to userSummary
+                    string userSummary = "This is a fake user summary for testing purposes.";
+                    // string userSummary = await httpClient.GetUserSummary(httpClient.MyId);
+
                     if (userData!= null && userSummary != null && userData.sprite_URL != null && userData.sprite_URL != "" && userSummary != "")
                     {
                         FinishLoading(userData.username, userData.sprite_URL, userSummary);
@@ -203,8 +210,9 @@ public class IntroQuestions : MonoBehaviour
     async void FinishLoading(string username, string sprite_URL, string userSummary)
     {
         loadingPanel.SetActive(false);
+        characterSummaryPanel.SetActive(true);
         characterSummaryPanel.GetComponent<CharacterSummaryManager>().SetCharacterSummary(username, sprite_URL, userSummary);
-        NavigateToCharacterSummaryPanel();
+        HideQuestionPanels();
     }
 
     async Task<bool> SaveAnswers()
@@ -215,6 +223,7 @@ public class IntroQuestions : MonoBehaviour
                 questionId = userQuestions[i].id,
                 response = questionInputFields[i].text
             });
+            Debug.Log("Adding answer: " + answers[i].response + " to question: " + answers[i].questionId);
         }
 
         // TODO: Comment this out when backend is ready. Check if PostAnswer returns true
@@ -239,6 +248,22 @@ public class IntroQuestions : MonoBehaviour
         return true;
     }
 
+    async Task<HTTPClient.UserData> LocalGetUser()
+    {
+        await Task.Delay(3000);
+        return new HTTPClient.UserData
+        {
+            id = new System.Guid(),
+            username = "Test User",
+            email = "test+user@gmail.com",
+            location = new HTTPClient.Location { coordX = 10, coordY = 20 },
+            createdTime = DateTime.Parse("2024-01-01T00:01:00Z"),
+            isOnline = true,
+            sprite_URL = "https://picsum.photos/200/300",
+            sprite_headshot_URL = "https://ibb.co/XZYT5xg"
+        };
+    }
+
     void NavigateToNextPanel()
     {
         allQuestionPanels[questionIdx].SetActive(false);
@@ -246,12 +271,11 @@ public class IntroQuestions : MonoBehaviour
         allQuestionPanels[questionIdx].SetActive(true);
     }
 
-    void NavigateToCharacterSummaryPanel()
+    void HideQuestionPanels()
     {
         // hide both the question panel container and the last question
         questionPanelsContainer.SetActive(false);
         allQuestionPanels[questionIdx].SetActive(false);
-        characterSummaryPanel.SetActive(true);
     }
 
     private Transform FindDeepChildHelper(Transform parent, string childName)
