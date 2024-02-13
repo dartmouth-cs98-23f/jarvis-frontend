@@ -14,13 +14,43 @@ public class CollabInfoComponent : MonoBehaviour
     public int questionId;
     public GameObject viewAnswersPanel;
     public GameObject typeAnswerPanel;
+    public List<string> answers;
+    public Button viewAnswersButton;
 
     // A method to set the collab details
-    public void SetCollabDetails(string question, int id, string answeredBy)
+    public void SetQuestionDetails(string question, int id)
     {
         questionId = id;
         questionTMP.text = "Q" + id.ToString() + ". " + question;
-        answeredByTMP.text = "Answered by: " + answeredBy;
+        
+    }
+    public void SetAnswerDetails()
+    {
+        string finalText = "";
+
+        // Loop through each answer
+        for (int i = 0; i < answers.Count - 1; i++)
+        {
+            // Retrieve the answer at index i
+            string ans = answers[i];
+
+            // Append the answer and a comma to the final text
+            finalText += ans + ", ";
+        }
+
+        // Append the last answer (without a comma)
+        if (answers.Count > 0)
+        {
+            finalText += answers[answers.Count - 1];
+        }
+
+        // Set the text to the TextMeshProUGUI component
+        answeredByTMP.text = "Answered by: " + finalText;
+    }
+
+    public void Unanswered(){
+        viewAnswersButton.gameObject.SetActive(false);
+        answeredByTMP.gameObject.SetActive(false);
     }
 
     public void ViewAnswers()

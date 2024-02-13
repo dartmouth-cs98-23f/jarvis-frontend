@@ -16,10 +16,14 @@ public class TrainAgentManager : MonoBehaviour
     public GameObject trainAgentTimeRemaining;
     public GameObject trainAgentDesc;
     public SpriteLoader spriteLoader;
-    
+    private Guid agentID;
+    private HTTPClient httpClient = HTTPClient.Instance;
+    public CollabAgentManager collabAgentManager;
 
     public void SetAgentID(Guid agentId){
+        agentID = agentId;
         FillTrainAgentFields(agentId);
+        // FetchTrainAgentInfo(agentId);
     }
 
     public void FillTrainAgentFields(Guid agentId){
@@ -176,5 +180,35 @@ public class TrainAgentManager : MonoBehaviour
             });
             trainAgentPanel.SetActive(true);
         }
+
+
+    public async void FetchTrainAgentInfo(Guid agentId){
+        HTTPClient.AgentData agent = await httpClient.GetAgent(agentId);
+
+        trainAgentName.GetComponent<TextMeshProUGUI>().text = agent.username;
+        trainAgentDesc.GetComponent<TextMeshProUGUI>().text = agent.description;
+
+        TimeSpan total = agent.hatchTime - agent.createdTime;
+        TimeSpan remaining = agent.hatchTime - DateTime.Now;
+        double totalHours = total.TotalHours;
+        double remainingHours = remaining.TotalHours;
+        int hours = (int)remainingHours;
+        int minutes = (int)((remainingHours - hours) * 60); // to calculate minutes to display in the text box
+
+        trainAgentTimeRemaining.GetComponent<TextMeshProUGUI>().text = $"Time Remaining: {hours}h {minutes}m";
+        trainAgentSlider.GetComponent<Slider>().maxValue = (float)totalHours;
+        trainAgentSlider.GetComponent<Slider>().value = (float)(totalHours - remainingHours);
+
+        // Call the LoadSprite method with the desired URL
+        spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
+
+                trainAgentSprite.GetComponent<Image>().sprite = sprite;
+            });
+            trainAgentPanel.SetActive(true);
+    }
+
+    public void OnTrainNowPressed(){
+        collabAgentManager.SetAgentID(agentID);
+    }
     }
 

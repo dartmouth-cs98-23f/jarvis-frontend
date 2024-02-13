@@ -63,6 +63,7 @@ public class HTTPClient
         string jsonRequest = JsonConvert.SerializeObject(userData);
         HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
         if (response.IsSuccessStatusCode)
@@ -93,7 +94,6 @@ public class HTTPClient
 {
     string apiUrl = $"{url}/Authentication/login";
 
-    Debug.Log("login called");
     try
     {
         UserLoginData loginData = new UserLoginData
@@ -105,14 +105,11 @@ public class HTTPClient
         string jsonRequest = JsonConvert.SerializeObject(loginData);
         HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
-        Debug.Log("before response");
-
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
-        Debug.Log("after response" + response);
 
         if (response.IsSuccessStatusCode)
         {
-            Debug.Log("response is success status code");
             string jsonResponse = await response.Content.ReadAsStringAsync();
             UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
             Debug.Log("User logged in successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.responseString);
@@ -145,6 +142,7 @@ public class HTTPClient
         string jsonRequest = JsonConvert.SerializeObject(answers);
         HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
         if (response.IsSuccessStatusCode)
@@ -173,6 +171,7 @@ public async Task<UserData> GetUser(Guid userId)
 
     try
     {
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
         if (response.IsSuccessStatusCode)
@@ -197,6 +196,7 @@ public async Task<UserData> GetUser(Guid userId)
 public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
     string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -214,6 +214,7 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
 public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
     string apiUrl = $"{url}/worlds/{worldId}/users";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -232,6 +233,7 @@ public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
 public async Task<List<HatchedData>> GetHatched(Guid worldId) {
     string apiUrl = $"{url}/worlds/{worldId}/agents/hatched";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -248,6 +250,7 @@ public async Task<List<HatchedData>> GetHatched(Guid worldId) {
 public async Task<List<IncubatingData>> GetIncubating(Guid worldId) {
     string apiUrl = $"{url}/worlds/{worldId}/agents/incubating";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -265,6 +268,7 @@ public async Task<List<IncubatingData>> GetIncubating(Guid worldId) {
 public async Task<AgentData> GetAgent(Guid agentId) {
     string apiUrl = $"{url}/agents/{agentId}";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -295,6 +299,7 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
         string jsonRequest = JsonConvert.SerializeObject(createAgentData);
         HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
         if (response.IsSuccessStatusCode)
@@ -315,6 +320,57 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
         // Handle other exceptions if needed
         Debug.LogError("Login HTTP Request Exception: " + e.Message);
         return false; // Registration failed due to exception
+    }
+}
+
+public async Task<List<ResponseData>> GetResponses(Guid agentId){
+    string apiUrl = $"{url}/questions/responses/{agentId}";
+
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<ResponseData> responses = JsonConvert.DeserializeObject<List<ResponseData>>(jsonResponse);
+    
+        return responses;
+    } else {
+        Debug.LogError("GetResponses Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+
+public async Task<List<QuestionResponseData>> GetQuestionResponse(Guid agentId, Guid questionId){
+    string apiUrl = $"{url}/questions/responses/{agentId}/{questionId}";
+
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<QuestionResponseData> responses = JsonConvert.DeserializeObject<List<QuestionResponseData>>(jsonResponse);
+    
+        return responses;
+    } else {
+        Debug.LogError("GetQuestionResponse Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+
+public async Task<List<QuestionData>> GetAgentQuestions(){
+    string apiUrl = $"{url}/questions/agents";
+
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<QuestionData> questions = JsonConvert.DeserializeObject<List<QuestionData>>(jsonResponse);
+    
+        return questions;
+    } else {
+        Debug.LogError("GetAgentQuestions Error: " + response.StatusCode);
+        return null; // May need to change null
     }
 }
 
@@ -443,6 +499,27 @@ public class UpdateSprite
         public string name;
         public string description;
         public string thumbnail_url;
+    }
+    
+    [System.Serializable]
+    public class ResponseData
+    {
+        public Guid responderId;
+        public Guid questionId;
+        public string response;
+    }
+    [System.Serializable]
+    public class QuestionData
+    {
+        public Guid id;
+        public string question;
+    }
+
+    [System.Serializable]
+    public class QuestionResponseData
+    {
+        public Guid responderId;
+        public string response;
     }
     public Guid MyId
     {

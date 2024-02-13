@@ -868,6 +868,8 @@ MonoBehaviour:
   questionId: 0
   viewAnswersPanel: {fileID: 0}
   typeAnswerPanel: {fileID: 0}
+  answers: []
+  viewAnswersButton: {fileID: 3329940357344957499}
 --- !u!114 &512892557356398348
 MonoBehaviour:
   m_ObjectHideFlags: 0
