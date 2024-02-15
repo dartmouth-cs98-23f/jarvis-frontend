@@ -12,9 +12,9 @@ public class LoginManager : MonoBehaviour
     public InputField passwordInput;
     public GameObject LoginPanel;
     public GameObject LandingPanel;
-
     public Text emailErrorText;
     public Text passwordErrorText;
+    private HTTPClient httpClient = HTTPClient.Instance;
 
     void Start()
     {
@@ -29,10 +29,10 @@ public class LoginManager : MonoBehaviour
         if (emailIsValid && passwordIsValid) {
             // TODO: Replace this with signin API call
             bool loginSuccessful = true;
-            // bool loginSuccessful = await SignIn(email, password);
+            // bool loginSuccessful = await httpClient.LoginUser(email, password);
             if (loginSuccessful)
             {
-                SceneNavigator.LoadGame(); // TODO: Replace this with navigating to logged in user's worlds scene
+                SceneNavigator.LoadMyWorlds(); // TODO: Replace this with navigating to logged in user's worlds scene
                 Debug.Log("Successfully logged in with email: " + emailInput.text + " and password: " + passwordInput.text);
             }
             else // TODO: Add UI error message for users
@@ -71,19 +71,6 @@ public class LoginManager : MonoBehaviour
         } else
         {
             return false;
-        }
-    }
-
-    private async Task<bool> SignIn(string email, string password)
-    {
-        HTTPClient httpClient = HTTPClient.Instance;
-        bool loginSuccessful = true;         // comment out this line to connect with backend API.
-        // bool registrationSuccessful = await httpClient.RegisterUser(firstname, lastname, email, password); // TODO: update firstname lastname with username and uncomment
-        if (loginSuccessful){
-            return true;
-        }
-        else{
-            return false; 
         }
     }
 

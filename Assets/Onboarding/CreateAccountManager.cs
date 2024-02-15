@@ -20,7 +20,7 @@ public class CreateAccountNavigator : MonoBehaviour
     public Text emailErrorText;
     public Text passwordErrorText;
     public Text confirmPasswordErrorText;
-
+    private HTTPClient httpClient = HTTPClient.Instance;
 
     void Start()
     {
@@ -29,7 +29,6 @@ public class CreateAccountNavigator : MonoBehaviour
         emailInput.onValueChanged.AddListener(delegate { ValidateEmail(); });
         passwordInput.onValueChanged.AddListener(delegate { ValidatePassword(); });
         confirmPasswordInput.onValueChanged.AddListener(delegate { ValidateConfirmPassword(); });
-
     }
 
 
@@ -131,9 +130,8 @@ public class CreateAccountNavigator : MonoBehaviour
     // "error: email is not valid"
     private async Task<bool> CreateAccount(string username, string email, string password, string confirmPassword)
     {
-        HTTPClient httpClient = HTTPClient.Instance;
         bool registrationSuccessful = true;         // comment out this line to connect with backend API.
-        // bool registrationSuccessful = await httpClient.RegisterUser(firstname, lastname, email, password); // TODO: update firstname lastname with username and uncomment
+        // bool registrationSuccessful = await httpClient.RegisterUser(username, email, password); // TODO: update firstname lastname with username and uncomment
         if (registrationSuccessful){
             return true;
     }
@@ -141,7 +139,6 @@ public class CreateAccountNavigator : MonoBehaviour
             return false; 
         }
     }
-
 
     private void NavigateToInfoPanel()
     {

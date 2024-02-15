@@ -24,6 +24,7 @@ public class HTTPClient
 
     private Guid myId;
     private Guid worldId;
+    private string authToken;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
     private HTTPClient() { }
@@ -46,131 +47,137 @@ public class HTTPClient
     //     httpClient.Dispose();
     // }
 
-    public async Task<bool> RegisterUser(string firstName, string lastName, string email, string password)
-{
-    string apiUrl = $"{url}/Authentication/register";
-
-    try
+    public async Task<bool> RegisterUser(string username, string email, string password)
     {
-        UserRegistrationData userData = new UserRegistrationData
+        string apiUrl = $"{url}/authentication/register";
+
+        try
         {
-            FirstName = firstName,
-            LastName = lastName,
-            Email = email,
-            Password = password
-        };
+            UserRegistrationData userData = new UserRegistrationData
+            {   
+                username = username,
+                email = email,
+                password = password
+            };
 
-        string jsonRequest = JsonConvert.SerializeObject(userData);
-        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            string jsonRequest = JsonConvert.SerializeObject(userData);
+            HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
-        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+            HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
-        if (response.IsSuccessStatusCode)
-        {
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
-            Debug.Log("User registered successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.responseString);
-            myId = registrationResponse.userId;
-
-            return true; // Registration successful
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
+                Debug.Log("User registered successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.authToken);
+                myId = registrationResponse.userId;
+                authToken = registrationResponse.authToken;
+                return true; // Registration successful
+            }
+            else
+            {
+                // Handle other HTTP status codes if needed
+                Debug.LogError("RegisterUser Error: " + response.StatusCode);
+                return false; // Registration failed
+            }
         }
-        else
+        catch (HttpRequestException e)
         {
-            // Handle other HTTP status codes if needed
-            Debug.LogError("RegisterUser Error: " + response.StatusCode);
-            return false; // Registration failed
-        }
-    }
-    catch (HttpRequestException e)
-    {
-        // Handle other exceptions if needed
-        Debug.LogError("Register HTTP Request Exception: " + e.Message);
-        return false; // Registration failed due to exception
-    }
-}
-
-    public async Task<bool> Login(string email, string password)
-{
-    string apiUrl = $"{url}/Authentication/login";
-
-    try
-    {
-        UserLoginData loginData = new UserLoginData
-        {
-            Email = email,
-            Password = password
-        };
-
-        string jsonRequest = JsonConvert.SerializeObject(loginData);
-        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-
-        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
-
-        if (response.IsSuccessStatusCode)
-        {
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
-            Debug.Log("User logged in successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.responseString);
-            myId = registrationResponse.userId;
-
-            return true; // Registration successful
-        }
-        else
-        {
-            // Handle other HTTP status codes if needed
-            Debug.LogError("Login Error: " + response.StatusCode);
-            return false; // Registration failed
+            // Handle other exceptions if needed
+            Debug.LogError("Register HTTP Request Exception: " + e.Message);
+            return false; // Registration failed due to exception
         }
     }
-    catch (HttpRequestException e)
+
+    public async Task<bool> LoginUser(string email, string password)
     {
-        // Handle other exceptions if needed
-        Debug.LogError("Login HTTP Request Exception: " + e.Message);
-        return false; // Registration failed due to exception
-    }
-}
+        string apiUrl = $"{url}/authentication/login";
 
-    public async Task<bool> PostResponses(Guid targetId, Guid responderId, List<QuestionResponseData> responses)
-{
-    string apiUrl = $"{url}/questions/responses";
-
-    try
-    {
-        // Create a new object to represent the request payload
-        var requestData = new
+        Debug.Log("login called");
+        try
         {
-            targetId = targetId,
-            responderId = responderId,
-            responses = responses
-        };
+            UserLoginData loginData = new UserLoginData
+            {
+                email = email,
+                password = password
+            };
 
-        // Serialize the request object to JSON
-        string jsonRequest = JsonConvert.SerializeObject(requestData);
-        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            string jsonRequest = JsonConvert.SerializeObject(loginData);
+            HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
-        // Send the POST request
-        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                UserLoginResponse loginResponse = JsonConvert.DeserializeObject<UserLoginResponse>(jsonResponse);
+                Debug.Log("User logged in successfully. ID: " + loginResponse.userId + ", Response String: " + loginResponse.authToken);
+                myId = loginResponse.userId;
+                authToken = loginResponse.authToken;
 
-        if (response.IsSuccessStatusCode)
-        {
-            Debug.Log("Responses posted successfully.");
-            return true; // Responses posted successfully
+                return true; // Registration successful
+            }
+            else
+            {
+                // Handle other HTTP status codes if needed
+                Debug.LogError("Login Error: " + response.StatusCode);
+                return false; // Registration failed
+            }
         }
-        else
+        catch (HttpRequestException e)
         {
-            Debug.LogError("PostResponsesError: " + response.StatusCode);
-            return false; // Posting responses failed
+            // Handle other exceptions if needed
+            Debug.LogError("Login HTTP Request Exception: " + e.Message);
+            return false; // Registration failed due to exception
         }
     }
-    catch (HttpRequestException e)
+
+    public class PostResponsesRequest
     {
-        Debug.LogError("PostResponses HTTP Request Exception: " + e.Message);
-        return false; // Posting responses failed due to exception
+        public Guid targetId;
+        public Guid responderId;
+        public List<PostResponse> responses;
     }
-}
+
+    public class PostResponse
+    {
+        public Guid questionId;
+        public string response;
+    }
+
+    public async Task<bool> PostResponses(Guid targetId, Guid responderId, List<PostResponse> responses)
+    {
+        string apiUrl = $"{url}/questions/responses";
+
+        try
+        {
+            PostResponsesRequest req = new PostResponsesRequest{
+                targetId = targetId, 
+                responderId = responderId, 
+                responses = responses,
+            };
+            string jsonRequest = JsonConvert.SerializeObject(req);
+            HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+
+            HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Debug.Log("Responses posted successfully.");
+                return true; // Responses posted successfully
+            }
+            else
+            {
+                Debug.LogError("PostResponsesError: " + response.StatusCode);
+                return false; // Posting responses failed
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            Debug.LogError("PostResponses HTTP Request Exception: " + e.Message);
+            return false; // Posting responses failed due to exception
+        }
+    }
 
 
 // TODO: This method should be called when in proximity to another character
@@ -202,6 +209,78 @@ public async Task<UserData> GetUser(Guid userId)
         return null; 
     }
 }
+
+public class UserSummary {
+    public string summary;
+}
+
+public async Task<string> GetUserSummary(Guid userId)
+{
+    Debug.Log("Called GetUserSummary in httpClient userid: " + userId.ToString());
+    string apiUrl = $"{url}/users/{userId}/summary";
+
+    try
+    {
+        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            UserSummary userSummary = JsonConvert.DeserializeObject<UserSummary>(jsonResponse);
+            return userSummary.summary;
+        }
+        else
+        {
+            Debug.LogError("GetUserSummary Error: " + response.StatusCode);
+            return null;
+        }
+    }
+    catch (HttpRequestException e)
+    {
+        Debug.LogError("GetUserSummary HTTP Request Exception: " + e.Message);
+        return null; 
+    }
+}
+
+    public class UpdateUserSummaryData
+    {
+        public string summary;
+    }
+
+
+    public async Task<bool> UpdateUserSummary(Guid userId, string summary)
+    {
+        string apiUrl = $"{url}/users/{userId}/summary";
+
+        try
+        {
+            UpdateUserSummaryData req = new UpdateUserSummaryData{
+                summary = summary
+            };
+            string jsonRequest = JsonConvert.SerializeObject(req);
+            HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+
+            HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Debug.Log("Summary updated successfully.");
+                return true;
+            }
+            else
+            {
+                Debug.LogError("UpdateUserSummary: " + response.StatusCode);
+                return false;
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            Debug.LogError("UpdateUserSummary HTTP Request Exception: " + e.Message);
+            return false; // Update summary failed due to exception
+        }
+    }
+
 
 public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
     string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
@@ -498,24 +577,30 @@ public async Task<bool> AddAgentToWorld(Guid agentId)
 [System.Serializable]
     public class UserRegistrationData
     {
-        public string FirstName;
-        public string LastName;
-        public string Password;
-        public string Email;
+        public string username;
+        public string email;
+        public string password;
     }
 
  [System.Serializable]
     public class UserLoginData
     {
-        public string Password;
-        public string Email;
+        public string email;
+        public string password;
     }
 
     [System.Serializable]
     public class UserRegistrationResponse
     {
         public Guid userId;
-        public string responseString;
+        public string authToken;
+    }
+
+    [System.Serializable]
+    public class UserLoginResponse
+    {
+        public Guid userId;
+        public string authToken;
     }
 
 [System.Serializable]
@@ -589,9 +674,10 @@ public class UpdateSprite
     public class UserWorld
     {
         public Guid id;
+        public Guid creatorId;
         public string name;
         public string description;
-        public string thumbnail_url;
+        public string thumbnail_URL;
     }
     
     [System.Serializable]
@@ -628,6 +714,14 @@ public class UpdateSprite
     {
         get { return worldId; }
     }
+
+    public string AuthToken
+    {
+        get { return authToken; }
+    }
+
+    public Guid CurrentWorldId { get; set; }
+
 
 }
 }
