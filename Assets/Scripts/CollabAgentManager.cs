@@ -21,17 +21,22 @@ public class CollabAgentManager : MonoBehaviour
     public GameObject collabAgentPanel;
     public GameObject viewAnswersPanel;
     public GameObject typeAnswerPanel;
-    public GameObject agentName;
+    public TextMeshProUGUI agentName;
     public GameObject spriteHead;
     public InputField answerInput;
     public string answer;
     private Guid agentID;
     private HTTPClient httpClient = HTTPClient.Instance;
     public SpriteLoader spriteLoader;
+    public ViewAnswersManager viewAnswersManager;
 
     public void SetAgentID(Guid agentId){
         agentID = agentId;
         localDisplayCollabQuestions();
+    }
+    public void SetPanelDetails(Sprite sprite, TextMeshProUGUI name){
+        spriteHead.GetComponent<Image>().sprite = sprite;
+        agentName.text = name.text;
     }
     public void localDisplayCollabQuestions()
     {
@@ -92,6 +97,11 @@ public class CollabAgentManager : MonoBehaviour
             CollabInfoComponent collabInfoComponent = collabListGO.GetComponent<CollabInfoComponent>();
             collabInfoComponent.viewAnswersPanel = viewAnswersPanel;
             collabInfoComponent.typeAnswerPanel = typeAnswerPanel;
+            collabInfoComponent.viewAnswersManager = viewAnswersManager;
+            collabInfoComponent.spriteHead = spriteHead.GetComponent<Image>().sprite;
+            collabInfoComponent.username = agentName;
+            collabInfoComponent.agentID = agentID;
+            collabInfoComponent.questionID = indQuestion.id;
 
             // Set player details dynamically
             collabInfoComponent.SetQuestionDetails(indQuestion.question, count);
@@ -117,6 +127,7 @@ public class CollabAgentManager : MonoBehaviour
 
             collabInfoComponent.SetAnswerDetails();
             count++;
+            collabAgentPanel.SetActive(true);
         }
 
     }
@@ -137,6 +148,11 @@ public class CollabAgentManager : MonoBehaviour
             CollabInfoComponent collabInfoComponent = collabListGO.GetComponent<CollabInfoComponent>();
             collabInfoComponent.viewAnswersPanel = viewAnswersPanel;
             collabInfoComponent.typeAnswerPanel = typeAnswerPanel;
+            collabInfoComponent.viewAnswersManager = viewAnswersManager;
+            collabInfoComponent.spriteHead = spriteHead.GetComponent<Image>().sprite;
+            collabInfoComponent.username = agentName;
+            collabInfoComponent.agentID = agentID;
+            collabInfoComponent.questionID = questionObj.id;
 
             // Set player details dynamically
             collabInfoComponent.SetQuestionDetails(questionObj.question, count);

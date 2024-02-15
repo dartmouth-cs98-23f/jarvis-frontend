@@ -37,5 +37,6 @@ public class IncubatingInfoComponent : MonoBehaviour
     public void ClickPrefab()
     {
         trainAgentManager.SetAgentID(incubatingId);
+        trainAgentManager.SetPanelDetails(displayUserImage.sprite, usernameTMP);
     }
 }

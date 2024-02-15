@@ -11,16 +11,19 @@ public class CollabInfoComponent : MonoBehaviour
 {
     public TextMeshProUGUI questionTMP;
     public TextMeshProUGUI answeredByTMP;
-    public int questionId;
     public GameObject viewAnswersPanel;
     public GameObject typeAnswerPanel;
     public List<string> answers;
     public Button viewAnswersButton;
+    public ViewAnswersManager viewAnswersManager;
+    public Sprite spriteHead;
+    public TextMeshProUGUI username;
+    public Guid agentID;
+    public Guid questionID;
 
     // A method to set the collab details
     public void SetQuestionDetails(string question, int id)
     {
-        questionId = id;
         questionTMP.text = "Q" + id.ToString() + ". " + question;
         
     }
@@ -55,6 +58,9 @@ public class CollabInfoComponent : MonoBehaviour
 
     public void ViewAnswers()
     {
+        viewAnswersManager.SetIDs(agentID, questionID);
+        viewAnswersManager.SetPanelDetails(spriteHead, username.text, questionTMP.text);
+        viewAnswersManager.localDisplayAnswers();
         // Toggle the panel visibility
         if (viewAnswersPanel != null)
         {

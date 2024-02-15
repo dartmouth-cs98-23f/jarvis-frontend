@@ -19,11 +19,18 @@ public class TrainAgentManager : MonoBehaviour
     private Guid agentID;
     private HTTPClient httpClient = HTTPClient.Instance;
     public CollabAgentManager collabAgentManager;
+    public GameObject spriteHead;
+    public TextMeshProUGUI agentName;
 
     public void SetAgentID(Guid agentId){
         agentID = agentId;
         FillTrainAgentFields(agentId);
         // FetchTrainAgentInfo(agentId);
+    }
+
+    public void SetPanelDetails(Sprite sprite, TextMeshProUGUI name){
+        spriteHead.GetComponent<Image>().sprite = sprite;
+        agentName = name;
     }
 
     public void FillTrainAgentFields(Guid agentId){
@@ -173,11 +180,11 @@ public class TrainAgentManager : MonoBehaviour
         trainAgentSlider.GetComponent<Slider>().maxValue = (float)totalHours;
         trainAgentSlider.GetComponent<Slider>().value = (float)(totalHours - remainingHours);
 
-        // Call the LoadSprite method with the desired URL
-        spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
+        // // Call the LoadSprite method with the desired URL
+        // spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
 
-                trainAgentSprite.GetComponent<Image>().sprite = sprite;
-            });
+        //         trainAgentSprite.GetComponent<Image>().sprite = sprite;
+        //     });
             trainAgentPanel.SetActive(true);
         }
 
@@ -208,7 +215,9 @@ public class TrainAgentManager : MonoBehaviour
     }
 
     public void OnTrainNowPressed(){
+        collabAgentManager.SetPanelDetails(spriteHead.GetComponent<Image>().sprite, agentName);
         collabAgentManager.SetAgentID(agentID);
+        
     }
     }
 
