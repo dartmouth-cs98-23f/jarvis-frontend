@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using Clients;
 
 public class GeneratedWorldManager : MonoBehaviour
 {
@@ -12,17 +13,23 @@ public class GeneratedWorldManager : MonoBehaviour
     public GameObject navbarPanel;
     public Text worldNameText;
     public Image displayThumbnail;
+    private Guid worldId;
+    private HTTPClient httpClient = HTTPClient.Instance;
+
     public void OnPressPlay()
     {
-        // TODO: Navigate to game map, remove the bottom where it navigates to MyWorlds. Its 
-        // for local testing only
         generatedWorldPanel.SetActive(false);
         myWorldsPanel.SetActive(true);
         navbarPanel.GetComponent<NavbarManager>().NavigateBackToMyWorlds();
+        
+        Debug.Log("Navigating to game map, current world id: " + worldId.ToString());
+        httpClient.CurrentWorldId = worldId;
+        SceneNavigator.LoadGame();
     }
 
-    public void SetGeneratedWorld(string worldName, string thumbnail_URL)
+    public void SetGeneratedWorld(Guid worldId, string worldName, string thumbnail_URL)
     {
+        this.worldId = worldId;
         worldNameText.text = worldName;
         StartCoroutine(LoadWorldSprite(thumbnail_URL));
     }

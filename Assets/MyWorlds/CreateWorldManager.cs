@@ -6,13 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
+using Clients;
 
-[System.Serializable]
-public class WorldCreationResponse
-{
-    public string worldCode;
-    public string thumbnail_URL;
-}
 
 public class CreateWorldManager : MonoBehaviour
 {
@@ -23,17 +18,12 @@ public class CreateWorldManager : MonoBehaviour
 
     public GameObject generatedWorldPanel;
     public GameObject navbarPanel;
+    private HTTPClient httpClient = HTTPClient.Instance;
     // Start is called before the first frame update
     void OnEnable()
     {
         worldNameInputField.text = ""; // reset world name input field
         worldDescriptionInputField.text = ""; // reset world description input field
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public async void OnPressCreate()
@@ -42,12 +32,12 @@ public class CreateWorldManager : MonoBehaviour
         string worldDescription = worldDescriptionInputField.text;
         StartLoading();
         try {
-            WorldCreationResponse response = await LocalCreateWorld(new Guid(), worldName, worldDescription); // sends a post request to the backend and wait for response
-            // WorldCreationResponse response = await CreateWorld(HTTPClient.Instance.MyId, worldName, worldDescription); // sends a post request to the backend and wait for response
+            HTTPClient.CreateWorldResponse response = await LocalCreateWorld(new Guid(), worldName, worldDescription); // sends a post request to the backend and wait for response
+            // HTTPClient.CreateWorldResponse response = await CreateWorld(httpClient.MyId, worldName, worldDescription); // sends a post request to the backend and wait for response
             // TODO: Check if CreateWorld on backend adds to User's list of worlds otherwise, add it to user's list of worlds using AddUserWorld()
             if (response != null) // when response comes back
             {
-                FinishLoading(worldName, response.thumbnail_URL); // navigate to next screen
+                FinishLoading(response.id, worldName, response.thumbnail_URL); // navigate to next screen
             }
         } catch (Exception e) {
             Debug.Log("Failed to create world: " + e.Message); // TODO: Add UI error message on failure to create world
@@ -61,14 +51,14 @@ public class CreateWorldManager : MonoBehaviour
         navbarPanel.SetActive(false);
     }
 
-    void FinishLoading(string worldName, string thumbnail_URL)
+    void FinishLoading(Guid worldId, string worldName, string thumbnail_URL)
     {
         loadingPanel.SetActive(false);
         generatedWorldPanel.SetActive(true);
-        generatedWorldPanel.GetComponent<GeneratedWorldManager>().SetGeneratedWorld(worldName, thumbnail_URL);
+        generatedWorldPanel.GetComponent<GeneratedWorldManager>().SetGeneratedWorld(worldId, worldName, thumbnail_URL);
     }
 
-    public async Task<WorldCreationResponse> LocalCreateWorld(Guid userId, string worldName, string worldDescription)
+    public async Task<HTTPClient.CreateWorldResponse> LocalCreateWorld(Guid userId, string worldName, string worldDescription)
     {
         // Simulate delay to mimic network request time
         await Task.Delay(3000); // Wait for 3 second
@@ -76,37 +66,13 @@ public class CreateWorldManager : MonoBehaviour
         Debug.Log($"Simulated creation of world with name: {worldName} and description: {worldDescription}");
 
         // Return the mock world code as if it was received from the backend
-        return new WorldCreationResponse { worldCode = "ABC123", thumbnail_URL = "https://picsum.photos/202" };
+        return new HTTPClient.CreateWorldResponse { id = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41"), name = worldName, thumbnail_URL = "https://picsum.photos/202" };
     }
 
 
     // TODO: Add this backend api accordingly. this is currently just a template code.
-    async Task<WorldCreationResponse> CreateWorld()
+    async Task<HTTPClient.CreateWorldResponse> CreateWorld(Guid userId, string worldName, string worldDescription)
     {
-        string apiUrl = "your_api_endpoint_here";
-        // Prepare your POST data here (example uses an empty JSON body)
-        string jsonData = "{}";
-        
-        using (UnityWebRequest request = UnityWebRequest.PostWwwForm(apiUrl, jsonData))
-        {
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
-            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-            
-            await request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                // Deserialize the JSON response
-                WorldCreationResponse response = JsonConvert.DeserializeObject<WorldCreationResponse>(request.downloadHandler.text);
-                Debug.Log("World created successfully. Code: " + response.worldCode);
-                return response; // Return the world code from the response
-            }
-            else
-            {
-                Debug.LogError("Error creating world: " + request.error);
-                return null;
-            }
-        }
+        return await httpClient.CreateWorld(userId, worldName, worldDescription);
     }
 }
