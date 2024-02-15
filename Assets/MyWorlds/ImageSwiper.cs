@@ -18,7 +18,7 @@ public struct WorldSprite
 public class ImageSwiper : MonoBehaviour
 {
     public GameObject myWorldsPanel;
-    float swipeThreshold = 300f;
+    float swipeThreshold = 500f;
     public int currentIndex = 0;
     private Vector2 startTouchPosition;
     private Vector2 currentSwipe;
@@ -33,25 +33,54 @@ public class ImageSwiper : MonoBehaviour
     private float timeTouchStarted;
     private float longPressDuration = 1.0f; // Duration to trigger a long press
 
-    void Start()
+    void OnEnable()
     {
         Debug.Log("ImageSwiper enabled");
         if (myWorldsPanel != null) {
             MyWorldsManager myWorldsManager = myWorldsPanel.GetComponent<MyWorldsManager>();
-            if (myWorldsManager.userWorlds != null)
-            {
-                userWorlds = myWorldsManager.userWorlds;
-                Debug.Log("User Worlds in ImageSwiper: " + userWorlds.Count);
-            } else 
-            {
-                userWorlds = new List<HTTPClient.UserWorld>(); // TODO: Add no worlds UI
-            }
-            StartLoadingUserWorlds();
-            displayImage = GetComponentInChildren<Image>();
+            // if (myWorldsManager.userWorlds != null)
+            // {
+            //     userWorlds = myWorldsManager.userWorlds;
+            //     Debug.Log("User Worlds in ImageSwiper: " + userWorlds.Count);
+            // } else 
+            // {
+            //     userWorlds = new List<HTTPClient.UserWorld>(); // TODO: Add no worlds UI
+            //     Debug.Log("No user worlds in ImageSwiper or userWorlds still null");
+            // }
+            userWorlds = myWorldsManager.userWorlds;
+            // StartLoadingUserWorlds();
+            InitializeDisplayImage();
             rectTransform = GetComponent<RectTransform>(); // Get the RectTransform
             UpdateWorldsDisplay();        
         }
     }
+
+    private void InitializeDisplayImage()
+    {
+        Transform displayImageTransform = FindDeepChildHelper(myWorldsPanel.transform, "ThumbnailImage");
+        displayImage = displayImageTransform.GetComponent<Image>();
+    }
+
+    public void SetupUserWorlds(List<HTTPClient.UserWorld> userWorlds)
+    {
+        this.userWorlds = userWorlds;
+        StartLoadingUserWorlds();
+    }
+
+    private Transform FindDeepChildHelper(Transform parent, string childName)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == childName)
+                return child;
+            
+            Transform found = FindDeepChildHelper(child, childName);
+            if (found != null)
+                return found;
+        }
+        return null; // Not found
+    }
+
 
     private void Update()
     {
@@ -118,16 +147,18 @@ public class ImageSwiper : MonoBehaviour
 
     public void StartLoadingUserWorlds()
     {
+        Debug.Log("In StartLoadingUserWorlds");
         StartCoroutine(LoadWorldSprites(userWorlds));
     }
 
     IEnumerator LoadWorldSprites(List<HTTPClient.UserWorld> userWorldList)
     {
         worldSprites = new List<WorldSprite>(); // Initialize or clear the existing list
-
+        Debug.Log("In LoadWorldSprites userWorld count: " + userWorldList.Count);
         foreach (HTTPClient.UserWorld world in userWorldList)
         {
-            UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(world.thumbnail_url);
+            Debug.Log("Loading world thumbnail: " + world.thumbnail_URL);
+            UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(world.thumbnail_URL);
             yield return uwr.SendWebRequest(); // Wait for the download to complete
 
             if (uwr.result == UnityWebRequest.Result.Success)
@@ -152,6 +183,11 @@ public class ImageSwiper : MonoBehaviour
 
     public void MoveToNextImage()
     {
+        // if (worldSprites.Count == 0)
+        // {
+        //     StartLoadingUserWorlds(); // try loading worlds again
+        //     return;
+        // }
         Debug.Log("Moving to next image");
         currentIndex = (currentIndex + 1) % worldSprites.Count; // Wrap to the beginning if at the end
         UpdateWorldsDisplay();

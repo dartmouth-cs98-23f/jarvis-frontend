@@ -18,10 +18,10 @@ public class AddWorldManager : MonoBehaviour
         worldCodeInputField.text = ""; // reset code input field
     }
 
-    public void OnPressAdd()
+    public async void OnPressAdd()
     {
         // TODO: Check if world code is valid format
-        bool addedSuccessfully = myWorldsManager.AddWorld(worldCodeInputField.text);
+        bool addedSuccessfully = await myWorldsManager.AddWorld(worldCodeInputField.text);
         if (addedSuccessfully)
         {
             addWorldPanel.SetActive(false);
