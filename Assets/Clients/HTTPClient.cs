@@ -292,7 +292,7 @@ public async Task<AgentData> GetAgent(Guid agentId) {
     }
 }
 
-public async Task<bool> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
+public async Task<IdData> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
 {
     string apiUrl = $"{url}/agents";
 
@@ -315,21 +315,21 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
         if (response.IsSuccessStatusCode)
         {
             string jsonResponse = await response.Content.ReadAsStringAsync();
-            CreateAgentResponse createAgentResponse = JsonConvert.DeserializeObject<CreateAgentResponse>(jsonResponse);
-            Debug.Log("Agent created successfully, with ID: " + createAgentResponse.agentId);
-            return true; // Create agent successful
+            IdData agentId = JsonConvert.DeserializeObject<IdData>(jsonResponse);
+            Debug.Log("Agent created successfully, with ID: " + agentId);
+            return agentId; // Create agent successful
         }
         else
         {
             Debug.LogError("Create Agent Error: " + response.StatusCode);
-            return false; // Create agent failed
+            return null; // Create agent failed
         }
     }
     catch (HttpRequestException e)
     {
         // Handle other exceptions if needed
         Debug.LogError("Login HTTP Request Exception: " + e.Message);
-        return false; // Registration failed due to exception
+        return null; // Registration failed due to exception
     }
 }
 
@@ -430,6 +430,43 @@ public async Task<IdData> GetWorldCreator(){
     }
 }
 
+public async Task<bool> AddAgentToWorld(Guid agentId)
+{
+    string apiUrl = $"{url}/worlds/{worldId}/agents";
+
+    try
+    {
+        // Create a request object containing the agent's ID
+        var requestData = new
+        {
+            agentId = agentId
+        };
+
+        // Serialize the request object to JSON
+        string jsonRequest = JsonConvert.SerializeObject(requestData);
+        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+        // Send the POST request
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Debug.Log("Responses posted successfully.");
+            return true; // Responses posted successfully
+        }
+        else
+        {
+            Debug.LogError("AddAgentToWorldError: " + response.StatusCode);
+            return false; // Posting responses failed
+        }
+    }
+    catch (HttpRequestException e)
+    {
+        Debug.LogError("AddAgentToWorld HTTP Request Exception: " + e.Message);
+        return false; // Posting responses failed due to exception
+    }
+}
 
     public class CharacterData
     {
