@@ -9,6 +9,7 @@ TagManager:
   - HatchedInfoPrefab
   - IncubatingInfoPrefab
   - CollabInfoPrefab
+  - QuestionAnswerPrefab
   layers:
   - Default
   - TransparentFX

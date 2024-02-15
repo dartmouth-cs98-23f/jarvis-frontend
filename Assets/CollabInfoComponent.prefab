@@ -697,7 +697,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 375, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 750, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6962807344375137479
@@ -865,14 +865,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questionTMP: {fileID: 4407073569576127743}
   answeredByTMP: {fileID: 3054905241128323783}
-  questionId: 0
   viewAnswersPanel: {fileID: 0}
   typeAnswerPanel: {fileID: 0}
   answers: []
   viewAnswersButton: {fileID: 3329940357344957499}
   viewAnswersManager: {fileID: 0}
+  addAnswerManager: {fileID: 0}
   spriteHead: {fileID: 0}
-  username: 
+  username: {fileID: 0}
 --- !u!114 &512892557356398348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -934,7 +934,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 375, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 750, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3949208712302700680

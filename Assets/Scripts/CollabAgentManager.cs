@@ -23,12 +23,11 @@ public class CollabAgentManager : MonoBehaviour
     public GameObject typeAnswerPanel;
     public TextMeshProUGUI agentName;
     public GameObject spriteHead;
-    public InputField answerInput;
-    public string answer;
     private Guid agentID;
     private HTTPClient httpClient = HTTPClient.Instance;
     public SpriteLoader spriteLoader;
     public ViewAnswersManager viewAnswersManager;
+    public AddAnswerManager addAnswerManager;
 
     public void SetAgentID(Guid agentId){
         agentID = agentId;
@@ -98,6 +97,7 @@ public class CollabAgentManager : MonoBehaviour
             collabInfoComponent.viewAnswersPanel = viewAnswersPanel;
             collabInfoComponent.typeAnswerPanel = typeAnswerPanel;
             collabInfoComponent.viewAnswersManager = viewAnswersManager;
+            collabInfoComponent.addAnswerManager = addAnswerManager;
             collabInfoComponent.spriteHead = spriteHead.GetComponent<Image>().sprite;
             collabInfoComponent.username = agentName;
             collabInfoComponent.agentID = agentID;
@@ -149,6 +149,7 @@ public class CollabAgentManager : MonoBehaviour
             collabInfoComponent.viewAnswersPanel = viewAnswersPanel;
             collabInfoComponent.typeAnswerPanel = typeAnswerPanel;
             collabInfoComponent.viewAnswersManager = viewAnswersManager;
+            collabInfoComponent.addAnswerManager = addAnswerManager;
             collabInfoComponent.spriteHead = spriteHead.GetComponent<Image>().sprite;
             collabInfoComponent.username = agentName;
             collabInfoComponent.agentID = agentID;
@@ -178,19 +179,6 @@ public class CollabAgentManager : MonoBehaviour
                 spriteHead.GetComponent<Image>().sprite = sprite;
             });
             collabAgentPanel.SetActive(true);
-    }
-
-    public void StoreInput()
-    {
-        answer = answerInput.text;
-
-        // TODO: Send this information to the backend upon clicking the confirm button
-    }
-
-    public void ResetInputFields()
-    {
-        // Reset the input fields
-        answerInput.text = "";
     }
 
     // Deletes instantiations of the prefab that shows up on the collab list when the panel is closed out

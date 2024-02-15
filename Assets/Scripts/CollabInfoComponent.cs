@@ -16,6 +16,7 @@ public class CollabInfoComponent : MonoBehaviour
     public List<string> answers;
     public Button viewAnswersButton;
     public ViewAnswersManager viewAnswersManager;
+    public AddAnswerManager addAnswerManager;
     public Sprite spriteHead;
     public TextMeshProUGUI username;
     public Guid agentID;
@@ -74,6 +75,8 @@ public class CollabInfoComponent : MonoBehaviour
 
     public void Answer()
     {
+        addAnswerManager.SetAgentID(agentID);
+        addAnswerManager.SetPanelDetails(spriteHead, username.text, questionTMP.text);
         // Toggle the panel visibility
         if (typeAnswerPanel != null)
         {

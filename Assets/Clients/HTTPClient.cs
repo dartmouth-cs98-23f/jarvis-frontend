@@ -132,16 +132,25 @@ public class HTTPClient
     }
 }
 
-    public async Task<bool> PostResponses(List<string> answers)
+    public async Task<bool> PostResponses(Guid targetId, Guid responderId, List<QuestionResponseData> responses)
 {
-    string apiUrl = $"{url}/users/{myId}/responses";
+    string apiUrl = $"{url}/questions/responses";
 
     try
     {
-        // Serialize the list of answers directly to JSON
-        string jsonRequest = JsonConvert.SerializeObject(answers);
+        // Create a new object to represent the request payload
+        var requestData = new
+        {
+            targetId = targetId,
+            responderId = responderId,
+            responses = responses
+        };
+
+        // Serialize the request object to JSON
+        string jsonRequest = JsonConvert.SerializeObject(requestData);
         HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
+        // Send the POST request
         // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
@@ -162,6 +171,7 @@ public class HTTPClient
         return false; // Posting responses failed due to exception
     }
 }
+
 
 // TODO: This method should be called when in proximity to another character
 public async Task<UserData> GetUser(Guid userId)
@@ -374,6 +384,51 @@ public async Task<List<QuestionData>> GetAgentQuestions(){
     }
 }
 
+public async Task<bool> RemoveUserFromWorld(Guid userId)
+{
+    string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
+    try
+    {
+        // Send the DELETE request
+        HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
+        
+        // Check if the request was successful
+        if (response.IsSuccessStatusCode)
+        {
+            // No content is returned for a successful deletion
+            return true;
+        }
+        else
+        {
+            // Log the error if the request fails
+            Console.WriteLine($"Error: {response.StatusCode}");
+            return false;
+        }
+    }
+    catch (Exception e)
+    {
+        // Log any exceptions that occur
+        Console.WriteLine($"Exception: {e.Message}");
+        return false;
+    }
+}
+
+public async Task<IdData> GetWorldCreator(){
+    string apiUrl = $"{url}/worlds/{worldId}/creator";
+
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        IdData creatorId = JsonConvert.DeserializeObject<IdData>(jsonResponse);
+    
+        return creatorId;
+    } else {
+        Debug.LogError("GetWorldCreator Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
 
 
     public class CharacterData
@@ -400,6 +455,7 @@ public async Task<List<QuestionData>> GetAgentQuestions(){
     {
         public string email;
         public bool isOnline;
+        public bool isCreator;
     }
 
 [System.Serializable]
@@ -520,6 +576,12 @@ public class UpdateSprite
     {
         public Guid responderId;
         public string response;
+    }
+
+    [System.Serializable]
+    public class IdData
+    {
+        public Guid id;
     }
     public Guid MyId
     {
