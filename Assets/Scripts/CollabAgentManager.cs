@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System;
+using Clients;
+using Newtonsoft.Json;
 
 public class CollabAgentManager : MonoBehaviour
 {
@@ -11,94 +14,171 @@ public class CollabAgentManager : MonoBehaviour
     [System.Serializable]
     public class CollabInfo
     {
-        public string question;
-        public string answeredBy;
-        public int id;
+        public string username;
+        public string response;
     }
-
-    public List<CollabInfo> collabList;
     public GameObject collabAgentPrefab;
+    public GameObject collabAgentPanel;
     public GameObject viewAnswersPanel;
     public GameObject typeAnswerPanel;
-    public InputField answerInput;
-    public string answer;
+    public TextMeshProUGUI agentName;
+    public GameObject spriteHead;
+    private Guid agentID;
+    private HTTPClient httpClient = HTTPClient.Instance;
+    public SpriteLoader spriteLoader;
+    public ViewAnswersManager viewAnswersManager;
+    public AddAnswerManager addAnswerManager;
 
+    public void SetAgentID(Guid agentId){
+        agentID = agentId;
+        localDisplayCollabQuestions();
+    }
+    public void SetPanelDetails(Sprite sprite, TextMeshProUGUI name){
+        spriteHead.GetComponent<Image>().sprite = sprite;
+        agentName.text = name.text;
+    }
     public void localDisplayCollabQuestions()
     {
-        List<CollabInfo> dummyCollabList = new List<CollabInfo>();
+        int count = 1;
+        string questionsJson = @"
+        [
+            {
+                ""id"": ""1c0f8e3b-1c0f-4c25-96f3-14e1a5d0e693"",
+                ""question"": ""What is your favorite color?""
+            },
+            {
+                ""id"": ""2b5d9f6c-2b5d-4a12-9f1d-8cfeabf68e8d"",
+                ""question"": ""How many siblings do you have?""
+            },
+            {
+                ""id"": ""3d0a4e6f-3d0a-4b39-ba7c-9e2d7d8fbdbe"",
+                ""question"": ""What is your favorite food?""
+            },
+            {
+                ""id"": ""4e8c9a2b-4e8c-45d1-a68b-1f39d1c6a802"",
+                ""question"": ""Where were you born?""
+            }
+        ]";
 
-        // Dummy Question 1
+        List<HTTPClient.QuestionData> testQuestions = JsonConvert.DeserializeObject<List<HTTPClient.QuestionData>>(questionsJson);
+        List<CollabInfo> dummy1 = new List<CollabInfo>();
+        List<CollabInfo> dummy2 = new List<CollabInfo>();
+        List<CollabInfo> dummy3 = new List<CollabInfo>();
+        List<CollabInfo> dummy4 = new List<CollabInfo>();
+
         CollabInfo collab1 = new CollabInfo();
-        collab1.question = "How would Obi Wan Kenobi react to a meteor falling from the sky?";
-        collab1.id = 1;
-        collab1.answeredBy = "Vico, Alan";
-        dummyCollabList.Add(collab1);
+        collab1.response = "How would Obi Wan Kenobi react to a meteor falling from the sky";
+        collab1.username = "Vico";
+        dummy1.Add(collab1);
 
-        // Dummy Question 2
         CollabInfo collab2 = new CollabInfo();
-        collab2.question = "Is Obi Wan him?";
-        collab2.id = 2;
-        collab2.answeredBy = "Vico, Alan";
-        dummyCollabList.Add(collab2);
+        collab2.response = "Is Obi Wan him?";
+        collab2.username = "Alan";
+        dummy1.Add(collab2);
 
-        // Dummy Question 3
         CollabInfo collab3 = new CollabInfo();
-        collab3.question = "What color is Obi Wan's lightsaber?";
-        collab3.id = 3;
-        collab3.answeredBy = "Vico, Alan";
-        dummyCollabList.Add(collab3);
+        collab3.response = "What color is Obi Wan's lightsaber?";
+        collab3.username = "Vico";
+        dummy2.Add(collab3);
 
-        // Dummy Question 4
         CollabInfo collab4 = new CollabInfo();
-        collab4.question = "Is Obi Wan the best Jedi ever?";
-        collab4.id = 4;
-        collab4.answeredBy = "Vico, Alan";
-        dummyCollabList.Add(collab4);
+        collab4.response = "Is Obi Wan the best Jedi ever?";
+        collab4.username = "Alan";
+        dummy3.Add(collab4);
 
-        // Dummy Question 5
-        CollabInfo collab5 = new CollabInfo();
-        collab5.question = "Tell me a time when you and Obi Wan had fun.";
-        collab5.id = 5;
-        collab5.answeredBy = "Vico, Alan";
-        dummyCollabList.Add(collab5);
-
-        // Dummy Question 6
-        CollabInfo collab6 = new CollabInfo();
-        collab6.question = "Lowkey isn't Yoda cooler though?";
-        collab6.id = 6;
-        collab6.answeredBy = "Vico, Alan";
-        dummyCollabList.Add(collab6);
-        
-
-        for (int i = 0; i < dummyCollabList.Count; i++)
+        for (int i = 0; i < testQuestions.Count; i++)
         {
-            CollabInfo collabInfo = dummyCollabList[i];
+            HTTPClient.QuestionData indQuestion = testQuestions[i];
             GameObject collabListGO = Instantiate(collabAgentPrefab, content.transform);
             collabListGO.tag = "CollabInfoPrefab";
 
             // Access child components directly
             CollabInfoComponent collabInfoComponent = collabListGO.GetComponent<CollabInfoComponent>();
-            TextMeshProUGUI question = collabInfoComponent.questionTMP; 
-            int questionId = collabInfoComponent.questionId; 
             collabInfoComponent.viewAnswersPanel = viewAnswersPanel;
             collabInfoComponent.typeAnswerPanel = typeAnswerPanel;
+            collabInfoComponent.viewAnswersManager = viewAnswersManager;
+            collabInfoComponent.addAnswerManager = addAnswerManager;
+            collabInfoComponent.spriteHead = spriteHead.GetComponent<Image>().sprite;
+            collabInfoComponent.username = agentName;
+            collabInfoComponent.agentID = agentID;
+            collabInfoComponent.questionID = indQuestion.id;
 
             // Set player details dynamically
-            collabInfoComponent.SetCollabDetails(collabInfo.question, collabInfo.id, collabInfo.answeredBy);
+            collabInfoComponent.SetQuestionDetails(indQuestion.question, count);
+
+            if (i == 0){
+            foreach (CollabInfo info in dummy1){
+                collabInfoComponent.answers.Add(info.username);
+            }
+            }
+            else if (i == 1){
+            foreach (CollabInfo info in dummy2){
+                collabInfoComponent.answers.Add(info.username);
+            }
+            }
+            else if (i == 2){
+            foreach (CollabInfo info in dummy3){
+                collabInfoComponent.answers.Add(info.username);
+            }
+            }
+            else if (i == 3){
+                collabInfoComponent.Unanswered();
+            }
+
+            collabInfoComponent.SetAnswerDetails();
+            count++;
+            collabAgentPanel.SetActive(true);
         }
+
     }
 
-    public void StoreInput()
-    {
-        answer = answerInput.text;
+    public async void DisplayCollabQuestions(){
+        HTTPClient.AgentData agent = await httpClient.GetAgent(agentID);
 
-        // TODO: Send this information to the backend upon clicking the confirm button
-    }
+        agentName.GetComponent<TextMeshProUGUI>().text = agent.username;
 
-    public void ResetInputFields()
-    {
-        // Reset the input fields
-        answerInput.text = "";
+        List<HTTPClient.QuestionData> questions = await httpClient.GetAgentQuestions();
+        int count = 1;
+
+        // This loop sets the question text in each prefab
+        foreach (HTTPClient.QuestionData questionObj in questions){
+            GameObject collabListGO = Instantiate(collabAgentPrefab, content.transform);
+            collabListGO.tag = "CollabInfoPrefab";
+
+            CollabInfoComponent collabInfoComponent = collabListGO.GetComponent<CollabInfoComponent>();
+            collabInfoComponent.viewAnswersPanel = viewAnswersPanel;
+            collabInfoComponent.typeAnswerPanel = typeAnswerPanel;
+            collabInfoComponent.viewAnswersManager = viewAnswersManager;
+            collabInfoComponent.addAnswerManager = addAnswerManager;
+            collabInfoComponent.spriteHead = spriteHead.GetComponent<Image>().sprite;
+            collabInfoComponent.username = agentName;
+            collabInfoComponent.agentID = agentID;
+            collabInfoComponent.questionID = questionObj.id;
+
+            // Set player details dynamically
+            collabInfoComponent.SetQuestionDetails(questionObj.question, count);
+
+            List<HTTPClient.QuestionResponseData> responses = await httpClient.GetQuestionResponse(agentID, questionObj.id);
+            
+            // This loop figures out who has answered each question
+            foreach(HTTPClient.QuestionResponseData responseObj in responses){
+                HTTPClient.UserData user = await httpClient.GetUser(responseObj.responderId);
+                collabInfoComponent.answers.Add(user.username);
+            }
+
+            if (collabInfoComponent.answers.Count == 0){
+                collabInfoComponent.Unanswered();
+            }
+            collabInfoComponent.SetAnswerDetails();
+            count++;
+        }
+
+        // Call the LoadSprite method with the desired URL
+        spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
+
+                spriteHead.GetComponent<Image>().sprite = sprite;
+            });
+            collabAgentPanel.SetActive(true);
     }
 
     // Deletes instantiations of the prefab that shows up on the collab list when the panel is closed out

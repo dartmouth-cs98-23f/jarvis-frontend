@@ -4,6 +4,8 @@ using UnityEngine;
 using System;
 using TMPro;
 using UnityEngine.UI;
+using Clients;
+using Newtonsoft.Json;
 
 public class TrainAgentManager : MonoBehaviour
 {
@@ -13,40 +15,157 @@ public class TrainAgentManager : MonoBehaviour
     public GameObject trainAgentSlider;
     public GameObject trainAgentTimeRemaining;
     public GameObject trainAgentDesc;
+    public SpriteLoader spriteLoader;
+    private Guid agentID;
+    private HTTPClient httpClient = HTTPClient.Instance;
+    public CollabAgentManager collabAgentManager;
+    public GameObject spriteHead;
+    public TextMeshProUGUI agentName;
 
-    [Serializable]
-    public class AgentData
-    {
-        public string id;
-        public string username;
-        public string description;
-        public string summary;
-        public LocationData location;
-        public string creatorId;
-        public bool isHatched;
-        public string sprite_URL;
-        public string sprite_headshot_URL;
-        public DateTime createdTime;
-        public DateTime hatchTime;
+    public void SetAgentID(Guid agentId){
+        agentID = agentId;
+        FillTrainAgentFields(agentId);
+        // FetchTrainAgentInfo(agentId);
     }
 
-    [Serializable]
-    public class LocationData
-    {
-        public int x_coord;
-        public int y_coord;
+    public void SetPanelDetails(Sprite sprite, TextMeshProUGUI name){
+        spriteHead.GetComponent<Image>().sprite = sprite;
+        agentName = name;
     }
-    
-    public void FillTrainAgentFields(){
-        AgentData agent = new AgentData();
-        agent.sprite_headshot_URL = "Shapes/master_yoda_head";
-        agent.username = "Master Yoda";
-        agent.creatorId = "00000000-0000-0000-0000-000000000000"; // Should call get user with this id to display creator name
-        agent.createdTime = DateTime.Parse("2024-02-04T02:54:19.911Z");
-        agent.hatchTime = DateTime.Parse("2024-02-11T12:54:19.911Z");
-        agent.description = "Master Yoda is that mf boy. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll. Now let's spam text to test the scroll.";
 
-        trainAgentSprite.GetComponent<Image>().sprite = Resources.Load<Sprite>(agent.sprite_headshot_URL);
+    public void FillTrainAgentFields(Guid agentId){
+        string agent1 = @"
+        {
+            ""id"": ""11111111-1111-1111-1111-111111111111"",
+            ""username"": ""John"",
+            ""description"": ""Description 1"",
+            ""summary"": ""Summary 1"",
+            ""location"": {
+                ""x_coord"": 10,
+                ""y_coord"": 20
+            },
+            ""creatorId"": ""22222222-2222-2222-2222-222222222222"",
+            ""isHatched"": false,
+            ""sprite_URL"": ""https://picsum.photos/200"",
+            ""sprite_headshot_URL"": ""https://picsum.photos/200"",
+            ""createdTime"": ""2023-11-04T22:54:19.911Z"",
+            ""hatchTime"": ""2023-12-04T22:54:19.911Z""
+        }
+        ";
+
+        string agent2 = @"
+        {
+            ""id"": ""33333333-3333-3333-3333-333333333333"",
+            ""username"": ""Alice"",
+            ""description"": ""Description 2"",
+            ""summary"": ""Summary 2"",
+            ""location"": {
+                ""x_coord"": 30,
+                ""y_coord"": 40
+            },
+            ""creatorId"": ""44444444-4444-4444-4444-444444444444"",
+            ""isHatched"": true,
+            ""sprite_URL"": ""https://picsum.photos/200"",
+            ""sprite_headshot_URL"": ""https://picsum.photos/200"",
+            ""createdTime"": ""2023-11-05T22:54:19.911Z"",
+            ""hatchTime"": ""2023-12-05T22:54:19.911Z""
+        }
+        ";
+
+        string agent3 = @"
+        {
+            ""id"": ""55555555-5555-5555-5555-555555555555"",
+            ""username"": ""Bob"",
+            ""description"": ""Description 3"",
+            ""summary"": ""Summary 3"",
+            ""location"": {
+                ""x_coord"": 50,
+                ""y_coord"": 60
+            },
+            ""creatorId"": ""66666666-6666-6666-6666-666666666666"",
+            ""isHatched"": false,
+            ""sprite_URL"": ""https://picsum.photos/200"",
+            ""sprite_headshot_URL"": ""https://picsum.photos/200"",
+            ""createdTime"": ""2023-11-06T22:54:19.911Z"",
+            ""hatchTime"": ""2023-12-06T22:54:19.911Z""
+        }
+        ";
+
+        string agent4 = @"
+        {
+            ""id"": ""77777777-7777-7777-7777-777777777777"",
+            ""username"": ""Sarah"",
+            ""description"": ""Description 4"",
+            ""summary"": ""Summary 4"",
+            ""location"": {
+                ""x_coord"": 70,
+                ""y_coord"": 80
+            },
+            ""creatorId"": ""88888888-8888-8888-8888-888888888888"",
+            ""isHatched"": true,
+            ""sprite_URL"": ""https://picsum.photos/200"",
+            ""sprite_headshot_URL"": ""https://picsum.photos/200"",
+            ""createdTime"": ""2023-11-07T22:54:19.911Z"",
+            ""hatchTime"": ""2023-12-07T22:54:19.911Z""
+        }
+        ";
+
+        string agent5 = @"
+        {
+            ""id"": ""99999999-9999-9999-9999-999999999999"",
+            ""username"": ""Emily"",
+            ""description"": ""Description 5"",
+            ""summary"": ""Summary 5"",
+            ""location"": {
+                ""x_coord"": 90,
+                ""y_coord"": 100
+            },
+            ""creatorId"": ""00000000-0000-0000-0000-000000000000"",
+            ""isHatched"": false,
+            ""sprite_URL"": ""https://picsum.photos/200"",
+            ""sprite_headshot_URL"": ""https://picsum.photos/200"",
+            ""createdTime"": ""2023-11-08T22:54:19.911Z"",
+            ""hatchTime"": ""2023-12-08T22:54:19.911Z""
+        }
+        ";
+
+        string agent6 = @"
+        {
+            ""id"": ""10101010-1010-1010-1010-101010101010"",
+            ""username"": ""David"",
+            ""description"": ""Description 6"",
+            ""summary"": ""Summary 6"",
+            ""location"": {
+                ""x_coord"": 110,
+                ""y_coord"": 120
+            },
+            ""creatorId"": ""11111111-1111-1111-1111-111111111111"",
+            ""isHatched"": true,
+            ""sprite_URL"": ""https://picsum.photos/200"",
+            ""sprite_headshot_URL"": ""https://picsum.photos/200"",
+            ""createdTime"": ""2023-11-09T22:54:19.911Z"",
+            ""hatchTime"": ""2023-12-09T22:54:19.911Z""
+        }
+        ";
+
+        HTTPClient.AgentData agentOb1 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent1);
+        HTTPClient.AgentData agentOb2 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent2);
+        HTTPClient.AgentData agentOb3 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent3);
+        HTTPClient.AgentData agentOb4 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent4);
+        HTTPClient.AgentData agentOb5 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent5);
+        HTTPClient.AgentData agentOb6 = JsonConvert.DeserializeObject<HTTPClient.AgentData>(agent6);
+
+        Dictionary<Guid, HTTPClient.AgentData> myDictionary = new Dictionary<Guid, HTTPClient.AgentData>();
+
+        myDictionary[new Guid("11111111-1111-1111-1111-111111111111")] = agentOb1;
+        myDictionary[new Guid("22222222-2222-2222-2222-222222222222")] = agentOb2;
+        myDictionary[new Guid("33333333-3333-3333-3333-333333333333")] = agentOb3;
+        myDictionary[new Guid("44444444-4444-4444-4444-444444444444")] = agentOb4;
+        myDictionary[new Guid("55555555-5555-5555-5555-555555555555")] = agentOb5;
+        myDictionary[new Guid("66666666-6666-6666-6666-666666666666")] = agentOb6;
+
+        HTTPClient.AgentData agent = myDictionary[agentId];
+
         trainAgentName.GetComponent<TextMeshProUGUI>().text = agent.username;
         trainAgentDesc.GetComponent<TextMeshProUGUI>().text = agent.description;
 
@@ -60,12 +179,45 @@ public class TrainAgentManager : MonoBehaviour
         trainAgentTimeRemaining.GetComponent<TextMeshProUGUI>().text = $"Time Remaining: {hours}h {minutes}m";
         trainAgentSlider.GetComponent<Slider>().maxValue = (float)totalHours;
         trainAgentSlider.GetComponent<Slider>().value = (float)(totalHours - remainingHours);
-        
+
+        // // Call the LoadSprite method with the desired URL
+        // spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
+
+        //         trainAgentSprite.GetComponent<Image>().sprite = sprite;
+        //     });
+            trainAgentPanel.SetActive(true);
+        }
+
+
+    public async void FetchTrainAgentInfo(Guid agentId){
+        HTTPClient.AgentData agent = await httpClient.GetAgent(agentId);
+
+        trainAgentName.GetComponent<TextMeshProUGUI>().text = agent.username;
+        trainAgentDesc.GetComponent<TextMeshProUGUI>().text = agent.description;
+
+        TimeSpan total = agent.hatchTime - agent.createdTime;
+        TimeSpan remaining = agent.hatchTime - DateTime.Now;
+        double totalHours = total.TotalHours;
+        double remainingHours = remaining.TotalHours;
+        int hours = (int)remainingHours;
+        int minutes = (int)((remainingHours - hours) * 60); // to calculate minutes to display in the text box
+
+        trainAgentTimeRemaining.GetComponent<TextMeshProUGUI>().text = $"Time Remaining: {hours}h {minutes}m";
+        trainAgentSlider.GetComponent<Slider>().maxValue = (float)totalHours;
+        trainAgentSlider.GetComponent<Slider>().value = (float)(totalHours - remainingHours);
+
+        // Call the LoadSprite method with the desired URL
+        spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
+
+                trainAgentSprite.GetComponent<Image>().sprite = sprite;
+            });
+            trainAgentPanel.SetActive(true);
     }
 
-    private void Update(){
-        if (trainAgentPanel.activeSelf){
-            FillTrainAgentFields();
-        }
+    public void OnTrainNowPressed(){
+        collabAgentManager.SetPanelDetails(spriteHead.GetComponent<Image>().sprite, agentName);
+        collabAgentManager.SetAgentID(agentID);
+        
     }
-}
+    }
+

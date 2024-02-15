@@ -14,6 +14,7 @@ public class IncubatingListManager : MonoBehaviour
     public GameObject trainAgentPanel;
     public SpriteLoader spriteLoader;
     private HTTPClient httpClient = HTTPClient.Instance;
+    public TrainAgentManager trainAgentManager;
 
     public void localDisplayIncubatingList()
     {
@@ -183,6 +184,8 @@ public class IncubatingListManager : MonoBehaviour
             IncubatingInfoComponent incubatingInfoComponent = incubatingListGO.GetComponent<IncubatingInfoComponent>();
             Image spriteHead = incubatingInfoComponent.displayUserImage; // Access the child Image component
             TextMeshProUGUI username = incubatingInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
+            incubatingInfoComponent.trainAgentManager = trainAgentManager;
+            incubatingInfoComponent.incubatingId = incubatingId.id;
             TimeSpan total = incubatingInfo.hatchTime - incubatingInfo.createdTime;
             TimeSpan remaining = incubatingInfo.hatchTime - DateTime.Now;
             double totalHours = total.TotalHours;

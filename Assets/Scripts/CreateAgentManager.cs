@@ -103,11 +103,12 @@ public class CreateAgentManager : MonoBehaviour
 
     public async void SendAgentInfo()
     {
-        // TODO: Get error message from backend and display it
-        bool createAgentSuccessful = await httpClient.CreateAgent(name, desc, httpClient.MyId, (int)incubation);
+        HTTPClient.IdData agent = await httpClient.CreateAgent(name, desc, httpClient.MyId, (int)incubation);
+        Guid agentId = agent.id;
 
-        if (createAgentSuccessful)
+        if (agentId != null)
         {
+            bool addSuccess = await httpClient.AddAgentToWorld(agentId);
             sideMenuManager.ToggleConfirmCreatePanel();
             incubatingListManager.CloseIncubatingListPanel();
             incubatingListManager.localDisplayIncubatingList(); // TODO: Change to non-local when backend working

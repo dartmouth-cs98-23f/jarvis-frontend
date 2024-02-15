@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Clients;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System;
 
 public class PlayersListManager : MonoBehaviour
 {
@@ -15,6 +16,11 @@ public class PlayersListManager : MonoBehaviour
     private HTTPClient httpClient = HTTPClient.Instance;
     public SpriteLoader spriteLoader;
     public SideMenu sideMenuManager;
+    public GameObject kickPanel;
+    public GameObject playersListPanel;
+    public GameObject playersListManager;
+    public TextMeshProUGUI kickUsername;
+    public Guid playerID;
     public async void localDisplayPlayersList()
     {
         string playersJson = @"
@@ -106,6 +112,15 @@ public class PlayersListManager : MonoBehaviour
         TextMeshProUGUI username = playerInfoComponent.usernameTMP;
         GameObject onlineIndicator = playerInfoComponent.onlineIndicator;
 
+        playerInfoComponent.kickPanel = kickPanel;
+        playerInfoComponent.playersListPanel = playersListPanel;
+        playerInfoComponent.playersListManager = playersListManager.GetComponent<PlayersListManager>();
+        playerInfoComponent.playerId = playerInfo.id;
+
+        if (playerInfo.isCreator){
+                playerInfoComponent.IsOwner();
+            }
+
         spriteLoader.LoadSprite(playerInfo.sprite_headshot_URL, (sprite) => {
             // Set player details dynamically
             playerInfoComponent.SetPlayerDetails(sprite, playerInfo.username);
@@ -171,6 +186,16 @@ public class PlayersListManager : MonoBehaviour
             TextMeshProUGUI username = playerInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             GameObject onlineIndicator = playerInfoComponent.onlineIndicator; // Access the child GameObject
 
+            playerInfoComponent.kickPanel = kickPanel;
+            playerInfoComponent.playersListPanel = playersListPanel;
+            playerInfoComponent.playersListManager = playersListManager.GetComponent<PlayersListManager>();
+            playerInfoComponent.playerId = playerInfo.id;
+
+            HTTPClient.IdData creator = await httpClient.GetWorldCreator();
+            if (httpClient.MyId == creator.id){
+                playerInfoComponent.IsOwner();
+            }
+
             spriteLoader = GameObject.FindObjectOfType<SpriteLoader>();
 
             // Call the LoadSprite method with the desired URL
@@ -224,5 +249,35 @@ public class PlayersListManager : MonoBehaviour
         {
             Debug.Log("Player Count Text component not assigned.");
         }
+    }
+
+    public void OnCancelPressed(){
+        kickPanel.SetActive(false);
+        playersListPanel.SetActive(true);
+    }
+
+    public async void OnKickPressed(){
+        kickPanel.SetActive(false);
+        playersListPanel.SetActive(true);
+        
+        // Call the method to remove the user from the world
+        bool response = await httpClient.RemoveUserFromWorld(playerID);
+
+        // Handle the response based on the boolean value
+        if (response)
+        {
+            Debug.Log("User removed from the world successfully.");
+        }
+        else
+        {
+            Debug.Log("Failed to remove user from the world.");
+        }
+    }
+    public void SetKickUsername(TextMeshProUGUI name){
+        kickUsername.text = "Kick " + name.text + " from World?";
+    }
+    
+    public void SetPlayerID(Guid playerId){
+        playerID = playerId;
     }
 }

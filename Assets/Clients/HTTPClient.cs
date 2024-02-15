@@ -179,6 +179,7 @@ public class HTTPClient
         }
     }
 
+
 // TODO: This method should be called when in proximity to another character
 public async Task<UserData> GetUser(Guid userId)
 {
@@ -187,6 +188,7 @@ public async Task<UserData> GetUser(Guid userId)
 
     try
     {
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
         if (response.IsSuccessStatusCode)
@@ -283,6 +285,7 @@ public async Task<string> GetUserSummary(Guid userId)
 public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
     string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -300,6 +303,7 @@ public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiver
 public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
     string apiUrl = $"{url}/worlds/{worldId}/users";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -318,6 +322,7 @@ public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
 public async Task<List<HatchedData>> GetHatched(Guid worldId) {
     string apiUrl = $"{url}/worlds/{worldId}/agents/hatched";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -334,6 +339,7 @@ public async Task<List<HatchedData>> GetHatched(Guid worldId) {
 public async Task<List<IncubatingData>> GetIncubating(Guid worldId) {
     string apiUrl = $"{url}/worlds/{worldId}/agents/incubating";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -351,6 +357,7 @@ public async Task<List<IncubatingData>> GetIncubating(Guid worldId) {
 public async Task<AgentData> GetAgent(Guid agentId) {
     string apiUrl = $"{url}/agents/{agentId}";
 
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
     if (response.IsSuccessStatusCode) {
@@ -364,7 +371,7 @@ public async Task<AgentData> GetAgent(Guid agentId) {
     }
 }
 
-public async Task<bool> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
+public async Task<IdData> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
 {
     string apiUrl = $"{url}/agents";
 
@@ -381,248 +388,164 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
         string jsonRequest = JsonConvert.SerializeObject(createAgentData);
         HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
         if (response.IsSuccessStatusCode)
         {
             string jsonResponse = await response.Content.ReadAsStringAsync();
-            CreateAgentResponse createAgentResponse = JsonConvert.DeserializeObject<CreateAgentResponse>(jsonResponse);
-            Debug.Log("Agent created successfully, with ID: " + createAgentResponse.agentId);
-            return true; // Create agent successful
+            IdData agentId = JsonConvert.DeserializeObject<IdData>(jsonResponse);
+            Debug.Log("Agent created successfully, with ID: " + agentId);
+            return agentId; // Create agent successful
         }
         else
         {
             Debug.LogError("Create Agent Error: " + response.StatusCode);
-            return false; // Create agent failed
+            return null; // Create agent failed
         }
     }
     catch (HttpRequestException e)
     {
         // Handle other exceptions if needed
         Debug.LogError("Login HTTP Request Exception: " + e.Message);
-        return false; // Registration failed due to exception
+        return null; // Registration failed due to exception
     }
 }
 
-    public async Task<List<UserQuestion>> GetUserQuestions()
+public async Task<List<ResponseData>> GetResponses(Guid agentId){
+    string apiUrl = $"{url}/questions/responses/{agentId}";
+
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<ResponseData> responses = JsonConvert.DeserializeObject<List<ResponseData>>(jsonResponse);
+    
+        return responses;
+    } else {
+        Debug.LogError("GetResponses Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+
+public async Task<List<QuestionResponseData>> GetQuestionResponse(Guid agentId, Guid questionId){
+    string apiUrl = $"{url}/questions/responses/{agentId}/{questionId}";
+
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<QuestionResponseData> responses = JsonConvert.DeserializeObject<List<QuestionResponseData>>(jsonResponse);
+    
+        return responses;
+    } else {
+        Debug.LogError("GetQuestionResponse Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+
+public async Task<List<QuestionData>> GetAgentQuestions(){
+    string apiUrl = $"{url}/questions/agents";
+
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        List<QuestionData> questions = JsonConvert.DeserializeObject<List<QuestionData>>(jsonResponse);
+    
+        return questions;
+    } else {
+        Debug.LogError("GetAgentQuestions Error: " + response.StatusCode);
+        return null; // May need to change null
+    }
+}
+
+public async Task<bool> RemoveUserFromWorld(Guid userId)
+{
+    string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
+    try
     {
-        string apiUrl = $"{url}/questions/users";
-
-        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
-
+        // Send the DELETE request
+        HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
+        
+        // Check if the request was successful
         if (response.IsSuccessStatusCode)
         {
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            List<UserQuestion> userQuestions = JsonConvert.DeserializeObject<List<UserQuestion>>(jsonResponse);
-            return userQuestions;
+            // No content is returned for a successful deletion
+            return true;
         }
         else
         {
-            Debug.LogError("GetUserQuestions Error: " + response.StatusCode);
-            return null;
+            // Log the error if the request fails
+            Console.WriteLine($"Error: {response.StatusCode}");
+            return false;
         }
     }
-
-    public async Task<CreateWorldResponse> CreateWorld(Guid creatorId, string name, string description)
+    catch (Exception e)
     {
-        string apiUrl = $"{url}/worlds";
-
-        try
-        {
-            CreateWorldData createWorldData = new CreateWorldData
-            {
-                creatorId = creatorId,
-                name = name,
-                description = description
-            };
-
-            string jsonRequest = JsonConvert.SerializeObject(createWorldData);
-            HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-
-            HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                CreateWorldResponse createWorldResponse = JsonConvert.DeserializeObject<CreateWorldResponse>(jsonResponse);
-                Debug.Log("World created successfully, with ID: " + createWorldResponse.id);
-                return createWorldResponse; // Create world successful
-            }
-            else
-            {
-                Debug.LogError("Create world Error: " + response.StatusCode);
-                return null; // Create world failed
-            }
-        }
-        catch (HttpRequestException e)
-        {
-            // Handle other exceptions if needed
-            Debug.LogError("Login HTTP Request Exception: " + e.Message);
-            return null; // Registration failed due to exception
-        }
+        // Log any exceptions that occur
+        Console.WriteLine($"Exception: {e.Message}");
+        return false;
     }
+}
 
-    // Gets the worlds that a user have
-    public async Task<List<UserWorld>> GetUserWorlds(Guid id) {
-        string apiUrl = $"{url}/users/{id}/worlds";
+public async Task<IdData> GetWorldCreator(){
+    string apiUrl = $"{url}/worlds/{worldId}/creator";
 
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+    // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
-        if (response.IsSuccessStatusCode) {
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            List<UserWorld> userWorlds = JsonConvert.DeserializeObject<List<UserWorld>>(jsonResponse);
-        
-            return userWorlds;
-        } else {
-            Debug.LogError("GetUserWorlds Error: " + response.StatusCode);
-            return null; // May need to change null
-        }
+    if (response.IsSuccessStatusCode) {
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        IdData creatorId = JsonConvert.DeserializeObject<IdData>(jsonResponse);
+    
+        return creatorId;
+    } else {
+        Debug.LogError("GetWorldCreator Error: " + response.StatusCode);
+        return null; // May need to change null
     }
+}
 
-    public async Task<Guid?> GetWorldIdFromWorldCode(string worldCode) {
-        string apiUrl = $"{url}/worlds/code/{worldCode}";
+public async Task<bool> AddAgentToWorld(Guid agentId)
+{
+    string apiUrl = $"{url}/worlds/{worldId}/agents";
 
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
-
-        if (response.IsSuccessStatusCode) {
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            GetWorldIdFromWorldCodeResponse getWorldIdResponse = JsonConvert.DeserializeObject<GetWorldIdFromWorldCodeResponse>(jsonResponse);
-
-            return getWorldIdResponse.worldId;
-        } else {
-            Debug.LogError("GetWorldIdFromWorldCode Error: " + response.StatusCode);
-
-            return null; // May need to change null
-        }
-    }
-
-    public async Task<bool> DeleteWorld(Guid worldId)
+    try
     {
-        string apiUrl = $"{url}/worlds/{worldId}";
-
-        try
+        // Create a request object containing the agent's ID
+        var requestData = new
         {
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-            HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
+            agentId = agentId
+        };
 
-            if (response.IsSuccessStatusCode)
-            {
-                Debug.Log("World deleted successfully from user with world id: " + worldId);
-                return true;
-            }
-            else
-            {
-                Debug.LogError("Delete world failed: " + response.StatusCode);
-                return false;
-            }
+        // Serialize the request object to JSON
+        string jsonRequest = JsonConvert.SerializeObject(requestData);
+        HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+        // Send the POST request
+        // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+        HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Debug.Log("Responses posted successfully.");
+            return true; // Responses posted successfully
         }
-        catch (HttpRequestException e)
+        else
         {
-            // Handle other exceptions if needed
-            Debug.LogError("HTTP Request Exception: " + e.Message);
-            return false; // Delete world failed due to exception
-        }
-    }
-
-    public async Task<bool> RemoveWorldFromList(Guid worldId, Guid userId)
-    {
-        string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
-
-        try
-        {
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-
-            HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
-
-            if (response.IsSuccessStatusCode)
-            {
-                Debug.Log("World removed successfully to user with world id: ");
-                return true;
-            }
-            else
-            {
-                Debug.LogError("Remove world failed: " + response.StatusCode);
-                return false;
-            }
-        }
-        catch (HttpRequestException e)
-        {
-            // Handle other exceptions if needed
-            Debug.LogError("HTTP Request Exception: " + e.Message);
-            return false; // Remove world failed due to exception
+            Debug.LogError("AddAgentToWorldError: " + response.StatusCode);
+            return false; // Posting responses failed
         }
     }
-
-
-    public async Task<AddUserToWorldResponse> AddUserToWorld(Guid worldId, Guid userId)
+    catch (HttpRequestException e)
     {
-        string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
-
-        try
-        {
-            // no content needed for this post request. this is just needed for Post request
-            HttpContent content = new StringContent("", System.Text.Encoding.UTF8, "application/json");
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-
-            HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                AddUserToWorldResponse addWorldResponse = JsonConvert.DeserializeObject<AddUserToWorldResponse>(jsonResponse);
-                Debug.Log("World added successfully to user with world id: " + addWorldResponse.worldId);
-                return addWorldResponse;
-            }
-            else
-            {
-                Debug.LogError("Add world failed: " + response.StatusCode);
-                return null;
-            }
-        }
-        catch (HttpRequestException e)
-        {
-            // Handle other exceptions if needed
-            Debug.LogError("HTTP Request Exception: " + e.Message);
-            return null; // Registration failed due to exception
-        }
+        Debug.LogError("AddAgentToWorld HTTP Request Exception: " + e.Message);
+        return false; // Posting responses failed due to exception
     }
-
-    public class AddUserToWorldResponse
-    {
-        public Guid worldId;
-        public string worldName;
-        public string thumbnailURL;
-    }
-
-
-    public class GetWorldIdFromWorldCodeResponse
-    {
-        public Guid worldId;
-    }
-
-    public class CreateWorldData
-    {   
-        public Guid creatorId;
-        public string name;
-        public string description;
-    }
-
-    public class CreateWorldResponse
-    {
-        public Guid id;
-        public string name;
-        public string thumbnail_URL;
-    }
-
-
-    public class UserQuestion
-    {
-        public Guid id;
-        public string question;
-    }
+}
 
     public class CharacterData
     {
@@ -648,6 +571,7 @@ public async Task<bool> CreateAgent(string username, string description, Guid cr
     {
         public string email;
         public bool isOnline;
+        public bool isCreator;
     }
 
 [System.Serializable]
@@ -754,6 +678,33 @@ public class UpdateSprite
         public string name;
         public string description;
         public string thumbnail_URL;
+    }
+    
+    [System.Serializable]
+    public class ResponseData
+    {
+        public Guid responderId;
+        public Guid questionId;
+        public string response;
+    }
+    [System.Serializable]
+    public class QuestionData
+    {
+        public Guid id;
+        public string question;
+    }
+
+    [System.Serializable]
+    public class QuestionResponseData
+    {
+        public Guid responderId;
+        public string response;
+    }
+
+    [System.Serializable]
+    public class IdData
+    {
+        public Guid id;
     }
     public Guid MyId
     {

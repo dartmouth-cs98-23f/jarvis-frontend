@@ -13,6 +13,7 @@ public class HatchedInfoComponent : MonoBehaviour
     public TextMeshProUGUI usernameTMP;
     public Image displayUserImage;
     public GameObject agentInfoPanel;
+    public AgentInfoManager agentInfoManager;
     public Guid hatchedId;
 
 
@@ -28,14 +29,6 @@ public class HatchedInfoComponent : MonoBehaviour
 
     public void ClickPrefab()
     {
-        // Toggle the panel visibility
-        if (agentInfoPanel != null)
-        {
-            agentInfoPanel.SetActive(!agentInfoPanel.activeSelf);
-        }
-        else
-        {
-            Debug.LogError("Agent Info Panel reference is not set.");
-        }
+        agentInfoManager.SetAgentID(hatchedId);
     }
 }
