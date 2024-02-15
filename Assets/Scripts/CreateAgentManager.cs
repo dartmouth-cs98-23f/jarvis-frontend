@@ -103,7 +103,6 @@ public class CreateAgentManager : MonoBehaviour
 
     public async void SendAgentInfo()
     {
-        // TODO: Get error message from backend and display it
         HTTPClient.IdData agent = await httpClient.CreateAgent(name, desc, httpClient.MyId, (int)incubation);
         Guid agentId = agent.id;
 
