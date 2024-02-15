@@ -179,8 +179,6 @@ namespace Clients {
             }
         }
 
-
-        // TODO: This method should be called when in proximity to another character
         public async Task<UserData> GetUser(Guid userId)
         {
             Debug.Log("Called GetUser in httpClient userid: " + userId.ToString());
