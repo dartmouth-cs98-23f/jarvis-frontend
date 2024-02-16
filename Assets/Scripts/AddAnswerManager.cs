@@ -42,10 +42,10 @@ public class AddAnswerManager : MonoBehaviour
         string answer = answerInput.text;
 
         // Create a list to store the question-response data
-        List<HTTPClient.QuestionResponseData> responses = new List<HTTPClient.QuestionResponseData>();
+        List<HTTPClient.PostResponse> responses = new List<HTTPClient.PostResponse>();
 
         // Add the answer to the responses list
-        HTTPClient.QuestionResponseData response = new HTTPClient.QuestionResponseData();
+        HTTPClient.PostResponse response = new HTTPClient.PostResponse();
         response.response = answer;
         responses.Add(response);
 

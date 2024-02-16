@@ -33,7 +33,6 @@ public class PlayersListManager : MonoBehaviour
                     ""y_coord"": 20
                 },
                 ""isOnline"": true,
-                ""isCreator"": false,
                 ""sprite_URL"": ""https://picsum.photos/200"",
                 ""sprite_headshot_URL"": ""https://picsum.photos/200""
             },
@@ -45,7 +44,6 @@ public class PlayersListManager : MonoBehaviour
                     ""y_coord"": 25
                 },
                 ""isOnline"": false,
-                ""isCreator"": false,
                 ""sprite_URL"": ""https://picsum.photos/200"",
                 ""sprite_headshot_URL"": ""https://picsum.photos/200""
             },
@@ -57,7 +55,6 @@ public class PlayersListManager : MonoBehaviour
                     ""y_coord"": 40
                 },
                 ""isOnline"": true,
-                ""isCreator"": true,
                 ""sprite_URL"": ""https://picsum.photos/200"",
                 ""sprite_headshot_URL"": ""https://picsum.photos/200""
             },
@@ -69,7 +66,6 @@ public class PlayersListManager : MonoBehaviour
                     ""y_coord"": 45
                 },
                 ""isOnline"": false,
-                ""isCreator"": false,
                 ""sprite_URL"": ""https://picsum.photos/200"",
                 ""sprite_headshot_URL"": ""https://picsum.photos/200""
             },
@@ -81,7 +77,6 @@ public class PlayersListManager : MonoBehaviour
                     ""y_coord"": 60
                 },
                 ""isOnline"": true,
-                ""isCreator"": false,
                 ""sprite_URL"": ""https://picsum.photos/200"",
                 ""sprite_headshot_URL"": ""https://picsum.photos/200""
             },
@@ -93,7 +88,6 @@ public class PlayersListManager : MonoBehaviour
                     ""y_coord"": 65
                 },
                 ""isOnline"": false,
-                ""isCreator"": true,
                 ""sprite_URL"": ""https://picsum.photos/200"",
                 ""sprite_headshot_URL"": ""https://picsum.photos/200""
             }
@@ -117,7 +111,7 @@ public class PlayersListManager : MonoBehaviour
         playerInfoComponent.playersListManager = playersListManager.GetComponent<PlayersListManager>();
         playerInfoComponent.playerId = playerInfo.id;
 
-        if (playerInfo.isCreator){
+        if (playerInfo.id == new Guid("22222222-2222-2222-2222-222222222222")){
                 playerInfoComponent.IsOwner();
             }
 
