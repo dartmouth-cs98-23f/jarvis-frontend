@@ -72,6 +72,8 @@ namespace Clients {
                     Debug.Log("User registered successfully. ID: " + registrationResponse.userId + ", Response String: " + registrationResponse.authToken);
                     myId = registrationResponse.userId;
                     authToken = registrationResponse.authToken;
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+
                     return true; // Registration successful
                 }
                 else
@@ -113,6 +115,7 @@ namespace Clients {
                     Debug.Log("User logged in successfully. ID: " + loginResponse.userId + ", Response String: " + loginResponse.authToken);
                     myId = loginResponse.userId;
                     authToken = loginResponse.authToken;
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
 
                     return true; // Registration successful
                 }
@@ -157,7 +160,6 @@ namespace Clients {
                 };
                 string jsonRequest = JsonConvert.SerializeObject(req);
                 HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
 
                 HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
@@ -186,7 +188,6 @@ namespace Clients {
 
             try
             {
-                // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
                 HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
                 if (response.IsSuccessStatusCode)
@@ -232,7 +233,6 @@ namespace Clients {
         public async Task<List<UserWorld>> GetUserWorlds(Guid id) {
             string apiUrl = $"{url}/users/{id}/worlds";
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -249,7 +249,6 @@ namespace Clients {
         public async Task<Guid?> GetWorldIdFromWorldCode(string worldCode) {
             string apiUrl = $"{url}/worlds/code/{worldCode}";
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -368,7 +367,6 @@ namespace Clients {
         public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
             string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -386,7 +384,6 @@ namespace Clients {
         public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
             string apiUrl = $"{url}/worlds/{worldId}/users";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -407,7 +404,6 @@ namespace Clients {
 
             try
             {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
                 HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
 
                 if (response.IsSuccessStatusCode)
@@ -433,7 +429,6 @@ namespace Clients {
         public async Task<List<HatchedData>> GetHatched(Guid worldId) {
             string apiUrl = $"{url}/worlds/{worldId}/agents/hatched";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -450,7 +445,6 @@ namespace Clients {
         public async Task<List<IncubatingData>> GetIncubating(Guid worldId) {
             string apiUrl = $"{url}/worlds/{worldId}/agents/incubating";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -468,7 +462,6 @@ namespace Clients {
         public async Task<AgentData> GetAgent(Guid agentId) {
             string apiUrl = $"{url}/agents/{agentId}";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -499,7 +492,6 @@ namespace Clients {
                 string jsonRequest = JsonConvert.SerializeObject(createAgentData);
                 HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
-                // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
                 HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
@@ -526,7 +518,6 @@ namespace Clients {
         public async Task<List<ResponseData>> GetResponses(Guid agentId){
             string apiUrl = $"{url}/questions/responses/{agentId}";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -543,7 +534,6 @@ namespace Clients {
         public async Task<List<QuestionResponseData>> GetQuestionResponse(Guid agentId, Guid questionId){
             string apiUrl = $"{url}/questions/responses/{agentId}/{questionId}";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -560,7 +550,6 @@ namespace Clients {
         public async Task<List<QuestionData>> GetAgentQuestions(){
             string apiUrl = $"{url}/questions/agents";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -588,7 +577,6 @@ namespace Clients {
 
                 string jsonRequest = JsonConvert.SerializeObject(createWorldData);
                 HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
 
                 HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
@@ -654,8 +642,6 @@ namespace Clients {
 
             try
             {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-
                 HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
 
                 if (response.IsSuccessStatusCode)
@@ -685,7 +671,6 @@ namespace Clients {
             {
                 // no content needed for this post request. this is just needed for Post request
                 HttpContent content = new StringContent("", System.Text.Encoding.UTF8, "application/json");
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
 
                 HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
@@ -713,7 +698,6 @@ namespace Clients {
         public async Task<IdData> GetWorldCreator(){
             string apiUrl = $"{url}/worlds/{worldId}/creator";
 
-            // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
@@ -744,7 +728,6 @@ namespace Clients {
                 HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
                 // Send the POST request
-                // httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
                 HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
