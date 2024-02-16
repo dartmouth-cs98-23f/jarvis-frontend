@@ -39,7 +39,7 @@ public class GameClient : MonoBehaviour
             Debug.Log("InitializeGame: " + currentUserData.username);
             Debug.Log("InitializeGame: " + currentUserData.location.coordX + ", " + currentUserData.location.coordY);
             BuildAllCharacters(); // Call this method after user data is initialized
-            await SignalRClient.Initialize(userId, currentUserData.username); // TODO: Change first name to user first name later
+            await SignalRClient.Initialize(httpClient.AuthToken, currentUserData.username); // TODO: Change first name to user first name later
             signalRClient = SignalRClient.Instance;
             // signalRClient.RegisterUpdateLocationHandler(); // register updateLocation handler
         }
