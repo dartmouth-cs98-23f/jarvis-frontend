@@ -341,8 +341,6 @@ namespace Clients {
                 };
                 string jsonRequest = JsonConvert.SerializeObject(req);
                 HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-
                 HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
