@@ -90,7 +90,7 @@ public class SignalRClient
     /// <returns></returns>
     public async Task BroadcastMessage(string funcName, string message)
     {
-        await _connection.SendAsync(funcName, firstName, message);
+        await _connection.SendAsync(funcName, username, message);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public class SignalRClient
 
     public void RegisterSendMessageHandler(ChatManager.ChatManager chatManager)
     {
-        _connection.On<string, string>("ReceiveMessage", (senderId, message, isOnline) =>
+        _connection.On<string, string, string>("ReceiveMessage", (senderId, message, isOnline) =>
         {
             Debug.Log($"Message received from user {senderId}: {message}. User is online: {isOnline}");
             SenderId = senderId;
