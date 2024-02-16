@@ -10,17 +10,18 @@ namespace Clients {
 
 public class SignalRClient
 {
-    private readonly string firstName;
+    private readonly string username;
     private readonly HubConnection _connection;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
     public static string SenderId;
     public static string Message;
+    public static bool IsOnline;
     private static SignalRClient instance;
 
-    private SignalRClient(string firstName, string url)
+    private SignalRClient(string username, string url)
     {
-        this.firstName = firstName.Length <= 10 ? firstName.ToLower() : firstName.ToLower()[..10];
+        this.username = username.Length <= 10 ? username.ToLower() : username.ToLower()[..10];
         _connection = new HubConnectionBuilder()
             .WithUrl(url)
             .Build();
@@ -38,15 +39,15 @@ public class SignalRClient
         }
     }
 
-    public static async Task Initialize(Guid userId, string firstName)
+    public static async Task Initialize(string authToken, string username)
     {
         if (instance == null)
         {
             // string baseURL = "http://localhost:5087/unity";
             string baseURL = "https://simyou.azurewebsites.net/unity";
-            string urlWithUserId = baseURL + "?userId=" + userId.ToString();
-            Debug.Log("Initializing SignalRClient with URL:" + urlWithUserId);
-            instance = new SignalRClient(firstName, urlWithUserId);
+            string urlWithAuthToken = baseURL + "?auth_token=" + authToken;
+            Debug.Log("Initializing SignalRClient with URL:" + urlWithAuthToken);
+            instance = new SignalRClient(username, urlWithAuthToken);
             Debug.Log("Post instance assignment" + instance);
             await instance.ConnectAsync();
             if (instance._connection.State == HubConnectionState.Connected)
@@ -54,7 +55,7 @@ public class SignalRClient
                 Debug.Log("IM ACTUALLY CONNECTED");
             }
             else{
-                Debug.Log("I am not actually connected :(");
+                Debug.Log("I am not actually connected");
             }
         }         
     }
@@ -89,7 +90,7 @@ public class SignalRClient
     /// <returns></returns>
     public async Task BroadcastMessage(string funcName, string message)
     {
-        await _connection.SendAsync(funcName, firstName, message);
+        await _connection.SendAsync(funcName, username, message);
     }
 
     /// <summary>
@@ -151,23 +152,24 @@ public class SignalRClient
 
     public void RegisterSendMessageHandler(ChatManager.ChatManager chatManager)
     {
-        _connection.On<string, string>("ReceiveMessage", (senderId, message) =>
+        _connection.On<string, string, string>("ReceiveMessage", (senderId, message, isOnline) =>
         {
-            Debug.Log($"Message received from user {senderId}: {message}");
+            Debug.Log($"Message received from user {senderId}: {message}. User is online: {isOnline}");
             SenderId = senderId;
             Message = message;
+            IsOnline = isOnline == "True" ? true : false;
         });
     }
 
     public class Location
-{
-    public int X_coordinate { get; set; }
-    public int Y_coordinate { get; set; }
-}
+    {
+        public int X_coordinate { get; set; }
+        public int Y_coordinate { get; set; }
+    }
     public Dictionary<Guid, Location> UserLocations
-        {
-            get { return userLocations; }
-        }
+    {
+        get { return userLocations; }
+    }
 
 }
 }

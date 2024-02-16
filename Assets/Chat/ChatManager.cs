@@ -44,11 +44,10 @@ public class ChatManager : MonoBehaviour
 {
     private HTTPClient httpClient = HTTPClient.Instance;
     // public Guid currentUserId = HTTPClient.Instance.MyId; // TODO: uncomment for actual backend testing
-    // private Guid otherCharacterId; 
+    // private Guid otherCharacterId; // TODO: uncomment for actual backend testing
 
     public Guid currentUserId = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41"); // TODO: Comment for backend testing
     public Guid otherCharacterId = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559"); // TODO: Comment for backend testing
-
     private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
     private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
     public GameObject AskMeQuestionButton;
@@ -61,7 +60,7 @@ public class ChatManager : MonoBehaviour
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
     private HTTPClient.UserData currentUserData;
     private HTTPClient.CharacterData otherCharacterData;
-    private string otherCharacterType; // check if the otehr character is user or agent
+    private string otherCharacterType; // check if the other character is user or agent
 
     private string chatTestJsonString = @"
     [
@@ -122,10 +121,8 @@ public class ChatManager : MonoBehaviour
             AskMeQuestionButton.SetActive(true);
         }
 
-        // TODO: Comment for backend
+        // TODO: Switch for backend
         currentUserData = await LocalGetUser(currentUserId);
-
-        // TODO: Uncomment for backend
         // currentUserData = await GetUser(currentUserId);
 
         // Initialize other user's head sprite
@@ -135,8 +132,12 @@ public class ChatManager : MonoBehaviour
         }));
 
         Debug.Log("In chat manager, otherCharacterId: " + otherCharacterId.ToString());
+        // TODO: Uncomment for backend
         // SignalRClient.Instance.RegisterSendMessageHandler(this);
+
+        // TODO: Switch for backend.
         LocalBuildChatHistory();
+        // BuildChatHistory();
     }
 
     public async void OnPressAskMeQuestion()
@@ -256,6 +257,7 @@ public class ChatManager : MonoBehaviour
             //     SenderId = new Guid(SignalRClient.SenderId),
             //     ReceiverId = currentUserId,
             //     Content = StringParser.ParseInput(SignalRClient.Message),
+            //     IsOnline = SignalRClient.IsOnline,
             //     IsGroupChat = false,
             //     CreatedTime = DateTime.UtcNow
             // });
@@ -264,6 +266,7 @@ public class ChatManager : MonoBehaviour
         //     // Reset the static variables to indicate that the message has been processed
         //     SignalRClient.SenderId = null;
         //     SignalRClient.Message = null;
+        //     SignalRClient.IsOnline = null;
         // }
     }
 
@@ -409,7 +412,6 @@ public class ChatManager : MonoBehaviour
         {
             return;
         }
-        
         HTTPClient.ChatMessage message = new HTTPClient.ChatMessage();
         message.SenderId = currentUserId;
         message.ReceiverId = receiverId;
@@ -419,7 +421,9 @@ public class ChatManager : MonoBehaviour
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
 
         await SignalRClient.Instance.SendChat(otherCharacterId, content);
-
+        
+        // TODO: Add logic to check SendChat result. Chat message object should only be generated 
+        // after SendChat is successful
         GenerateChatMessageObject(message);
     }
 
