@@ -28,8 +28,8 @@ public class LoginManager : MonoBehaviour
         bool passwordIsValid = ValidatePassword();
         if (emailIsValid && passwordIsValid) {
             // TODO: Replace this with signin API call
-            bool loginSuccessful = true;
-            // bool loginSuccessful = await httpClient.LoginUser(email, password);
+            // bool loginSuccessful = true;
+            bool loginSuccessful = await httpClient.LoginUser(emailInput.text, passwordInput.text);
             if (loginSuccessful)
             {
                 SceneNavigator.LoadMyWorlds(); // TODO: Replace this with navigating to logged in user's worlds scene

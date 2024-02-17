@@ -25,30 +25,6 @@ public class CreateAgentManager : MonoBehaviour
     public SideMenu sideMenuManager;
     public IncubatingListManager incubatingListManager;
 
-    [Serializable]
-    public class AgentData
-    {
-        public string id;
-        public string username;
-        public string description;
-        public string summary;
-        public LocationData location;
-        public string creatorId;
-        public bool isHatched;
-        public string sprite_URL;
-        public string sprite_headshot_URL;
-        public DateTime createdTime;
-        public DateTime hatchTime;
-    }
-
-    [Serializable]
-    public class LocationData
-    {
-        public int x_coord;
-        public int y_coord;
-    }
-
-
     public void StoreInput()
     {
         // Store text input from the username input field
@@ -59,8 +35,6 @@ public class CreateAgentManager : MonoBehaviour
 
         // Store incubation time from the slider
         incubation = incubationTime.value;
-
-        // TODO: Send this information to the backend upon clicking the next button
     }
 
     public void StoreVisualDesc(){
@@ -79,7 +53,8 @@ public class CreateAgentManager : MonoBehaviour
     }
 
     public void FillConfirmCreateFields(){
-        AgentData agent = new AgentData();
+        // TODO: Add sprite visual method here
+        HTTPClient.AgentData agent = new HTTPClient.AgentData();
         agent.sprite_URL = "Sprites/master_yoda";
         confirmSpriteObject.GetComponent<Image>().sprite = Resources.Load<Sprite>(agent.sprite_URL);
         confirmNameObject.GetComponent<TextMeshProUGUI>().text = name;
@@ -108,7 +83,7 @@ public class CreateAgentManager : MonoBehaviour
 
         if (agentId != null)
         {
-            bool addSuccess = await httpClient.AddAgentToWorld(agentId);
+            // bool addSuccess = await httpClient.AddAgentToWorld(agentId);
             sideMenuManager.ToggleConfirmCreatePanel();
             incubatingListManager.CloseIncubatingListPanel();
             incubatingListManager.localDisplayIncubatingList(); // TODO: Change to non-local when backend working

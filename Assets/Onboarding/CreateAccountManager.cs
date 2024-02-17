@@ -101,8 +101,8 @@ public class CreateAccountNavigator : MonoBehaviour
         if (usernameIsValid && emailIsValid && passwordIsValid && confirmPasswordIsValid) 
         {
             // TODO: Get error message from backend and display it
-            bool registrationSuccessful = true;
-            // bool registrationSuccessful = await CreateAccount(username, email, password, confirmPassword);
+            // bool registrationSuccessful = true;
+            bool registrationSuccessful = await CreateAccount(username, email, password, confirmPassword);
 
             if (registrationSuccessful)
             {
@@ -130,8 +130,8 @@ public class CreateAccountNavigator : MonoBehaviour
     // "error: email is not valid"
     private async Task<bool> CreateAccount(string username, string email, string password, string confirmPassword)
     {
-        bool registrationSuccessful = true;         // comment out this line to connect with backend API.
-        // bool registrationSuccessful = await httpClient.RegisterUser(username, email, password); // TODO: update firstname lastname with username and uncomment
+        // bool registrationSuccessful = true;         // comment out this line to connect with backend API.
+        bool registrationSuccessful = await httpClient.RegisterUser(username, email, password); 
         if (registrationSuccessful){
             return true;
     }

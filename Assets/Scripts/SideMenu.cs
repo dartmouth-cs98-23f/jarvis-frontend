@@ -9,6 +9,7 @@ public class SideMenu : MonoBehaviour
     public GameObject hamburgerIcon;
 
     public GameObject worldSettingsPanel;
+    public GameObject ownerWorldSettingsPanel;
     public GameObject playersListPanel;
     public GameObject hatchedPanel;
     public GameObject incubatingPanel;
@@ -27,6 +28,7 @@ public class SideMenu : MonoBehaviour
         menuPanel.SetActive(false);
         charactersSubMenu.SetActive(false);
         worldSettingsPanel.SetActive(false);
+        ownerWorldSettingsPanel.SetActive(false);
         playersListPanel.SetActive(false);
         hatchedPanel.SetActive(false);
         incubatingPanel.SetActive(false);
@@ -66,6 +68,10 @@ public class SideMenu : MonoBehaviour
     public void ToggleWorldSettingsPanel()
     {
         worldSettingsPanel.SetActive(!worldSettingsPanel.activeSelf);
+    }
+    public void ToggleOwnerWorldSettingsPanel()
+    {
+        ownerWorldSettingsPanel.SetActive(!ownerWorldSettingsPanel.activeSelf);
     }
 
     public void TogglePlayersListPanel()
