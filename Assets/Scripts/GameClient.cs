@@ -18,6 +18,7 @@ public class GameClient : MonoBehaviour
     public GameObject currentUserPrefab;
     public GameObject otherUserPrefab;
     public GameObject AgentPrefab;
+    public GameObject EggPrefab;
     public GameObject georgePrefab;
     public GameObject yodaPrefab;
     public Transform mainMap;
@@ -65,7 +66,7 @@ public class GameClient : MonoBehaviour
         allAgents = await httpClient.GetWorldAgents(httpClient.CurrentWorldId);
         foreach (HTTPClient.AgentData agent in allAgents)
         {
-            GameObject agentPrefab = GenerateAgentPrefab(agent.sprite_URL);
+            GameObject agentPrefab = GenerateAgentPrefab(agent);
             GameObject agentGO = Instantiate(agentPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
             agentGO.tag = CharacterType.Agent;
 
@@ -88,10 +89,15 @@ public class GameClient : MonoBehaviour
         }
     }
 
-    GameObject GenerateAgentPrefab(string sprite_URL)
+    GameObject GenerateAgentPrefab(HTTPClient.AgentData agent)
     {
-        return georgePrefab; // TODO: Add logic to get actual agent prefab
+        if (agent.isHatched) {
+            return AgentPrefab; // TODO: Add logic to get actual agent prefab
+        } else {
+            return EggPrefab; // TODO: Add logic for this to display the incubation time
+        }
     }
+    
 
     async void BuildAllUsers()
     {
@@ -123,15 +129,15 @@ public class GameClient : MonoBehaviour
     }
 
     // TODO: Update this method to generate the actual prefab of the user
-    GameObject GetUserPrefab(Guid userId)
+    GameObject GenerateUserPrefab(Guid userId)
     {
         if (userId == this.userId)
         {
-            return currentUserPrefab;
+            return currentUserPrefab;   // this prefab would have the playerMovement script attached
         }
         else
         {
-            return otherUserPrefab;
+            return otherUserPrefab; // this prefab would have the otherPlayerMovement script attached
         }
     }
 
