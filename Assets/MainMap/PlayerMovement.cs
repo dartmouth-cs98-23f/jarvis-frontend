@@ -1,14 +1,14 @@
+using System;
 using System.Collections;
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using Clients;
 using UnityEngine;
 using UnityEngine.UI;
-using Clients;
-using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
-using System;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
-
+using System.Threading.Tasks;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 targetPosition;
     private Animator animator;
     private float moveSpeed = 5.0f;
-    private Guid collidedUserId;
+    private Guid collidedCharacterId;
 
     public GameObject InteractButton;
     public Tilemap tilemap; // Reference to the Tilemap
@@ -104,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
             PlayerPrefs.SetString("coordX", xCoordinate.ToString());
             PlayerPrefs.SetString("coordY", yCoordinate.ToString()); 
 
-            // Send the updated location to the server
+            // TODO: Backend api connection. Send the updated location to the server
             // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
         }
         else
@@ -132,28 +132,22 @@ public class PlayerMovement : MonoBehaviour
         // Show click to chat button
         InteractButton.SetActive(true);
 
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("user") || collision.gameObject.CompareTag("agent"))
         {
-            CharacterComponent playerCharacterComponent = collision.gameObject.GetComponent<CharacterComponent>();
+            CharacterComponent characterComponent = collision.gameObject.GetComponent<CharacterComponent>();
 
-            if (playerCharacterComponent != null)
+            if (characterComponent != null)
             {
                 // Access NPC information
-                collidedUserId = playerCharacterComponent.GetUserId();
+                collidedCharacterId = characterComponent.GetCharacterId();
+                string collidedCharacterType = characterComponent.GetCharacterType();
 
-                Debug.Log($"Collided with Player (ID: {collidedUserId})");
+                Debug.Log($"Collided with Character Type: {collidedCharacterType} (ID: {collidedCharacterId})");
 
-                // Disable the Rigidbody2D to stop the NPCCharacter from moving
-                Rigidbody2D playerRigidbody = playerCharacterComponent.GetComponent<Rigidbody2D>();
-                if (playerRigidbody != null)
-                {
-                    playerRigidbody.bodyType = RigidbodyType2D.Static; // Set to Static to make it immovable
-                }
-
-                // Store the collidedUserId in PlayerPrefs
+                // Store the CollidedCharacterId in PlayerPrefs to access in the Chat scene
                 // TODO: Do this without using PlayerPrefs
-                PlayerPrefs.SetString("CollidedCharacterId", collidedUserId.ToString());
-                // PlayerPrefs.SetString("CollidedCharacterType", collided); // TODO: Add collision character type for Chat to handle
+                PlayerPrefs.SetString("CollidedCharacterId", collidedCharacterId.ToString());
+                PlayerPrefs.SetString("CollidedCharacterType", collidedCharacterType);
             }
         }
     }
