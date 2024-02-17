@@ -473,6 +473,24 @@ namespace Clients {
             }
         }
 
+        // Gets the agents that are in the world
+        public async Task<List<AgentData>> GetWorldAgents(Guid worldId) {
+            string apiUrl = $"{url}/worlds/{worldId}/agents";
+
+            HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode) {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<AgentData> worldAgents = JsonConvert.DeserializeObject<List<AgentData>>(jsonResponse);
+            
+                return worldAgents;
+            } else {
+                Debug.LogError("GetWorldAgents Error: " + response.StatusCode);
+                return null;
+            }
+            
+        }
+
         public async Task<IdData> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
         {
             string apiUrl = $"{url}/agents";

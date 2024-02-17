@@ -121,20 +121,21 @@ public class SignalRClient
             }
         }
 
-     public void RegisterUpdateLocationHandler()
+     public void RegisterUpdateLocationHandler(OtherPlayerMovement otherPlayerMovementScript)
+    {
+        // TODO: Refactor handleError out into a combined handler
+        _connection.On<string>("HandleError", (error) =>
         {
-            // TODO: Refactor handleError out into a combined handler
-            _connection.On<string>("HandleError", (error) =>
-            {
-                Debug.Log($"Error: {error}");
-            });
-            _connection.On<Guid, int, int>("UpdateLocation", (userId, xCoord, yCoord) =>
-            {
-                Debug.Log($"User {userId} moved to X: {xCoord}, Y: {yCoord}");
-                
-                userLocations[userId] = new Location { X_coordinate = xCoord, Y_coordinate = yCoord };
-            });
-        }
+            Debug.Log($"Error: {error}");
+        });
+        _connection.On<Guid, int, int>("UpdateLocation", (userId, xCoord, yCoord) =>
+        {
+            Debug.Log($"User {userId} moved to X: {xCoord}, Y: {yCoord}");
+            
+            userLocations[userId] = new Location { X_coordinate = xCoord, Y_coordinate = yCoord }; // TODO: Check if this is needed
+            otherPlayerMovementScript.UpdateLocation(userId, xCoord, yCoord);
+        });
+    }
 
     // Sends a message to a user through the server.
     public async Task SendChat(Guid receiverId, string message)

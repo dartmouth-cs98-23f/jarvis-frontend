@@ -1,6 +1,7 @@
 using UnityEngine;
 using Clients;
 using System;
+using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 
 
@@ -8,15 +9,18 @@ public class GameClient : MonoBehaviour
 {
 
     private Guid userId;
-    public GameObject currentPlayerPrefab;
+    public GameObject currentUserPrefab;
+    public GameObject otherUserPrefab;
+    public GameObject AgentPrefab;
     public GameObject georgePrefab;
     public GameObject yodaPrefab;
-    // public GameObject NPCPlayerPrefab;
     public SignalRClient signalRClient;
     public Transform mainMap;
 
     private HTTPClient httpClient;
     private HTTPClient.UserData currentUserData;
+    private List<HTTPClient.UserData> allUsers = new List<HTTPClient.UserData>();
+
 
     void Awake()
     {
@@ -38,7 +42,9 @@ public class GameClient : MonoBehaviour
         {
             Debug.Log("InitializeGame: " + currentUserData.username);
             Debug.Log("InitializeGame: " + currentUserData.location.coordX + ", " + currentUserData.location.coordY);
-            BuildAllCharacters(); // Call this method after user data is initialized
+            // BuildAllCharacters(); // Call this method after user data is initialized
+            BuildAllCharactersV2(); // Call this method after user data is initialized
+
             await SignalRClient.Initialize(httpClient.AuthToken, currentUserData.username); // TODO: Change first name to user first name later
             signalRClient = SignalRClient.Instance;
             // signalRClient.RegisterUpdateLocationHandler(); // register updateLocation handler
@@ -48,6 +54,59 @@ public class GameClient : MonoBehaviour
             Debug.LogError("Failed to initialize user data.");
         }
     }
+
+
+    void BuildAllCharactersV2()
+    {
+        BuildAllUsers();
+        // BuildAllAgents();
+    }
+
+    // void BuildAllAgents()
+    // {
+    //     return;
+    // }
+
+    async void BuildAllUsers()
+    {
+        allUsers = await httpClient.GetWorldUsers(httpClient.CurrentWorldId);
+        foreach (HTTPClient.UserData user in allUsers)
+        {
+            GameObject userPrefab = GetUserPrefab(user.id);
+            GameObject userGO = Instantiate(userPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
+            userGO.tag = "Player";
+
+            if (user.id == httpClient.MyId)
+            {
+                PlayerMovement userMovementScript = userGO.GetComponent<PlayerMovement>();
+                userMovementScript.InteractButton = GameObject.Find("InteractButton");
+                userMovementScript.InteractButton.SetActive(false);
+                userMovementScript.SetTilemap(GameObject.Find("Tilemap").GetComponent<Tilemap>());
+            } else {
+                OtherPlayerMovement otherUserMovementScript = userGO.GetComponent<OtherPlayerMovement>();
+
+            }
+
+            CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
+            userComponent.SetPosition(user.location.coordX, user.location.coordY, 0);
+            userComponent.SetUserId(user.id);
+        }
+    }
+
+    // TODO: Update this method to generate the actual prefab of the user
+    GameObject GetUserPrefab(Guid userId)
+    {
+        if (userId == this.userId)
+        {
+            return currentUserPrefab;
+        }
+        else
+        {
+            return otherUserPrefab;
+        }
+    }
+
+
 
     // c8268729-e4f5-4df3-85fc-51779d7c2b35
     //d2e12e14-5df1-4a0e-92f1-11f2f10e5880
@@ -72,7 +131,7 @@ public class GameClient : MonoBehaviour
             return;
         }
 
-        GameObject currentUserGO = Instantiate(currentPlayerPrefab, mainMap);
+        GameObject currentUserGO = Instantiate(currentUserPrefab, mainMap);
         currentUserGO.tag = "Player";
 
         Tilemap tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();

@@ -126,61 +126,37 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D collision)
-{
-    Debug.Log($"Collided with GameObject: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
-
-    // Show click to chat button
-    InteractButton.SetActive(true);
-
-    // Check if the collision is with an NPC
-    // if (collision.gameObject.CompareTag("NPC"))
-    // {
-    //     NPCCharacter npcCharacter = collision.gameObject.GetComponent<NPCCharacter>();
-
-    //     if (npcCharacter != null)
-    //     {
-    //         // Access NPC information
-    //         collidedUserId = npcCharacter.GetUserId();
-
-    //         Debug.Log($"Collided with NPC (ID: {collidedUserId})");
-
-    //         // Disable the Rigidbody2D to stop the NPCCharacter from moving
-    //         Rigidbody2D npcRigidbody = npcCharacter.GetComponent<Rigidbody2D>();
-    //         if (npcRigidbody != null)
-    //         {
-    //             npcRigidbody.bodyType = RigidbodyType2D.Static; // Set to Static to make it immovable
-    //         }
-
-    //         // Store the collidedUserId in PlayerPrefs
-    //         PlayerPrefs.SetString("CollidedCharacterId", collidedUserId.ToString());
-    //     }
-    // }
-
-    if (collision.gameObject.CompareTag("Player"))
     {
-        CharacterComponent playerCharacterComponent = collision.gameObject.GetComponent<CharacterComponent>();
+        Debug.Log($"Collided with GameObject: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
 
-        if (playerCharacterComponent != null)
+        // Show click to chat button
+        InteractButton.SetActive(true);
+
+        if (collision.gameObject.CompareTag("Player"))
         {
-            // Access NPC information
-            collidedUserId = playerCharacterComponent.GetUserId();
+            CharacterComponent playerCharacterComponent = collision.gameObject.GetComponent<CharacterComponent>();
 
-            Debug.Log($"Collided with Player (ID: {collidedUserId})");
-
-            // Disable the Rigidbody2D to stop the NPCCharacter from moving
-            Rigidbody2D playerRigidbody = playerCharacterComponent.GetComponent<Rigidbody2D>();
-            if (playerRigidbody != null)
+            if (playerCharacterComponent != null)
             {
-                playerRigidbody.bodyType = RigidbodyType2D.Static; // Set to Static to make it immovable
-            }
+                // Access NPC information
+                collidedUserId = playerCharacterComponent.GetUserId();
 
-            // Store the collidedUserId in PlayerPrefs
-            // TODO: Do this without using PlayerPrefs
-            PlayerPrefs.SetString("CollidedCharacterId", collidedUserId.ToString());
-            // PlayerPrefs.SetString("CollidedCharacterType", collided); // TODO: Add collision character type for Chat to handle
+                Debug.Log($"Collided with Player (ID: {collidedUserId})");
+
+                // Disable the Rigidbody2D to stop the NPCCharacter from moving
+                Rigidbody2D playerRigidbody = playerCharacterComponent.GetComponent<Rigidbody2D>();
+                if (playerRigidbody != null)
+                {
+                    playerRigidbody.bodyType = RigidbodyType2D.Static; // Set to Static to make it immovable
+                }
+
+                // Store the collidedUserId in PlayerPrefs
+                // TODO: Do this without using PlayerPrefs
+                PlayerPrefs.SetString("CollidedCharacterId", collidedUserId.ToString());
+                // PlayerPrefs.SetString("CollidedCharacterType", collided); // TODO: Add collision character type for Chat to handle
+            }
         }
     }
-}
 
     void OnCollisionExit2D(Collision2D collision)
     {
