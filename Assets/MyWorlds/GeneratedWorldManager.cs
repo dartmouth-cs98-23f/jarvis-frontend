@@ -36,6 +36,13 @@ public class GeneratedWorldManager : MonoBehaviour
 
     IEnumerator LoadWorldSprite(string thumbnail_URL)
     {
+        // Basic validation of the URL
+        if (string.IsNullOrEmpty(thumbnail_URL) || !Uri.IsWellFormedUriString(thumbnail_URL, UriKind.Absolute))
+        {
+            Debug.LogError($"Invalid or malformed URL: {thumbnail_URL}");
+            yield break; // Exit the coroutine early
+        }
+
         UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(thumbnail_URL);
         yield return uwr.SendWebRequest(); // Wait for the download to complete
 

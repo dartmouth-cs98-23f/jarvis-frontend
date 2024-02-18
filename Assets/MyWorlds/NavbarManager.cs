@@ -40,6 +40,7 @@ public class NavbarManager : MonoBehaviour
     public void SetCurrentPanel(GameObject panel)
     {
         currentPanel = panel;
+        Debug.Log("In SetCurrentPanel. Current panel is " + currentPanel.name);
         if (currentPanel != myWorldsPanel) // for all cases where they are not MyWorldsPanel, always make it available to go back
         {
             userIcon.SetActive(false);
