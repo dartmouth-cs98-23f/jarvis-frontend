@@ -29,11 +29,18 @@ public class UserProfileManager : MonoBehaviour
 
     private async Task InitializeText()
     {
-        await Task.Delay(1000);
         // TODO: Replace this text with user's actual summary by getting it from the backend
-        userSummary.text = "Silly silly user summary is silly";
-        // userSummary.text = await httpClient.GetUserSummary(httpClient.MyId);
+        // await Task.Delay(1000);
+        // userSummary.text = "Silly silly user summary is silly";
+        string userSummaryResponse = await httpClient.GetUserSummary(httpClient.MyId);
 
+        if (userSummary != null)
+        {
+            userSummary.text = userSummaryResponse;
+        } else {
+            Debug.Log("user summary is null. setting summary to empty string");
+            userSummary.text = "";
+        }
         userSummaryInputField.text = userSummary.text;
         userSummaryInputField.placeholder.GetComponent<Text>().text = userSummary.text;
     }
@@ -42,13 +49,17 @@ public class UserProfileManager : MonoBehaviour
     {
 
         // TODO: Switch this method for backend API
-        HTTPClient.UserData userData = await LocalGetUser(httpClient.MyId);
-        // HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
+        // HTTPClient.UserData userData = await LocalGetUser(httpClient.MyId);
+        HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
         if (userData != null)
         {
             Debug.Log("Initializing user profile with username: " + username + " and sprite_URL: " + userData.sprite_URL);
             this.username.text = "@" + userData.username;
-            StartCoroutine(LoadCharacterSprite(userData.sprite_URL));
+            if (!string.IsNullOrEmpty(userData.sprite_URL) || Uri.IsWellFormedUriString(userData.sprite_URL, UriKind.Absolute))
+            {
+                Debug.Log("loading character sprite");
+                StartCoroutine(LoadCharacterSprite(userData.sprite_URL));
+            }
             InitializeText();
         }
     }
@@ -71,6 +82,13 @@ public class UserProfileManager : MonoBehaviour
     }
     IEnumerator LoadCharacterSprite(string sprite_URL)
     {
+        // Basic validation of the URL
+        if (string.IsNullOrEmpty(sprite_URL) || !Uri.IsWellFormedUriString(sprite_URL, UriKind.Absolute))
+        {
+            Debug.LogError($"Invalid or malformed URL: {sprite_URL}");
+            yield break; // Exit the coroutine early
+        }
+
         UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(sprite_URL);
         yield return uwr.SendWebRequest(); // Wait for the download to complete
 

@@ -29,8 +29,8 @@ public class IntroQuestions : MonoBehaviour
     async void GenerateQuestionPanels()
     {
         // TODO: Comment to connect to backend
-        userQuestions = await LocalGetUserQuestions();
-        // userQuestions = await GetUserQuestions();
+        // userQuestions = await LocalGetUserQuestions();
+        userQuestions = await GetUserQuestions();
 
         foreach (HTTPClient.UserQuestion question in userQuestions)
         {
@@ -169,12 +169,12 @@ public class IntroQuestions : MonoBehaviour
 
                 try {
                     // TODO: Switch for backend api connection to userData
-                    HTTPClient.UserData userData = await LocalGetUser();
-                    // HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
+                    // HTTPClient.UserData userData = await LocalGetUser();
+                    HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
 
                     // TODO: Switch for backend api connection to userSummary
-                    string userSummary = "This is a fake user summary for testing purposes.";
-                    // string userSummary = await httpClient.GetUserSummary(httpClient.MyId);
+                    // string userSummary = "This is a fake user summary for testing purposes.";
+                    string userSummary = await httpClient.GetUserSummary(httpClient.MyId);
 
                     if (userData!= null && userSummary != null && userData.sprite_URL != null && userData.sprite_URL != "" && userSummary != "")
                     {
@@ -227,8 +227,8 @@ public class IntroQuestions : MonoBehaviour
         }
 
         // TODO: Comment this out when backend is ready. Check if PostAnswer returns true
-        bool postAnswerSuccessful = await LocalPostResponses();
-        // bool postAnswerSuccessful = httpClient.PostResponses(httpClient.MyId, httpClient.MyId, answers);
+        // bool postAnswerSuccessful = await LocalPostResponses();
+        bool postAnswerSuccessful = await httpClient.PostResponses(httpClient.MyId, httpClient.MyId, answers);
 
         if (postAnswerSuccessful)
         {

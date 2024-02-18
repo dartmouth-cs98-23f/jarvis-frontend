@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,11 +27,22 @@ public class CharacterSummaryManager : MonoBehaviour
         Debug.Log("setting character summary");
         this.username.GetComponent<Text>().text = "@" + username;
         this.userSummary.GetComponent<Text>().text = userSummary;
-        StartCoroutine(LoadCharacterSprite(sprite_URL));
+        if (!string.IsNullOrEmpty(sprite_URL) || Uri.IsWellFormedUriString(sprite_URL, UriKind.Absolute))
+        {
+            Debug.Log("loading character sprite");
+            StartCoroutine(LoadCharacterSprite(sprite_URL));
+        }
     }
 
     IEnumerator LoadCharacterSprite(string sprite_URL)
     {
+        // Basic validation of the URL
+        if (string.IsNullOrEmpty(sprite_URL) || !Uri.IsWellFormedUriString(sprite_URL, UriKind.Absolute))
+        {
+            Debug.LogError($"Invalid or malformed URL: {sprite_URL}");
+            yield break; // Exit the coroutine early
+        }
+
         UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(sprite_URL);
         yield return uwr.SendWebRequest(); // Wait for the download to complete
 

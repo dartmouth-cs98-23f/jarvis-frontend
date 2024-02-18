@@ -15,6 +15,13 @@ public class SpriteLoader : MonoBehaviour
 
     IEnumerator LoadSpriteCoroutine(string url, Action<Sprite> onSpriteLoaded)
     {
+        // Basic validation of the URL
+        if (string.IsNullOrEmpty(url) || !Uri.IsWellFormedUriString(url, UriKind.Absolute))
+        {
+            Debug.LogError($"Invalid or malformed URL: {url}");
+            yield break; // Exit the coroutine early
+        }
+
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
         yield return www.SendWebRequest();
 
