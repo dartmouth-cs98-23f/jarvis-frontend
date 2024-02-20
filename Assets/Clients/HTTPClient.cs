@@ -22,7 +22,7 @@ namespace Clients {
         // private const string url = "http://localhost:5087";  
         private const string url = "https://api.simugameservice.lekina.me";  
 
-        private Guid myId;
+        private Guid myId = new Guid("c3480195-64e8-4915-8326-391125d7d880"); // TODO: delete this id, just using for testing
         private Guid worldId;
         private string authToken;
         private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
@@ -68,6 +68,7 @@ namespace Clients {
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
+                    Debug.Log(jsonResponse);
                     UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
                     Debug.Log("User registered successfully. ID: " + registrationResponse.id.ToString() + ", Response String: " + registrationResponse.authToken);
                     myId = registrationResponse.id;
@@ -111,6 +112,7 @@ namespace Clients {
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
+                    Debug.Log(jsonResponse);
                     UserLoginResponse loginResponse = JsonConvert.DeserializeObject<UserLoginResponse>(jsonResponse);
                     Debug.Log("User logged in successfully. ID: " + loginResponse.id.ToString() + ", Response String: " + loginResponse.authToken);
                     myId = loginResponse.id;
@@ -516,7 +518,7 @@ namespace Clients {
                 {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
                     IdData agentId = JsonConvert.DeserializeObject<IdData>(jsonResponse);
-                    Debug.Log("Agent created successfully, with ID: " + agentId);
+                    Debug.Log("Agent created successfully, with ID: " + agentId.id);
                     return agentId; // Create agent successful
                 }
                 else

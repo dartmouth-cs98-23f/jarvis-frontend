@@ -130,7 +130,7 @@ public class CreateAccountNavigator : MonoBehaviour
     private async Task<bool> CreateAccount(string username, string email, string password, string confirmPassword)
     {
         // bool registrationSuccessful = true;         // comment out this line to connect with backend API.
-        bool registrationSuccessful = await httpClient.RegisterUser(username, email, password); // TODO: update firstname lastname with username and uncomment
+        bool registrationSuccessful = await httpClient.RegisterUser(username, email, password); 
         if (registrationSuccessful){
             return true;
     }
