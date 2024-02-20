@@ -15,6 +15,7 @@ public class GameClient : MonoBehaviour
 {
 
     private Guid userId;
+    private Guid worldId;
     public GameObject currentUserPrefab;
     public GameObject otherUserPrefab;
     public GameObject AgentPrefab;
@@ -27,10 +28,18 @@ public class GameClient : MonoBehaviour
     private HTTPClient.UserData currentUserData;
     private List<HTTPClient.UserData> allUsers = new List<HTTPClient.UserData>();
     private List<HTTPClient.AgentData> allAgents = new List<HTTPClient.AgentData>();
+    private HashSet<Guid> characterIdSet = new HashSet<Guid>();
     void Awake()
     {
         httpClient = HTTPClient.Instance; // get httpClient
-        userId = httpClient.MyId;
+        // TODO: Uncomment below for backend connection
+        // userId = httpClient.MyId;
+        // worldId = httpClient.CurrentWorldId();
+
+        // TODO: Comment below out for backend connection
+        userId = new Guid("c0c973f7-5f80-437e-8418-f3c401780274");
+        worldId = new Guid("3b490737-6d3f-4bb8-9593-15e8a1c80dab");
+
         InitializeGame();
     }
 
@@ -45,7 +54,6 @@ public class GameClient : MonoBehaviour
         if (currentUserData != null)
         {
             Debug.Log("InitializeGame: " + currentUserData.username);
-            Debug.Log("InitializeGame: " + currentUserData.location.coordX + ", " + currentUserData.location.coordY);
             // BuildAllCharacters(); // Call this method after user data is initialized
             BuildAllCharactersV2(); // Call this method after user data is initialized
         }
@@ -63,9 +71,16 @@ public class GameClient : MonoBehaviour
 
     async void BuildAllAgents()
     {
-        allAgents = await httpClient.GetWorldAgents(httpClient.CurrentWorldId);
+        allAgents = await httpClient.GetWorldAgents(worldId);
         foreach (HTTPClient.AgentData agent in allAgents)
         {
+            if (characterIdSet != null && characterIdSet.Contains(agent.id))
+            {
+                Debug.Log("Agent with id: " + agent.id + " already exists. Skipping...");
+                continue;
+            } else {
+                characterIdSet.Add(agent.id);
+            }
             GameObject agentPrefab = GenerateAgentPrefab(agent);
             GameObject agentGO = Instantiate(agentPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
             agentGO.tag = CharacterType.Agent;
@@ -94,24 +109,33 @@ public class GameClient : MonoBehaviour
         if (agent.isHatched) {
             return AgentPrefab; // TODO: Add logic to get actual agent prefab
         } else {
-            return EggPrefab; // TODO: Add logic for this to display the incubation time
+            return EggPrefab; // TODO: Add logic for this to display the incubation time and to interact with it - nurture it
         }
     }
     
 
     async void BuildAllUsers()
     {
-        allUsers = await httpClient.GetWorldUsers(httpClient.CurrentWorldId);
+        allUsers = await httpClient.GetWorldUsers(worldId);
         foreach (HTTPClient.UserData user in allUsers)
         {
-            GameObject userPrefab = GetUserPrefab(user.id);
+            Debug.Log("Building user: " + user.username + " with id: " + user.id);
+            if (characterIdSet != null && characterIdSet.Contains(user.id))
+            {
+                Debug.Log("User with id: " + user.id + " already exists. Skipping...");
+                continue;
+            } else {
+                characterIdSet.Add(user.id);
+            }
+
+            GameObject userPrefab = GenerateUserPrefab(user.id);
             GameObject userGO = Instantiate(userPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
             userGO.tag = CharacterType.User;
 
-            if (user.id == httpClient.MyId)
+            if (user.id == userId)
             {
                 PlayerMovement userMovementScript = userGO.GetComponent<PlayerMovement>();
-                userMovementScript.InteractButton = GameObject.Find("InteractButton");
+                userMovementScript.InteractButton = GameObject.Find("ChatButton");
                 userMovementScript.InteractButton.SetActive(false);
                 userMovementScript.SetTilemap(GameObject.Find("Tilemap").GetComponent<Tilemap>());
             } else {
@@ -119,9 +143,17 @@ public class GameClient : MonoBehaviour
             }
 
             CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
-            userComponent.SetPosition(user.location.coordX, user.location.coordY, 0);
             userComponent.SetCharacterId(user.id);
             userComponent.SetCharacterType(CharacterType.User);
+            
+            if (user.location == null)
+            {
+                Debug.Log("User location is null. Setting coordinates to 0, 0");
+                userComponent.SetPosition(0, 0, 0);
+                continue;
+            } else {
+                userComponent.SetPosition(user.location.coordX, user.location.coordY, 0);
+            }
             
             // Disable the Rigidbody2D to stop character from moving due to collisions
             DisableCharacterRigidBody(userComponent);
@@ -133,10 +165,12 @@ public class GameClient : MonoBehaviour
     {
         if (userId == this.userId)
         {
+            Debug.Log("Generating main user prefab with userId: " + userId);
             return currentUserPrefab;   // this prefab would have the playerMovement script attached
         }
         else
         {
+            Debug.Log("Generating other user prefab with userId: " + userId);
             return otherUserPrefab; // this prefab would have the otherPlayerMovement script attached
         }
     }

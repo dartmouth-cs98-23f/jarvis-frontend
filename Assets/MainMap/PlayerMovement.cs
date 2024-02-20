@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void SetTilemap(Tilemap tilemap)
     {
+        Debug.Log("Setting tilemap");
         this.tilemap = tilemap;
     }
     

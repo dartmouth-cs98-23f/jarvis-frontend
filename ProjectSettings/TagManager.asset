@@ -10,6 +10,8 @@ TagManager:
   - IncubatingInfoPrefab
   - CollabInfoPrefab
   - QuestionAnswerPrefab
+  - user
+  - agent
   layers:
   - Default
   - TransparentFX

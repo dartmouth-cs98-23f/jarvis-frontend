@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 2518843050321789976}
   m_Layer: 0
   m_Name: MainUserPrefab
-  m_TagString: Player
+  m_TagString: user
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -242,7 +242,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab9dce597cc6f45a6bfdab106433970c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractButton: {fileID: 0}
+  InteractButton: {fileID: 8426570399328869988, guid: b243e50a4ee414f3d9b6d02c4558bf9a, type: 3}
+  tilemap: {fileID: 0}
 --- !u!58 &1719291808388457283
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -290,3 +291,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd4f6238c901e4f4aaf1a44f5234f373, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterType: 
