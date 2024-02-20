@@ -2,6 +2,8 @@ using UnityEngine;
 using Clients;
 using System;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 
 public class GameClient : MonoBehaviour
@@ -17,6 +19,7 @@ public class GameClient : MonoBehaviour
 
     private HTTPClient httpClient;
     private HTTPClient.UserData currentUserData;
+    public GameObject userPrefab;
 
     void Awake()
     {
@@ -37,10 +40,11 @@ public class GameClient : MonoBehaviour
         if (currentUserData != null)
         {
             Debug.Log("InitializeGame: " + currentUserData.username);
-            Debug.Log("InitializeGame: " + currentUserData.location.coordX + ", " + currentUserData.location.coordY);
+            currentUserData.location = new HTTPClient.Location();
+            // Debug.Log("InitializeGame: " + currentUserData.location.coordX + ", " + currentUserData.location.coordY);
             BuildAllCharacters(); // Call this method after user data is initialized
-            await SignalRClient.Initialize(httpClient.AuthToken, currentUserData.username); // TODO: Change first name to user first name later
-            signalRClient = SignalRClient.Instance;
+            // await SignalRClient.Initialize(httpClient.AuthToken, currentUserData.username); // TODO: Change first name to user first name later
+            // signalRClient = SignalRClient.Instance;
             // signalRClient.RegisterUpdateLocationHandler(); // register updateLocation handler
         }
         else
@@ -72,13 +76,18 @@ public class GameClient : MonoBehaviour
             return;
         }
 
+        GameObject testGO = Instantiate(userPrefab, mainMap);
+        testGO.tag = "Player";
+        CharacterComponent testCharacterComponent = testGO.GetComponent<CharacterComponent>();
+        testCharacterComponent.SetPosition(currentUserData.location.coordX, currentUserData.location.coordY, 0);
+
         GameObject currentUserGO = Instantiate(currentPlayerPrefab, mainMap);
         currentUserGO.tag = "Player";
 
         Tilemap tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
 
         PlayerMovement playerMovementScript = currentUserGO.GetComponent<PlayerMovement>();
-        playerMovementScript.InteractButton = GameObject.Find("InteractButton");
+        playerMovementScript.InteractButton = GameObject.Find("ChatButton");
         playerMovementScript.InteractButton.SetActive(false);
         playerMovementScript.SetTilemap(tilemap);
         CharacterComponent characterComponent = currentUserGO.GetComponent<CharacterComponent>();
@@ -88,13 +97,13 @@ public class GameClient : MonoBehaviour
         GameObject georgeWashingtonGO = Instantiate(georgePrefab, mainMap);
         georgeWashingtonGO.tag = "Player";
         PlayerMovement georgeWashingtonMovementScript = georgeWashingtonGO.GetComponent<PlayerMovement>();
-        Transform georgeMainCamera = georgeWashingtonGO.transform.Find("Main Camera");
+        // Transform georgeMainCamera = georgeWashingtonGO.transform.Find("Main Camera");
         // If the camera exists, destroy it
         // destroy mainCamera and playerMovement script for NPC
-        if (georgeMainCamera != null)
-        {
-            Destroy(georgeMainCamera.gameObject);
-        }
+        // if (georgeMainCamera != null)
+        // {
+        //     Destroy(georgeMainCamera.gameObject);
+        // }
         if (georgeWashingtonMovementScript != null)
         {
             Destroy(georgeWashingtonMovementScript);

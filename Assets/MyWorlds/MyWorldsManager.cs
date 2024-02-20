@@ -6,6 +6,7 @@ using Clients;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 
 public class MyWorldsManager : MonoBehaviour
@@ -83,7 +84,9 @@ public class MyWorldsManager : MonoBehaviour
     {
         // Set current world id and navigate to game
         httpClient.CurrentWorldId = new Guid(worldSwiper.GetCurrentWorldId());
-        SceneNavigator.LoadGame();
+        // SceneNavigator.LoadGame();
+        SceneManager.LoadScene("Overworld");
+        
     }
 
     public void OnPressCreateWorld()

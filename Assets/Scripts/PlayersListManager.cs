@@ -123,7 +123,7 @@ public class PlayersListManager : MonoBehaviour
             if (playerInfo.isOnline)
             {
                 Color color = onlineIndicator.GetComponent<Image>().color;
-                color = Color.green;
+                color = new Color(110 / 255.0f, 140 / 255.0f, 51 / 255.0f);
                 color.a = 1;
                 onlineIndicator.GetComponent<Image>().color = color;
                 Outline outline = onlineIndicator.GetComponent<Outline>();
@@ -140,7 +140,7 @@ public class PlayersListManager : MonoBehaviour
                 onlineIndicator.GetComponent<Image>().color = color;
                 Outline outline = onlineIndicator.GetComponent<Outline>();
                 Color outlineColor = outline.effectColor;
-                outlineColor = Color.gray;
+                outlineColor = new Color(115/255.0f, 123/255.0f, 125/255.0f);
                 outlineColor.a = 0.5f;
                 outline.effectColor = outlineColor;
                 onlineIndicator.GetComponent<Outline>().enabled = true;
@@ -200,14 +200,14 @@ public class PlayersListManager : MonoBehaviour
             // Change color based on online/offline status
             if (playerInfo.isOnline)
             {
-                onlineIndicator.GetComponent<Image>().color = Color.green;
+                onlineIndicator.GetComponent<Image>().color = new Color(110 / 255.0f, 140 / 255.0f, 51 / 255.0f);
                 onlineIndicator.GetComponent<Outline>().enabled = false;
             }
             else
             {
                 onlineIndicator.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
                 onlineIndicator.GetComponent<Outline>().enabled = true;
-                onlineIndicator.GetComponent<Outline>().effectColor = Color.gray;
+                onlineIndicator.GetComponent<Outline>().effectColor = new Color(115/255.0f, 123/255.0f, 125/255.0f);
             }
         });
     }

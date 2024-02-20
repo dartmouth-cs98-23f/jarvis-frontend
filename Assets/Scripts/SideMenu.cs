@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class SideMenu : MonoBehaviour
 {
@@ -7,6 +8,11 @@ public class SideMenu : MonoBehaviour
     public GameObject charactersButton;
     public GameObject charactersSubMenu;
     public GameObject hamburgerIcon;
+    public EventTrigger characters;
+    public EventTrigger worldSettings;
+    public EventTrigger exitWorld;
+    public EventTrigger players;
+    public EventTrigger agents;
 
     public GameObject worldSettingsPanel;
     public GameObject ownerWorldSettingsPanel;
@@ -41,6 +47,39 @@ public class SideMenu : MonoBehaviour
         agentCollabPanel.SetActive(false);
         viewAnswersPanel.SetActive(false);
         typeAnswerPanel.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (worldSettingsPanel.activeSelf ||
+        ownerWorldSettingsPanel.activeSelf ||
+        playersListPanel.activeSelf ||
+        hatchedPanel.activeSelf ||
+        incubatingPanel.activeSelf ||
+        swipePrefab.activeSelf ||
+        createAgentPanel.activeSelf ||
+        visualDescPanel.activeSelf ||
+        confirmCreatePanel.activeSelf ||
+        agentInfoPanel.activeSelf ||
+        trainAgentPanel.activeSelf ||
+        agentCollabPanel.activeSelf ||
+        viewAnswersPanel.activeSelf ||
+        typeAnswerPanel.activeSelf)
+        {
+            characters.enabled = false;
+            worldSettings.enabled = false;
+            exitWorld.enabled = false;
+            players.enabled = false;
+            agents.enabled = false;
+        }
+        else
+        {
+            characters.enabled = true;
+            worldSettings.enabled = true;
+            exitWorld.enabled = true;
+            players.enabled = true;
+            agents.enabled = true;
+        }
     }
 
     public void ToggleMenu()
