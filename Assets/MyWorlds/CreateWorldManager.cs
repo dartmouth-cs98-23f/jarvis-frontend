@@ -32,8 +32,8 @@ public class CreateWorldManager : MonoBehaviour
         string worldDescription = worldDescriptionInputField.text;
         StartLoading();
         try {
-            HTTPClient.CreateWorldResponse response = await LocalCreateWorld(new Guid(), worldName, worldDescription); // sends a post request to the backend and wait for response
-            // HTTPClient.CreateWorldResponse response = await CreateWorld(httpClient.MyId, worldName, worldDescription); // sends a post request to the backend and wait for response
+            // HTTPClient.CreateWorldResponse response = await LocalCreateWorld(new Guid(), worldName, worldDescription); // sends a post request to the backend and wait for response
+            HTTPClient.CreateWorldResponse response = await CreateWorld(httpClient.MyId, worldName, worldDescription); // sends a post request to the backend and wait for response
             // TODO: Check if CreateWorld on backend adds to User's list of worlds otherwise, add it to user's list of worlds using AddUserWorld()
             if (response != null) // when response comes back
             {

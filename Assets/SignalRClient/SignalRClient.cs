@@ -21,7 +21,6 @@ public class SignalRClient
 
     private SignalRClient(string username, string url)
     {
-        this.username = username.Length <= 10 ? username.ToLower() : username.ToLower()[..10];
         _connection = new HubConnectionBuilder()
             .WithUrl(url)
             .Build();

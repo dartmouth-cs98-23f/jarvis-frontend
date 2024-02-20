@@ -51,21 +51,30 @@ public class MyWorldsManager : MonoBehaviour
     // Start is called before the first frame update
     async void Start()
     {
-        currentWorldObject.SetActive(true);
 
         // TODO: Get from backend API
-        userWorlds = await LocalGetUserWorlds();
-        // userWorlds = await GetUserWorlds();
+        // userWorlds = await LocalGetUserWorlds();
+        userWorlds = await GetUserWorlds();
+        currentWorldObject.SetActive(true);
 
-        Debug.Log("Current world object active only after userWorlds is set");
+        navbarManager = navBarObject.GetComponent<NavbarManager>();
+        navbarManager.SetCurrentPanel(myWorldsPanel);
+
+        if (userWorlds == null || userWorlds.Count == 0)
+        {
+            currentWorldObject.SetActive(false);
+            return;
+        }
+
         worldSwiper = currentWorldObject.GetComponent<ImageSwiper>();
+        Debug.Log("world swiper: " + worldSwiper);
         if (worldSwiper != null)
         {
+
             Debug.Log("Setting up worldswiper: " + userWorlds.Count);
             worldSwiper.SetupUserWorlds(userWorlds); // A new method to safely initialize ImageSwiper with loaded data
         }
-        navbarManager = navBarObject.GetComponent<NavbarManager>();
-        navbarManager.SetCurrentPanel(myWorldsPanel);
+
     }
 
     async Task<List<HTTPClient.UserWorld>> LocalGetUserWorlds()
@@ -83,17 +92,24 @@ public class MyWorldsManager : MonoBehaviour
     public void OnPressEnter()
     {
         // Set current world id and navigate to game
-        httpClient.CurrentWorldId = new Guid(worldSwiper.GetCurrentWorldId());
-        // SceneNavigator.LoadGame();
-        SceneManager.LoadScene("Overworld");
-        
+        if (worldSwiper != null && worldSwiper.GetCurrentWorldId() != null) {
+            httpClient.CurrentWorldId = new Guid(worldSwiper.GetCurrentWorldId());
+            SceneNavigator.LoadGame();
+        }
     }
 
     public void OnPressCreateWorld()
     {
+        if(createWorldPanel == null)
+            Debug.LogError("createWorldPanel is null");
+        else
+            createWorldPanel.SetActive(true);        
+
+        if(navbarManager == null)
+            Debug.LogError("navbarManager is null");
+        else
+            navbarManager.SetCurrentPanel(createWorldPanel);
         myWorldsPanel.SetActive(false);
-        createWorldPanel.SetActive(true);
-        navbarManager.SetCurrentPanel(createWorldPanel);
     }
 
     public void OnPressAddNewWorld()
@@ -118,9 +134,11 @@ public class MyWorldsManager : MonoBehaviour
             }
         );
         return new HTTPClient.AddUserToWorldResponse { 
-            worldId = worldId, 
-            worldName = "Existing world",
-            thumbnailURL = "https://picsum.photos/201"
+            id = worldId, 
+            creatorId = userId,
+            name = "Existing world",
+            description = "description test",
+            thumbnail_URL = "https://picsum.photos/201"
         };
     }
 
@@ -129,16 +147,33 @@ public class MyWorldsManager : MonoBehaviour
 
         Debug.Log("Adding world" + " " + worldCode);
         // TODO: This is for local testing only. Comment out for deploy.
-        HTTPClient.AddUserToWorldResponse addWorldResponse = await LocalAddUserToWorld(new Guid(), new Guid());
+        // HTTPClient.AddUserToWorldResponse addWorldResponse = await LocalAddUserToWorld(new Guid(), new Guid());
 
         // TODO: Add backend api. get the worldId from response and add to userWorlds
-        // Guid worldId = httpClient.GetWorldIdFromWorldCode(worldCode);
-        // HTTPClient.AddUserToWorldResponse addWorldResponse = await httpClient.AddUserToWorld(worldId, httpClient.MyId);
+        Guid? nullableWorldId = await httpClient.GetWorldIdFromWorldCode(worldCode);
+        if (nullableWorldId == null || nullableWorldId == Guid.Empty)
+        {
+            Debug.Log("World not found");
+            return false;
+        }
+        Guid worldId = nullableWorldId.Value;
+
+        // Validate if world is already in user's worlds
+        for (int i = 0; i < userWorlds.Count; i++)
+        {
+            if (userWorlds[i].id == worldId)
+            {
+                Debug.Log("World already exists in user's worlds");
+                return false;
+            }
+        }
+
+        HTTPClient.AddUserToWorldResponse addWorldResponse = await httpClient.AddUserToWorld(worldId, httpClient.MyId);
 
         if (addWorldResponse != null) // if successfully added to user's worlds on backend
         {
             // TODO: Uncomment this if using for backend
-            // userWorlds = await GetUserWorlds(); // re-render all of user's worlds
+            userWorlds = await GetUserWorlds(); // re-render all of user's worlds
 
             worldSwiper.AddWorld();
             return true;
@@ -147,19 +182,19 @@ public class MyWorldsManager : MonoBehaviour
         }
     }
 
-    public void LeaveWorld(string worldId)
+    public async Task LeaveWorld(string worldId)
     {
         // TODO: Local Testing version. Comment out if you want to test backend
-        userWorlds.RemoveAt(worldSwiper.currentIndex);
-        bool removeWorldSuccessful = true; // comment out this line to connect with backend API.
+        // userWorlds.RemoveAt(worldSwiper.currentIndex);
+        // bool removeWorldSuccessful = true; // comment out this line to connect with backend API.
 
         // TODO: Backend version:
-        // bool removeWorldSuccessful = await RemoveWorldFromList(worldId, httpClient.MyId);
+        bool removeWorldSuccessful = await httpClient.RemoveWorldFromList(new Guid(worldId), httpClient.MyId);
 
         if (removeWorldSuccessful)
         {
             // Get the updated list of worlds
-            // userWorlds = await GetUserWorlds(); // TODO: Uncomment this for backend version 
+            userWorlds = await GetUserWorlds(); // TODO: Uncomment this for backend version 
             // re-render user's worlds
             worldSwiper.RemoveWorld();
         }

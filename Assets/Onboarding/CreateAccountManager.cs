@@ -101,7 +101,6 @@ public class CreateAccountNavigator : MonoBehaviour
         if (usernameIsValid && emailIsValid && passwordIsValid && confirmPasswordIsValid) 
         {
             // TODO: Get error message from backend and display it
-            // bool registrationSuccessful = true;
             bool registrationSuccessful = await CreateAccount(username, email, password, confirmPassword);
 
             if (registrationSuccessful)

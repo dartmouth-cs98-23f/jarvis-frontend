@@ -70,7 +70,7 @@ namespace Clients {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
                     Debug.Log(jsonResponse);
                     UserRegistrationResponse registrationResponse = JsonConvert.DeserializeObject<UserRegistrationResponse>(jsonResponse);
-                    Debug.Log("User registered successfully. ID: " + registrationResponse.id + ", Response String: " + registrationResponse.authToken);
+                    Debug.Log("User registered successfully. ID: " + registrationResponse.id.ToString() + ", Response String: " + registrationResponse.authToken);
                     myId = registrationResponse.id;
                     authToken = registrationResponse.authToken;
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
@@ -114,7 +114,7 @@ namespace Clients {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
                     Debug.Log(jsonResponse);
                     UserLoginResponse loginResponse = JsonConvert.DeserializeObject<UserLoginResponse>(jsonResponse);
-                    Debug.Log("User logged in successfully. ID: " + loginResponse.id + ", Response String: " + loginResponse.authToken);
+                    Debug.Log("User logged in successfully. ID: " + loginResponse.id.ToString() + ", Response String: " + loginResponse.authToken);
                     myId = loginResponse.id;
                     authToken = loginResponse.authToken;
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
@@ -167,7 +167,7 @@ namespace Clients {
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Debug.Log("Responses posted successfully.");
+                    Debug.Log("Responses posted successfully. Count: " + req.responses.Count);
                     return true; // Responses posted successfully
                 }
                 else
@@ -221,6 +221,7 @@ namespace Clients {
             {
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 List<UserQuestion> userQuestions = JsonConvert.DeserializeObject<List<UserQuestion>>(jsonResponse);
+                Debug.Log("GetUserQuestons response: " + userQuestions.Count);
                 return userQuestions;
             }
             else
@@ -249,15 +250,15 @@ namespace Clients {
         }
 
         public async Task<Guid?> GetWorldIdFromWorldCode(string worldCode) {
-            string apiUrl = $"{url}/worlds/code/{worldCode}";
+            string apiUrl = $"{url}/code/{worldCode}";
 
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode) {
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 GetWorldIdFromWorldCodeResponse getWorldIdResponse = JsonConvert.DeserializeObject<GetWorldIdFromWorldCodeResponse>(jsonResponse);
-
-                return getWorldIdResponse.worldId;
+                Debug.Log("GetWorldIdFromWorldCode response: " + getWorldIdResponse.id);
+                return getWorldIdResponse.id;
             } else {
                 Debug.LogError("GetWorldIdFromWorldCode Error: " + response.StatusCode);
 
@@ -273,15 +274,16 @@ namespace Clients {
 
         public class AddUserToWorldResponse
         {
-            public Guid worldId;
-            public string worldName;
-            public string thumbnailURL;
+            public Guid id;
+            public Guid creatorId;
+            public string name;
+            public string description;
+            public string thumbnail_URL;
         }
-
 
         public class GetWorldIdFromWorldCodeResponse
         {
-            public Guid worldId;
+            public Guid id;
         }
 
         public class CreateWorldData
@@ -315,7 +317,7 @@ namespace Clients {
                 }
                 else
                 {
-                    Debug.LogError("GetUserSummary Error: " + response.StatusCode);
+                    Debug.Log("GetUserSummary Error: " + response.StatusCode);
                     return null;
                 }
             }
@@ -475,6 +477,24 @@ namespace Clients {
             }
         }
 
+        // Gets the agents that are in the world
+        public async Task<List<AgentData>> GetWorldAgents(Guid worldId) {
+            string apiUrl = $"{url}/worlds/{worldId}/agents";
+
+            HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode) {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<AgentData> worldAgents = JsonConvert.DeserializeObject<List<AgentData>>(jsonResponse);
+            
+                return worldAgents;
+            } else {
+                Debug.LogError("GetWorldAgents Error: " + response.StatusCode);
+                return null;
+            }
+            
+        }
+
         public async Task<IdData> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
         {
             string apiUrl = $"{url}/agents";
@@ -596,8 +616,8 @@ namespace Clients {
             catch (HttpRequestException e)
             {
                 // Handle other exceptions if needed
-                Debug.LogError("Login HTTP Request Exception: " + e.Message);
-                return null; // Registration failed due to exception
+                Debug.LogError("CreateWorld HTTP Request Exception: " + e.Message);
+                return null;
             }
         }
 
@@ -639,14 +659,14 @@ namespace Clients {
         public async Task<bool> RemoveWorldFromList(Guid worldId, Guid userId)
         {
             string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
-
+            Debug.Log("Removing world with id: " + worldId + " from user with id: " + userId);
             try
             {
                 HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Debug.Log("World removed successfully to user with world id: ");
+                    Debug.Log("World removed successfully to user with world id: " + worldId + " and user id: " + userId);
                     return true;
                 }
                 else
@@ -678,7 +698,7 @@ namespace Clients {
                 {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
                     AddUserToWorldResponse addWorldResponse = JsonConvert.DeserializeObject<AddUserToWorldResponse>(jsonResponse);
-                    Debug.Log("World added successfully to user with world id: " + addWorldResponse.worldId);
+                    Debug.Log("World added successfully to user with world id: " + addWorldResponse.id + " and creator id: " + addWorldResponse.creatorId + " and name: " + addWorldResponse.name + " and description: " + addWorldResponse.description + " and thumbnail_URL: " + addWorldResponse.thumbnail_URL);
                     return addWorldResponse;
                 }
                 else

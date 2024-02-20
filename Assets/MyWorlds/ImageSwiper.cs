@@ -158,7 +158,16 @@ public class ImageSwiper : MonoBehaviour
         foreach (HTTPClient.UserWorld world in userWorldList)
         {
             Debug.Log("Loading world thumbnail: " + world.thumbnail_URL);
-            UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(world.thumbnail_URL);
+
+            string thumbnail_URL = world.thumbnail_URL;
+            // Basic validation of the URL
+            if (string.IsNullOrEmpty(thumbnail_URL) || !Uri.IsWellFormedUriString(thumbnail_URL, UriKind.Absolute))
+            {
+                Debug.Log($"Invalid or malformed URL: {thumbnail_URL}");
+                thumbnail_URL = "https://picsum.photos/200"; // TODO: Use better default photo
+            }
+
+            UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(thumbnail_URL);
             yield return uwr.SendWebRequest(); // Wait for the download to complete
 
             if (uwr.result == UnityWebRequest.Result.Success)
@@ -189,12 +198,23 @@ public class ImageSwiper : MonoBehaviour
         //     return;
         // }
         Debug.Log("Moving to next image");
+        if (worldSprites.Count == 0)
+        {
+            Debug.Log("No worlds to move to");
+            return;
+        }
         currentIndex = (currentIndex + 1) % worldSprites.Count; // Wrap to the beginning if at the end
         UpdateWorldsDisplay();
     }
 
     public void MoveToPreviousImage()
     {
+        if (worldSprites.Count == 0)
+        {
+            Debug.Log("No worlds to move to");
+            return;
+        }
+
         if (currentIndex == 0)
         {
             currentIndex = worldSprites.Count - 1; // Wrap to the end if at the beginning
@@ -208,7 +228,7 @@ public class ImageSwiper : MonoBehaviour
 
     private void UpdateWorldsDisplay()
     {
-        if(worldSprites.Count > 0)
+        if(worldSprites != null && worldSprites.Count > 0)
         {
             displayImage.sprite = worldSprites[currentIndex].sprite;
             displayWorldName.text = worldSprites[currentIndex].name;
