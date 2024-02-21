@@ -66,19 +66,19 @@ public class SideMenu : MonoBehaviour
         viewAnswersPanel.activeSelf ||
         typeAnswerPanel.activeSelf)
         {
-            characters.enabled = false;
-            worldSettings.enabled = false;
-            exitWorld.enabled = false;
-            players.enabled = false;
-            agents.enabled = false;
+            // characters.enabled = false;
+            // worldSettings.enabled = false;
+            // exitWorld.enabled = false;
+            // players.enabled = false;
+            // agents.enabled = false;
         }
         else
         {
-            characters.enabled = true;
-            worldSettings.enabled = true;
-            exitWorld.enabled = true;
-            players.enabled = true;
-            agents.enabled = true;
+            // characters.enabled = true;
+            // worldSettings.enabled = true;
+            // exitWorld.enabled = true;
+            // players.enabled = true;
+            // agents.enabled = true;
         }
     }
 
