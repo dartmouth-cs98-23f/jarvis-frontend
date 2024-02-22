@@ -93,6 +93,7 @@ public class SignalRClient
     /// <summary>
     /// Registers a handler for incoming messages.
     /// </summary>
+    /// @Deprecated. This has now been changed to the MessageHandler method.
     public void RegisterReceiveMessageHandler()
     {
         _connection.On<string, string>("ReceiveMessage", (user, message) =>
@@ -225,6 +226,29 @@ public class SignalRClient
         _connection.On<Guid>("OnUserLoggedOutHandler", (Guid userId) =>
         {
             Debug.Log($"User {userId} has logged out. Setting them to offline in world...");
+        });
+    }
+
+
+    // This hits the OnUserLoggedInHandler endpoint but is specifically used in chat manager to update the display
+    // of the other user's online status UI
+    public void OnUserLoggedInChatHandler(ChatManager.ChatManager chatManager)
+    {
+        _connection.On<Guid>("OnUserLoggedInHandler", (Guid userId) =>
+        {
+            Debug.Log($"User {userId} has logged in. Setting them to online in chat...");
+            chatManager.SetUserIsOnline(userId, true);
+        });
+    }
+
+    // This hits the OnUserLoggedOutHandler endpoint but is specifically used in chat manager to update the display
+    // of the other user's online status UI
+    public void OnUserLoggedOutChatHandler(ChatManager.ChatManager chatManager)
+    {
+        _connection.On<Guid>("OnUserLoggedOutHandler", (Guid userId) =>
+        {
+            Debug.Log($"User {userId} has logged out. Setting them to offline in chat...");
+            chatManager.SetUserIsOnline(userId, false);
         });
     }
 

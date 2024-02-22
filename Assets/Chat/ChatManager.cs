@@ -60,6 +60,7 @@ public class ChatManager : MonoBehaviour
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
     private HTTPClient.UserData currentUserData;
     private HTTPClient.CharacterData otherCharacterData;
+    private bool otherCharacterIsOnline; // true for online, false for offline or agent
     private string otherCharacterType; // check if the other character is user or agent
 
     private string chatTestJsonString = @"
@@ -109,8 +110,10 @@ public class ChatManager : MonoBehaviour
             if (otherUserData != null && otherUserData.isOnline)
             {
                 AskMeQuestionButton.SetActive(false);
+                otherCharacterIsOnline = true;
             } else { // if other user is offline, display button
                 AskMeQuestionButton.SetActive(true);
+                otherCharacterIsOnline = false;
             }
             // TODO: Uncomment for backend
             // otherCharacterData = await GetUser(otherCharacterId);
@@ -119,6 +122,7 @@ public class ChatManager : MonoBehaviour
             otherCharacterData = await LocalGetAgent(otherCharacterId);
             // otherCharacterData = await GetAgent(otherCharacterId);
             AskMeQuestionButton.SetActive(true);
+            otherCharacterIsOnline = false;
         }
 
         // TODO: Switch for backend
@@ -132,12 +136,34 @@ public class ChatManager : MonoBehaviour
         }));
 
         Debug.Log("In chat manager, otherCharacterId: " + otherCharacterId.ToString());
-        // TODO: Uncomment for backend
-        // SignalRClient.Instance.MessageHandler(this);
+
+        // TODO: Uncomment for connection with backend signalR
+        SignalRClient.Instance.MessageHandler(this); // handles incoming messages
+        SignalRClient.Instance.OnUserLoggedInChatHandler(this);
+        SignalRClient.Instance.OnUserLoggedOutChatHandler(this);
+
 
         // TODO: Switch for backend.
         LocalBuildChatHistory();
         // BuildChatHistory();
+
+    }
+
+    // this method is called by SignalRClient to handle the other user's online status
+    public void SetUserIsOnline(Guid userId, bool isOnline)
+    {
+        if (userId == otherCharacterId)
+        {
+            if (isOnline) {
+                Debug.Log("Setting other user " + userId.ToString() +  " online");
+                otherCharacterIsOnline = true;
+                displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
+            } else {
+                Debug.Log("Setting other user " + userId.ToString() +  " offline");
+                otherCharacterIsOnline = false;
+                displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/red_circle");
+            }
+        }
     }
 
     public async void OnPressAskMeQuestion()
@@ -318,7 +344,7 @@ public class ChatManager : MonoBehaviour
         // set activity status
         if (otherCharacterType == "user") {
             HTTPClient.UserData otherUserData = otherCharacterData as HTTPClient.UserData;
-            if (otherUserData != null && otherUserData.isOnline)
+            if (otherUserData != null && otherCharacterIsOnline)
             {
                 displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
             }
