@@ -107,6 +107,7 @@ public class CreateAccountNavigator : MonoBehaviour
             {
                 NavigateToInfoPanel();
                 Debug.Log("Successfully created account with username: " + username + " email: " + email + " and password: " + password + "");
+                await SignalRClient.Initialize(httpClient.AuthToken);
             }
             else
             {

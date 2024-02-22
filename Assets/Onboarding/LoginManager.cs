@@ -36,6 +36,7 @@ public class LoginManager : MonoBehaviour
             {
                 SceneNavigator.LoadMyWorlds(); // TODO: Replace this with navigating to logged in user's worlds scene
                 Debug.Log("Successfully logged in with email: " + emailInput.text + " and password: " + passwordInput.text);
+                await SignalRClient.Initialize(httpClient.AuthToken);
             }
             else // TODO: Add UI error message for users
             {

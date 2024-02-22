@@ -19,7 +19,7 @@ namespace Clients {
         public UserData currentUserData = new UserData();
 
         private readonly HttpClient httpClient = new HttpClient();
-        // private const string url = "http://localhost:5087";  
+        // private const string url = "http://localhost:5000";  
         private const string url = "https://api.simugameservice.lekina.me";  
 
         // private Guid myId = new Guid("c3480195-64e8-4915-8326-391125d7d880"); // TODO: delete this id, just using for testing

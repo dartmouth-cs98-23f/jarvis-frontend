@@ -133,7 +133,7 @@ public class ChatManager : MonoBehaviour
 
         Debug.Log("In chat manager, otherCharacterId: " + otherCharacterId.ToString());
         // TODO: Uncomment for backend
-        // SignalRClient.Instance.RegisterSendMessageHandler(this);
+        // SignalRClient.Instance.MessageHandler(this);
 
         // TODO: Switch for backend.
         LocalBuildChatHistory();
@@ -268,6 +268,22 @@ public class ChatManager : MonoBehaviour
         //     SignalRClient.Message = null;
         //     SignalRClient.IsOnline = null;
         // }
+    }
+
+    public void ReceiveMessage(Guid messageId, Guid senderId, string message, bool isOnline)
+    {
+        if (generatedMessageIds.Add(messageId)) // if chatMessage has not been created yet
+        {
+            GenerateChatMessageObject(new HTTPClient.ChatMessage
+            {
+                SenderId = senderId,
+                ReceiverId = currentUserId,
+                Content = StringParser.ParseInput(message),
+                IsOnline = isOnline,
+                IsGroupChat = false,
+                CreatedTime = DateTime.UtcNow
+            });
+        }
     }
 
     IEnumerator GetCharacterHeadSprite(string url, System.Action<Sprite> onCompleted)
@@ -421,10 +437,6 @@ public class ChatManager : MonoBehaviour
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
 
         await SignalRClient.Instance.SendChat(otherCharacterId, content);
-        
-        // TODO: Add logic to check SendChat result. Chat message object should only be generated 
-        // after SendChat is successful
-        GenerateChatMessageObject(message);
     }
 
     // For local frontend testing

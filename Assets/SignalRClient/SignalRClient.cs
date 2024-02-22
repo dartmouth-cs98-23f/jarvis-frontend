@@ -13,10 +13,6 @@ public class SignalRClient
     private readonly string username;
     private readonly HubConnection _connection;
     private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
-
-    public static string SenderId;
-    public static string Message;
-    public static bool IsOnline;
     private static SignalRClient instance;
 
     private SignalRClient(string url, string authToken)
@@ -45,8 +41,8 @@ public class SignalRClient
     {
         if (instance == null)
         {
-            string baseURL = "http://localhost:5000/unity";
-            // string baseURL = "https://simyou.azurewebsites.net/unity";
+            // string baseURL = "http://localhost:5000/unity";
+            string baseURL = "https://simyou.azurewebsites.net/unity";
             Debug.Log("Initializing SignalRClient with URL:" + baseURL);
             instance = new SignalRClient(baseURL, authToken);
             Debug.Log("Post instance assignment" + instance);
@@ -107,21 +103,21 @@ public class SignalRClient
 
     // Calls the backend method UpdateLocation with the current location of the user
     public async Task UpdateLocation(int xCoordinate, int yCoordinate)
-        {
+    {
             var location = new Location
             {
                 X_coordinate = xCoordinate,
                 Y_coordinate = yCoordinate
             };
 
-            if (IsConnected()) 
+            try
             {
                 await _connection.SendAsync("UpdateLocation", location.X_coordinate, location.Y_coordinate);
-            } else 
+            } catch (Exception ex) 
             {
                 Debug.Log("In updateLocation not Connected, failed to update");
             }
-        }
+    }
 
      public void RegisterUpdateLocationHandler(OtherPlayerMovement otherPlayerMovementScript)
     {
@@ -139,8 +135,13 @@ public class SignalRClient
         });
     }
 
-    // Sends a message to a user through the server.
-    public async Task SendChat(Guid receiverId, string message)
+    /// <summary>
+    /// Sends a <paramref name="message"/> to the user with the given <paramref name="receiverId"/>
+    /// </summary>
+    /// <param name="receiverId">The ID of the message target</param>
+    /// <param name="message">The actual contents of the message</param>
+    /// <returns></returns>
+    public async Task SendChat(Guid receiverId, string message)
     {
         try
         {
@@ -152,16 +153,122 @@ public class SignalRClient
         }
     }
 
-    public void RegisterSendMessageHandler(ChatManager.ChatManager chatManager)
+
+    /// <summary>
+    /// Handles a message received from another client through the server.
+    /// </summary>
+    /// <param name="sender">The client (can also be the server) sending the message</param>
+    /// <param name="message">The content of the message</param>
+    /// <returns></returns>
+    public void MessageHandler(ChatManager.ChatManager chatManager)
     {
-        _connection.On<string, string, string>("ReceiveMessage", (senderId, message, isOnline) =>
+        _connection.On<Guid, Guid, string, bool>("MessageHandler", (Guid messageId, Guid senderId, string message, bool isOnline) =>
         {
-            Debug.Log($"Message received from user {senderId}: {message}. User is online: {isOnline}");
-            SenderId = senderId;
-            Message = message;
-            IsOnline = isOnline == "True" ? true : false;
+            Debug.Log($"Message {messageId} received from user {senderId}: {message}. User is online: {isOnline}");
+            chatManager.ReceiveMessage(messageId, senderId, message, isOnline);
         });
     }
+
+
+    /// <summary>
+    /// Handles a server request that checks if the user is online.
+    /// The server will routinely send this request to check if the client is still logged in.
+    /// The client should respond by sending a <see cref="IUnityServer.PingServer"/> request.
+    /// </summary>
+    /// <returns></returns>
+    public async Task UserOnlineCheckHandler()
+    {
+        _connection.On("UserOnlineCheckHandler", async () =>
+        {
+            Debug.Log("Server checking if this client is online");
+            await PingServer(); // Respond to the server that the user is online
+        });
+    }
+
+
+    /// <summary>
+    /// Notifies the server that the user is online. We use this to keep track of active users. 
+    /// </summary>
+    /// <returns></returns>
+    public async Task PingServer()
+    {
+        try
+        {
+            await _connection.SendAsync("PingServer");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending message: {ex.Message}");
+        }    
+    }
+
+    /// <summary>
+    /// Handles a server request that notifies clients when a world's user logs into the server.
+    /// </summary>
+    /// <param name="userId">The ID of the newly-logged in user</param>
+    /// <returns></returns>
+    public void OnUserLoggedInHandler()
+    {
+        _connection.On<Guid>("OnUserLoggedInHandler", (Guid userId) =>
+        {
+            Debug.Log($"User {userId} has logged in. Setting them to online in world...");
+        });
+    }
+
+    /// <summary>
+    /// Handles a server request that notifies clients when a world's user logs into the server.
+    /// </summary>
+    /// <param name="userId">The ID of the newly-logged in user</param>
+    /// <returns></returns>
+    public void OnUserLoggedOutHandler()
+    {
+        _connection.On<Guid>("OnUserLoggedOutHandler", (Guid userId) =>
+        {
+            Debug.Log($"User {userId} has logged out. Setting them to offline in world...");
+        });
+    }
+
+
+    /// <summary>
+    /// Handles a server request that notifies clients when a new agent is added to the world.
+    /// </summary>
+    /// <param name="agentId">The ID of the newly-added agent</param>
+    /// <returns></returns>
+    public void OnAgentAddedHandler()
+    {
+        _connection.On<Guid>("OnAgentAddedHandler", (Guid agentId) =>
+        {
+            Debug.Log($"Agent {agentId} has been added to world. Adding agent to world...");
+            // TODO: Add method on gameclient to add agent to world
+        });
+    }
+
+    /// <summary>
+    /// Handles a server request that notifies clients when a new user joins the world.
+    /// </summary>
+    /// <param name="userId">The ID of the newly-added user</param>
+    /// <returns></returns>
+    public void OnUserAddedToWorldHandler()
+    {
+        _connection.On<Guid>("OnUserAddedToWorldHandler", (Guid userId) =>
+        {
+            Debug.Log($"User {userId} has joined the world. Adding user to world...");
+        });
+    }
+
+
+    /// <summary>
+    /// Handles a server request that notifies clients when a user leaves the world.
+    /// </summary>
+    /// <param name="userId">The ID of the user who left the world</param>
+    /// <returns></returns>
+    public void OnUserRemovedFromWorldHandler()
+    {
+        _connection.On<Guid>("OnUserRemovedFromWorldHandler", (Guid userId) =>
+        {
+            Debug.Log($"User {userId} has been removed from the world. Removing user to world...");
+        });
+    }
 
     public class Location
     {
