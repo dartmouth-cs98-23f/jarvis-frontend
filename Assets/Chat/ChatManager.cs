@@ -122,7 +122,7 @@ public class ChatManager : MonoBehaviour
             otherCharacterData = await LocalGetAgent(otherCharacterId);
             // otherCharacterData = await GetAgent(otherCharacterId);
             AskMeQuestionButton.SetActive(true);
-            otherCharacterIsOnline = false;
+            otherCharacterIsOnline = false; // this should always be false if it is agent
         }
 
         // TODO: Switch for backend
