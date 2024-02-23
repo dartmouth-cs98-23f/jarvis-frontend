@@ -367,11 +367,16 @@ namespace Clients {
         }
 
 
+        public class GetChatHistoryRequest
+        {
+            public Guid participantA_Id;
+            public Guid participantB_Id;
+        }
+
         public async Task<List<ChatMessage>> GetChatHistory(Guid senderId, Guid receiverId) {
-            string apiUrl = $"{url}/chats/history?userA_Id={senderId}&userB_Id={receiverId}";
-
+            string apiUrl = $"{url}/chats/history?participantA_Id={senderId}&participantB_Id={receiverId}";
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
-
+            Debug.Log("GetChatHistory called response: " + response.ToString());
             if (response.IsSuccessStatusCode) {
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 List<ChatMessage> chatHistory = JsonConvert.DeserializeObject<List<ChatMessage>>(jsonResponse);

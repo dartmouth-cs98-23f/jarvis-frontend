@@ -46,8 +46,11 @@ public class ChatManager : MonoBehaviour
     // public Guid currentUserId = HTTPClient.Instance.MyId; // TODO: uncomment for actual backend testing
     // private Guid otherCharacterId; // TODO: uncomment for actual backend testing
 
-    public Guid currentUserId = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41"); // TODO: Comment for backend testing
-    public Guid otherCharacterId = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559"); // TODO: Comment for backend testing
+    // public Guid currentUserId = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41"); // TODO: Comment for backend testing
+    public Guid currentUserId = new Guid("c0c973f7-5f80-437e-8418-f3c401780274"); // TODO: Comment for backend testing
+    // public Guid otherCharacterId = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559"); // TODO: Comment for backend testing
+    public Guid otherCharacterId = new Guid("40797c18-b6ef-41eb-992c-5281d0ea1570"); // TODO: Comment for backend testing
+
     private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
     private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
     public GameObject AskMeQuestionButton;
@@ -101,11 +104,12 @@ public class ChatManager : MonoBehaviour
         // TODO: Uncomment these when connecting with main game map to get Ids and type accordingly
         // otherCharacterId = new Guid(PlayerPrefs.GetString("CollidedCharacterId"));
         // otherCharacterType = PlayerPrefs.GetString("CollidedCharacterType");
-        string otherCharacterType = "agent";
+        otherCharacterType = "user";
         if (otherCharacterType == "user")
         {
             // TODO: Comment for backend
-            otherCharacterData = await LocalGetUser(otherCharacterId);
+            // otherCharacterData = await LocalGetUser(otherCharacterId);
+            otherCharacterData = await GetUser(otherCharacterId);
             HTTPClient.UserData otherUserData = otherCharacterData as HTTPClient.UserData;
             if (otherUserData != null && otherUserData.isOnline)
             {
@@ -119,23 +123,26 @@ public class ChatManager : MonoBehaviour
             // otherCharacterData = await GetUser(otherCharacterId);
 
         } else { // if the other character is an agent
-            otherCharacterData = await LocalGetAgent(otherCharacterId);
-            // otherCharacterData = await GetAgent(otherCharacterId);
+            // otherCharacterData = await LocalGetAgent(otherCharacterId);
+            otherCharacterData = await GetAgent(otherCharacterId);
             AskMeQuestionButton.SetActive(true);
             otherCharacterIsOnline = false; // this should always be false if it is agent
         }
 
         // TODO: Switch for backend
-        currentUserData = await LocalGetUser(currentUserId);
-        // currentUserData = await GetUser(currentUserId);
+        // currentUserData = await LocalGetUser(currentUserId);
+        currentUserData = await GetUser(currentUserId);
 
         // Initialize other user's head sprite
+
 
         StartCoroutine(GetCharacterHeadSprite(otherCharacterData.sprite_headshot_URL, userHeadSprite => {
             BuildOtherCharacterProfile(otherCharacterData.username, userHeadSprite);
         }));
 
         Debug.Log("In chat manager, otherCharacterId: " + otherCharacterId.ToString());
+
+        SignalRClient.Initialize("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
 
         // TODO: Uncomment for connection with backend signalR
         SignalRClient.Instance.MessageHandler(this); // handles incoming messages
@@ -144,9 +151,8 @@ public class ChatManager : MonoBehaviour
 
 
         // TODO: Switch for backend.
-        LocalBuildChatHistory();
-        // BuildChatHistory();
-
+        // LocalBuildChatHistory();
+        BuildChatHistory();
     }
 
     // this method is called by SignalRClient to handle the other user's online status
@@ -314,6 +320,14 @@ public class ChatManager : MonoBehaviour
 
     IEnumerator GetCharacterHeadSprite(string url, System.Action<Sprite> onCompleted)
     {
+
+        // Basic validation of the URL
+        if (string.IsNullOrEmpty(url) || !Uri.IsWellFormedUriString(url, UriKind.Absolute))
+        {
+            Debug.Log($"Invalid or malformed URL: {url}");
+            url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRy-nPenacnE-7cGk5y6w7X_5OEU72JWVlgu-8L3xCl5Q&s"; // TODO: Use better default photo
+        }
+
         UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
         yield return uwr.SendWebRequest();
         Debug.Log("GetCharHeadSprite URL: " + url);
@@ -340,7 +354,7 @@ public class ChatManager : MonoBehaviour
 
         displayOtherCharacterName.GetComponent<Text>().text = username;
         displayOtherCharacterHeadImage.sprite = charHeadSprite;
-
+        Debug.Log("Other Character Type is " + otherCharacterType);
         // set activity status
         if (otherCharacterType == "user") {
             HTTPClient.UserData otherUserData = otherCharacterData as HTTPClient.UserData;
@@ -391,8 +405,8 @@ public class ChatManager : MonoBehaviour
     {
 
         // TODO: Switch for backend API
-        LocalSendChat(otherCharacterId, messageInputField.text);
-        // SendChat(otherCharacterId, messageInputField.text);
+        // LocalSendChat(otherCharacterId, messageInputField.text);
+        SendChat(otherCharacterId, messageInputField.text);
         // Debug.Log("after adding new chat entry" + chatTestJsonString);
         messageInputField.text = "";
     }
