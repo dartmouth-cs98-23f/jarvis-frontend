@@ -176,6 +176,8 @@ public class ChatManager : MonoBehaviour
     {
         // TODO: Add backend API call to send bump response
         AskMeQuestionButton.SetActive(false);
+        HTTPClient.ChatMessage askMeQuestionMessage = await httpClient.AskMeQuestion(currentUserId, otherCharacterId);
+        ReceiveMessage(askMeQuestionMessage.Id, askMeQuestionMessage.SenderId, askMeQuestionMessage.Content, false); // IsOnline set to false by default since this is only called when user is talking to agent and agent should be offline
         await Task.Delay(15000); // delay showing the button again to prevent users from spamming
         AskMeQuestionButton.SetActive(true);
     }
@@ -196,8 +198,8 @@ public class ChatManager : MonoBehaviour
                 location = new HTTPClient.Location { coordX = 10, coordY = 20 },
                 createdTime = DateTime.Parse("2024-01-01T00:01:00Z"),
                 isOnline = true,
-                sprite_URL = "https://example.com/currentuser_sprite.png",
-                sprite_headshot_URL = "https://ibb.co/XZYT5xg"
+                sprite_headshot_URL = "https://ibb.co/XZYT5xg",
+                spriteAnimations = new List<int> {0, 0, 0, 0}
             };
         }
         else if (userId == otherCharacterId)
@@ -210,8 +212,8 @@ public class ChatManager : MonoBehaviour
                 location = new HTTPClient.Location { coordX = 30, coordY = 40 },
                 createdTime = DateTime.Parse("2024-01-02T00:01:00Z"),
                 isOnline = true,
-                sprite_URL = "https://example.com/otheruser_sprite.png",
-                sprite_headshot_URL = "https://picsum.photos/id/237/200"
+                sprite_headshot_URL = "https://picsum.photos/id/237/200",
+                spriteAnimations = new List<int> {0, 0, 0, 0}
             };
         }
 

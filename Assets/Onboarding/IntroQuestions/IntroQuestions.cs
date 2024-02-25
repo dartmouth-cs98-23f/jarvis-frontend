@@ -161,8 +161,8 @@ public class IntroQuestions : MonoBehaviour
         else if (questionIdx >= questionInputFields.Count-1) // if is last question
         {
             StartLoading();
-            bool saveSuccessful = await SaveAnswers(); // save answers to backend
-            if (saveSuccessful) {
+            string userSummary = await SaveAnswers(); // save answers to backend
+            if (userSummary != "") {
 
                 // Reset the question count for future use if needed
                 questionIdx = 0;
@@ -174,11 +174,11 @@ public class IntroQuestions : MonoBehaviour
 
                     // TODO: Switch for backend api connection to userSummary
                     // string userSummary = "This is a fake user summary for testing purposes.";
-                    string userSummary = await httpClient.GetUserSummary(httpClient.MyId);
+                    // string userSummary = await httpClient.GetUserSummary(httpClient.MyId);
 
-                    if (userData!= null && userSummary != null && userData.sprite_URL != null && userData.sprite_URL != "" && userSummary != "")
+                    if (userData!= null && userData.spriteAnimations != null)
                     {
-                        FinishLoading(userData.username, userData.sprite_URL, userSummary);
+                        FinishLoading(userData.username, userData.spriteAnimations, userSummary);
                     } else {
                         // TODO: Add UI Error message for users
                         Debug.Log("Failed to get user data or user summary due to backend error");
@@ -207,15 +207,15 @@ public class IntroQuestions : MonoBehaviour
         allQuestionPanels[questionIdx].SetActive(false);
     }
 
-    async void FinishLoading(string username, string sprite_URL, string userSummary)
+    async void FinishLoading(string username, List<int> spriteAnimations, string userSummary)
     {
         loadingPanel.SetActive(false);
         characterSummaryPanel.SetActive(true);
-        characterSummaryPanel.GetComponent<CharacterSummaryManager>().SetCharacterSummary(username, sprite_URL, userSummary);
+        characterSummaryPanel.GetComponent<CharacterSummaryManager>().SetCharacterSummary(username, spriteAnimations, userSummary);
         HideQuestionPanels();
     }
 
-    async Task<bool> SaveAnswers()
+    async Task<string> SaveAnswers()
     {
         for (int i = 0; i < questionInputFields.Count; i++)
         {
@@ -228,16 +228,16 @@ public class IntroQuestions : MonoBehaviour
 
         // TODO: Comment this out when backend is ready. Check if PostAnswer returns true
         // bool postAnswerSuccessful = await LocalPostResponses();
-        bool postAnswerSuccessful = await httpClient.PostResponses(httpClient.MyId, httpClient.MyId, answers);
+        HTTPClient.PostResponseResp postResp = await httpClient.PostResponses(httpClient.MyId, httpClient.MyId, answers);
 
-        if (postAnswerSuccessful)
+        if (postResp != null)
         {
-            return true;
+            return postResp.summary;
         }
         else
         {
             Debug.Log("Failed to post responses due to backend error");
-            return false;
+            return "";
         }
     }
 
@@ -259,8 +259,8 @@ public class IntroQuestions : MonoBehaviour
             location = new HTTPClient.Location { coordX = 10, coordY = 20 },
             createdTime = DateTime.Parse("2024-01-01T00:01:00Z"),
             isOnline = true,
-            sprite_URL = "https://picsum.photos/200/300",
-            sprite_headshot_URL = "https://ibb.co/XZYT5xg"
+            sprite_headshot_URL = "https://ibb.co/XZYT5xg",
+            spriteAnimations = new List<int> {0, 0, 0, 0}
         };
     }
 

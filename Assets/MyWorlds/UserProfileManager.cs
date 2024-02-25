@@ -20,6 +20,7 @@ public class UserProfileManager : MonoBehaviour
     public GameObject editButton;
     public GameObject saveButton;
     private HTTPClient httpClient = HTTPClient.Instance;
+    public GameObject userPrefabGO;
 
     // Start is called before the first frame update
     void OnEnable()
@@ -53,13 +54,9 @@ public class UserProfileManager : MonoBehaviour
         HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
         if (userData != null)
         {
-            Debug.Log("Initializing user profile with username: " + username + " and sprite_URL: " + userData.sprite_URL);
+            Debug.Log("Initializing user profile with username: " + userData.username);
             this.username.text = "@" + userData.username;
-            if (!string.IsNullOrEmpty(userData.sprite_URL) || Uri.IsWellFormedUriString(userData.sprite_URL, UriKind.Absolute))
-            {
-                Debug.Log("loading character sprite");
-                StartCoroutine(LoadCharacterSprite(userData.sprite_URL));
-            }
+            userPrefabGO.GetComponent<BodyPartsManager>().SetSprite(userData.spriteAnimations);
             InitializeText();
         }
     }
@@ -76,10 +73,12 @@ public class UserProfileManager : MonoBehaviour
             location = new HTTPClient.Location { coordX = 10, coordY = 20 },
             createdTime = DateTime.Parse("2024-01-01T00:01:00Z"),
             isOnline = true,
-            sprite_URL = "https://ibb.co/XZYT5xg",
+            spriteAnimations = new List<int> {0, 1, 1, 3},
             sprite_headshot_URL = "https://ibb.co/XZYT5xg"
         };
     }
+
+    // @Deprecated. This method was used when a user's sprite was stored as sprite_URL. Now it's been changed to spriteAnimations
     IEnumerator LoadCharacterSprite(string sprite_URL)
     {
         // Basic validation of the URL

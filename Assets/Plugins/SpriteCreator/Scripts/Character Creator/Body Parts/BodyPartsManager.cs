@@ -79,6 +79,11 @@ public class BodyPartsManager : MonoBehaviour
         animatorOverrideController.GetOverrides(defaultAnimationClips);
 
         // Override default animation clips with character body parts
+        Debug.Log("Setting sprite with indices: " + indices[0] + ", " + indices[1] + ", " + indices[2] + ", " + indices[3]);
+        if (indices == null) {
+            indices = new List<int>() { 0, 0, 0, 0 };
+            Debug.Log("Provided body part sprite values were null. Setting to default values.");
+        }
         for (int partIndex = 0; partIndex < bodyPartTypes.Length; partIndex++)
         {
             // Get current body part
