@@ -406,6 +406,23 @@ namespace Clients {
             
         }
 
+        public async Task<UserWorld> GetWorld(Guid worldId) {
+            string apiUrl = $"{url}/worlds/{worldId}";
+
+            HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode) {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                UserWorld worldInfo = JsonConvert.DeserializeObject<UserWorld>(jsonResponse);
+            
+                return worldInfo;
+            } else {
+                Debug.LogError("GetWorld Error: " + response.StatusCode);
+                return null; // May need to change null
+            }
+            
+        }
+
         public async Task<bool> DeleteWorld(Guid worldId)
         {
             string apiUrl = $"{url}/worlds/{worldId}";
@@ -903,6 +920,7 @@ namespace Clients {
             public Guid creatorId;
             public string name;
             public string description;
+            public string worldCode;
             public string thumbnail_URL;
         }
         

@@ -17,6 +17,7 @@ public class HatchedListManager : MonoBehaviour
     public SpriteLoader spriteLoader;
     public SideMenu sideMenuManager;
     public AgentInfoManager agentInfoManager;
+    public GameObject spriteHeadshotPrefab;
 
     public async void localDisplayHatchedList()
     {

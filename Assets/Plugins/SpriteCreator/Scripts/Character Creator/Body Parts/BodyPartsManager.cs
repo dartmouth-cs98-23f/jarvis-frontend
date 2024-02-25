@@ -37,20 +37,6 @@ public class BodyPartsManager : MonoBehaviour
             // Set body part animations
             UpdateBodyParts();
         }
-        else if(SceneManager.GetActiveScene().name == "MainMap"){
-            // Set animator
-            animator = GetComponent<Animator>();
-            animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
-            animator.runtimeAnimatorController = animatorOverrideController;
-
-            defaultAnimationClips = new AnimationClipOverrides(animatorOverrideController.overridesCount);
-            animatorOverrideController.GetOverrides(defaultAnimationClips);
-
-            // Set body part animations
-            // TODO: Get this information from the backend
-            List<int> indicesList = new List<int>() { 0, 1, 1, 1 };
-            SetSprite(indicesList);
-        }
     }
 
     public void UpdateBodyParts()
@@ -85,6 +71,13 @@ public class BodyPartsManager : MonoBehaviour
     }
 
     public void SetSprite(List<int> indices){
+        animator = GetComponent<Animator>();
+        animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
+        animator.runtimeAnimatorController = animatorOverrideController;
+
+        defaultAnimationClips = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+        animatorOverrideController.GetOverrides(defaultAnimationClips);
+
         // Override default animation clips with character body parts
         for (int partIndex = 0; partIndex < bodyPartTypes.Length; partIndex++)
         {

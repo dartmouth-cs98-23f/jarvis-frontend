@@ -50,17 +50,23 @@ public class WorldSettingsManager : MonoBehaviour
     }
 
     public async void OnButtonPressed(){
-        // HTTPClient.IdData creator = await httpClient.GetWorldCreator();
+        // HTTPClient.UserWorld worldInfo = await httpClient.GetWorld(httpClient.WorldId);
         HTTPClient.IdData creator = new HTTPClient.IdData();
-        creator.id = new Guid("c3480195-64e8-4915-8326-391125d7d880");
+        creator.id = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5");
         if (httpClient.MyId == creator.id){
             sideMenuManager.ToggleOwnerWorldSettingsPanel();
+            // namePlaceholder.text = worldInfo.name;
+            // descPlaceholder.text = worldInfo.description;
+            // inviteCodeText.text = "Invite Code: " + worldInfo.worldCode;
             localDisplayInviteCode();
             localDisplayNamePlaceholder();
             localDisplayDescPlaceholder();
         }
         else{
             sideMenuManager.ToggleWorldSettingsPanel();
+            // worldNameText.text = "Name: " + worldInfo.name;
+            // worldDescText.text = "Description: \n" + worldInfo.description;
+            // inviteCodeText.text = "Invite Code: " + worldInfo.worldCode;
             localDisplayInviteCode();
             localDisplayWorldDesc();
             localDisplayWorldName();
