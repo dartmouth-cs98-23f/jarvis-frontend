@@ -15,6 +15,7 @@ public class CreateAccountNavigator : MonoBehaviour
     public InputField confirmPasswordInput;
     public GameObject LandingPanel;
     public GameObject RegisterPanel;
+    public GameObject CharacterCreatorPanel;
     public GameObject InfoPanel;
     public Text usernameErrorText;
     public Text emailErrorText;
@@ -105,7 +106,7 @@ public class CreateAccountNavigator : MonoBehaviour
 
             if (registrationSuccessful)
             {
-                NavigateToInfoPanel();
+                NavigateToCharacterCreatorPanel();
                 Debug.Log("Successfully created account with username: " + username + " email: " + email + " and password: " + password + "");
                 await SignalRClient.Initialize(httpClient.AuthToken);
             }
@@ -138,6 +139,17 @@ public class CreateAccountNavigator : MonoBehaviour
         else{
             return false; 
         }
+    }
+
+    private void NavigateToCharacterCreation()
+    {
+        SceneNavigator.LoadCharacterCreator();
+    }
+
+    private void NavigateToCharacterCreatorPanel()
+    {
+        RegisterPanel.SetActive(false);
+        CharacterCreatorPanel.SetActive(true);
     }
 
     private void NavigateToInfoPanel()

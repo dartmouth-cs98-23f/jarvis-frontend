@@ -817,9 +817,9 @@ namespace Clients {
             {
                 var requestData = new
                 {
-                    animations = spriteAnimations
+                    spriteAnimations = spriteAnimations
                 };
-                
+
                 // Serialize the request object to JSON
                 string jsonRequest = JsonConvert.SerializeObject(requestData);
                 HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
@@ -841,7 +841,7 @@ namespace Clients {
             catch (HttpRequestException e)
             {
                 Debug.LogError("UpdateUserSprite HTTP Request Exception: " + e.Message);
-                return null; // user sprite update failed due to exception
+                return false; // user sprite update failed due to exception
             }
         }
 
@@ -926,13 +926,6 @@ namespace Clients {
         {
             public Guid id;
             public DateTime hatchedTime;
-        }
-
-        [System.Serializable]
-        public class UpdateUserSpriteResponse
-        {
-            [JsonProperty("animations")]
-            public List<int> spriteAnimations;
         }
 
         [System.Serializable]

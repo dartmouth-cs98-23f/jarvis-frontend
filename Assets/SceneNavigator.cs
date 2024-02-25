@@ -26,4 +26,9 @@ public class SceneNavigator : MonoBehaviour
     {
         SceneManager.LoadScene("Chat");
     }
+
+    public static void LoadCharacterCreator()
+    {
+        SceneManager.LoadScene("CharacterCreator");
+    }
 }

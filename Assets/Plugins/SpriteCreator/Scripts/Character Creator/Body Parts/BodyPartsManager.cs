@@ -24,8 +24,9 @@ public class BodyPartsManager : MonoBehaviour
 
     private void Start()
     {
-        if (SceneManager.GetActiveScene().name == "CharacterCreator")
+        if (SceneManager.GetActiveScene().name == "Onboarding" || SceneManager.GetActiveScene().name == "CharacterCreator")
         {
+            Debug.Log("In onboarding or CharacterCreator scene. Initializing update body parts");
             // Set animator
             animator = GetComponent<Animator>();
             animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
@@ -58,6 +59,7 @@ public class BodyPartsManager : MonoBehaviour
         // Override default animation clips with character body parts
         for (int partIndex = 0; partIndex < bodyPartTypes.Length; partIndex++)
         {
+            Debug.Log("In update body parts loop for part index: " + partIndex);
             // Get current body part
             string partType = bodyPartTypes[partIndex];
             // Get current body part ID
