@@ -16,6 +16,9 @@ public class OtherPlayerMovement : MonoBehaviour
     public Guid userId;
     private Animator animator;
     private GameObject gameClientGO;
+    public bool collided = false;
+    public Collision2D collidedPlayer;
+    private Vector2 targetPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -41,7 +44,6 @@ public class OtherPlayerMovement : MonoBehaviour
 
     void MovePlayer(int x, int y)
     {
-        Vector2 targetPosition = new Vector2(x, y);
         Debug.Log("Moving other player to: " + x + ", " + y);
         // This fixes the player automatically going to 0,0 on start
         if (targetPosition.x == 0f && targetPosition.y == 0f)
@@ -55,6 +57,9 @@ public class OtherPlayerMovement : MonoBehaviour
         Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
         // Calculate the absolute values of movement in x and y directions
 
+        animator.SetFloat("moveX", direction.x);
+        animator.SetFloat("moveY", direction.y);
+
         // Check if the distance between the player and the target is greater than the stopping distance
         if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
         {
@@ -62,9 +67,15 @@ public class OtherPlayerMovement : MonoBehaviour
             // Vector2 nextPosition = (Vector2)transform.position + direction * moveSpeed * Time.deltaTime;
 
             // Move the player towards the target position
+            if (!collided){
             rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
             animator.SetBool("moving", true);
             // rb.velocity = direction * moveSpeed;
+            }
+            else{
+                rb.velocity = Vector2.zero;
+                animator.SetBool("moving", false);
+            }
         }
         else
         {
@@ -73,6 +84,27 @@ public class OtherPlayerMovement : MonoBehaviour
             rb.velocity = Vector2.zero;
             animator.SetBool("moving", false);
         }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        collided = true;
+        collidedPlayer = collision;
+        Vector3 currentPosition = collidedPlayer.transform.position;
+        Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
+        targetPosition = currentPosition2D;
+    
+    }
+ 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (!(collision.transform.tag == "user") && !(collision.transform.tag == "agent"))
+            collided = true;
+    }
+ 
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        collided = false;
     }
 
 }

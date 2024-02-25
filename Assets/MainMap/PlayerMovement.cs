@@ -20,6 +20,9 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject InteractButton;
     public Tilemap tilemap; // Reference to the Tilemap
+    public bool collided = false;
+    public Collision2D collidedPlayer;
+
 
     // Start is called before the first frame update
     void Start()
@@ -76,9 +79,25 @@ public class PlayerMovement : MonoBehaviour
             // Check if the next position is within the bounds of the tilemap
             if (IsWithinTilemapBounds(nextPosition))
             {
+                if (!collided){
                 // Move the player towards the target position
                 animator.SetBool("moving", true);
                 rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
+                }
+                else{
+                    Vector2 positionRelative = transform.InverseTransformPoint(collidedPlayer.transform.position);
+
+                    float moveRelative = Vector2.Distance(positionRelative, direction);
+
+                    if (moveRelative > .75f)
+                    {
+                        rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
+                        animator.SetBool("moving", true);
+                    }
+                    else
+                        rb.velocity = Vector2.zero;
+                        animator.SetBool("moving", false);
+                        }
             }
             else
             {
@@ -123,6 +142,13 @@ public class PlayerMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag("user") || collision.gameObject.CompareTag("agent"))
         {
+            collided = true;
+            collidedPlayer = collision;
+            
+            Vector3 currentPosition = collidedPlayer.transform.position;
+            Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
+            targetPosition = currentPosition2D;
+
             CharacterComponent characterComponent = collision.gameObject.GetComponent<CharacterComponent>();
 
             if (characterComponent != null)
@@ -145,6 +171,11 @@ public class PlayerMovement : MonoBehaviour
     {
         // Hide click to chat button
         InteractButton.SetActive(false);
+        if (collided)
+        {
+            collided = false;
+            collidedPlayer = null;
+        }
     }
 
     // Update is called once per frame
