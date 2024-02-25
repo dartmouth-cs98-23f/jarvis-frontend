@@ -393,8 +393,36 @@ namespace Clients {
                 Debug.LogError("GetChatHistory Error: " + response.StatusCode);
                 return null; // May need to change null
             }
-            
         }
+
+        public async Task<ChatMessage> AskMeQuestion(Guid senderId, Guid recipientId)
+        {
+            string apiUrl = $"{url}/chats/question?senderId={senderId}&recipientId={recipientId}";
+            try
+            {
+                HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    ChatMessage chatMessage = JsonConvert.DeserializeObject<ChatMessage>(jsonResponse);
+                    return chatMessage;
+                }
+                else
+                {
+                    Debug.LogError("AskMeQuestion Error: " + response.StatusCode);
+                    return null;
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.LogError("AskMeQuestion HTTP Request Exception: " + e.Message);
+                return null;
+            }
+        }
+
+
+
         // Gets the users that are in the world
         public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
             string apiUrl = $"{url}/worlds/{worldId}/users";

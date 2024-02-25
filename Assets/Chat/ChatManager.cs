@@ -176,6 +176,8 @@ public class ChatManager : MonoBehaviour
     {
         // TODO: Add backend API call to send bump response
         AskMeQuestionButton.SetActive(false);
+        HTTPClient.ChatMessage askMeQuestionMessage = await httpClient.AskMeQuestion(currentUserId, otherCharacterId);
+        ReceiveMessage(askMeQuestionMessage.Id, askMeQuestionMessage.SenderId, askMeQuestionMessage.Content, false); // IsOnline set to false by default since this is only called when user is talking to agent and agent should be offline
         await Task.Delay(15000); // delay showing the button again to prevent users from spamming
         AskMeQuestionButton.SetActive(true);
     }

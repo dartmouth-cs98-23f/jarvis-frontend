@@ -19,9 +19,7 @@ public class CharacterSummaryManager : MonoBehaviour
         // TODO: Connect to backend to get user data
         username.GetComponent<Text>().text = "@" + "testUsername";
         userSummary.GetComponent<Text>().text = "You are a compassionate, wise, and brave Jedi Master. You're known for your strategic mind, moral integrity, mentorship skills, patience, and a subtle sense of humor. You are a compassionate, wise, and brave Jedi Master. You're known for your strategic mind, moral integrity, mentorship skills, patience, and a subtle sense of humor.";
-        // userImage.sprite = Resources.Load<Sprite>("Shapes/obi_wan_kenobi");
         userPrefabObject.GetComponent<BodyPartsManager>().SetSprite(new List<int> { 0, 0, 0, 0 });
-        Debug.Log("CharacterSummaryManager OnEnable");
     }
 
     public void SetCharacterSummary(string username, List<int> spriteAnimations, string userSummary)
