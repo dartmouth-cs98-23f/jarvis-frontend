@@ -106,7 +106,8 @@ public class CreateAccountNavigator : MonoBehaviour
 
             if (registrationSuccessful)
             {
-                NavigateToCharacterCreatorPanel();
+                PlayerPrefs.SetString("SkipToIntroQuestions", "true");
+                NavigateToCharacterCreation();
                 Debug.Log("Successfully created account with username: " + username + " email: " + email + " and password: " + password + "");
                 await SignalRClient.Initialize(httpClient.AuthToken);
             }

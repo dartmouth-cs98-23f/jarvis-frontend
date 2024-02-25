@@ -31,4 +31,9 @@ public class SceneNavigator : MonoBehaviour
     {
         SceneManager.LoadScene("CharacterCreator");
     }
+
+    public static void LoadOnboarding()
+    {
+        SceneManager.LoadScene("Onboarding");
+    }
 }

@@ -24,9 +24,8 @@ public class BodyPartsManager : MonoBehaviour
 
     private void Start()
     {
-        if (SceneManager.GetActiveScene().name == "Onboarding" || SceneManager.GetActiveScene().name == "CharacterCreator")
+        if (SceneManager.GetActiveScene().name == "CharacterCreator")
         {
-            Debug.Log("In onboarding or CharacterCreator scene. Initializing update body parts");
             // Set animator
             animator = GetComponent<Animator>();
             animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
@@ -38,20 +37,6 @@ public class BodyPartsManager : MonoBehaviour
             // Set body part animations
             UpdateBodyParts();
         }
-        else if(SceneManager.GetActiveScene().name == "MainMap"){
-            // Set animator
-            animator = GetComponent<Animator>();
-            animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
-            animator.runtimeAnimatorController = animatorOverrideController;
-
-            defaultAnimationClips = new AnimationClipOverrides(animatorOverrideController.overridesCount);
-            animatorOverrideController.GetOverrides(defaultAnimationClips);
-
-            // Set body part animations
-            // TODO: Get this information from the backend
-            List<int> indicesList = new List<int>() { 0, 1, 1, 1 };
-            SetSprite(indicesList);
-        }
     }
 
     public void UpdateBodyParts()
@@ -59,7 +44,6 @@ public class BodyPartsManager : MonoBehaviour
         // Override default animation clips with character body parts
         for (int partIndex = 0; partIndex < bodyPartTypes.Length; partIndex++)
         {
-            Debug.Log("In update body parts loop for part index: " + partIndex);
             // Get current body part
             string partType = bodyPartTypes[partIndex];
             // Get current body part ID
@@ -87,12 +71,14 @@ public class BodyPartsManager : MonoBehaviour
     }
 
     public void SetSprite(List<int> indices){
+        animator = GetComponent<Animator>();
+        animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
+        animator.runtimeAnimatorController = animatorOverrideController;
+
+        defaultAnimationClips = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+        animatorOverrideController.GetOverrides(defaultAnimationClips);
+
         // Override default animation clips with character body parts
-        Debug.Log("Setting sprite with indices: " + indices[0] + ", " + indices[1] + ", " + indices[2] + ", " + indices[3]);
-        if (indices == null) {
-            indices = new List<int>() { 0, 0, 0, 0 };
-            Debug.Log("Provided body part sprite values were null. Setting to default values.");
-        }
         for (int partIndex = 0; partIndex < bodyPartTypes.Length; partIndex++)
         {
             // Get current body part
