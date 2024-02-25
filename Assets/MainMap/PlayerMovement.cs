@@ -20,6 +20,9 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject InteractButton;
     public Tilemap tilemap; // Reference to the Tilemap
+    public bool collided = false;
+    public Collision2D collidedPlayer;
+
 
     // Start is called before the first frame update
     void Start()
@@ -55,29 +58,17 @@ public class PlayerMovement : MonoBehaviour
         // This fixes the player automatically going to 0,0 on start
         if (targetPosition.x == 0f && targetPosition.y == 0f)
         {
+            animator.SetBool("moving", false);
             rb.velocity = Vector2.zero;
             return;
         }
 
+        // Calculate the direction from the current position to the target position
         Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
 
-        // Calculate the absolute values of movement in x and y directions
-        float absMoveX = Mathf.Abs(direction.x);
-        float absMoveY = Mathf.Abs(direction.y);
-
-        // Determine which animation to play based on the movement direction
-        if (absMoveY > absMoveX)
-        {
-            // Play walk forward animation
-            animator.SetFloat("MoveX", 0f);
-            animator.SetFloat("MoveY", direction.y);
-        }
-        else
-        {
-            // Play walk right animation
-            animator.SetFloat("MoveX", direction.x);
-            animator.SetFloat("MoveY", 0f);
-        }
+        // Update the animator parameters
+        animator.SetFloat("moveX", direction.x);
+        animator.SetFloat("moveY", direction.y);
 
         // Check if the distance between the player and the target is greater than the stopping distance
         if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
@@ -88,15 +79,32 @@ public class PlayerMovement : MonoBehaviour
             // Check if the next position is within the bounds of the tilemap
             if (IsWithinTilemapBounds(nextPosition))
             {
+                if (!collided){
                 // Move the player towards the target position
+                animator.SetBool("moving", true);
                 rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
+                }
+                else{
+                    Vector2 positionRelative = transform.InverseTransformPoint(collidedPlayer.transform.position);
+
+                    float moveRelative = Vector2.Distance(positionRelative, direction);
+
+                    if (moveRelative > .75f)
+                    {
+                        rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
+                        animator.SetBool("moving", true);
+                    }
+                    else
+                        rb.velocity = Vector2.zero;
+                        animator.SetBool("moving", false);
+                        }
             }
             else
             {
                 // Stop the player if the next position is outside the tilemap bounds
+                animator.SetBool("moving", false);
                 rb.velocity = Vector2.zero;
             }
-
             // Get the current player position
             int xCoordinate = Mathf.RoundToInt(transform.position.x);
             int yCoordinate = Mathf.RoundToInt(transform.position.y);
@@ -111,9 +119,8 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             // If the player is within the stopping distance, stop its movement and animation
+            animator.SetBool("moving", false);
             rb.velocity = Vector2.zero;
-            animator.SetFloat("MoveX", 0.001f);
-            animator.SetFloat("MoveY", 0.001f);
         }
     }
 
@@ -135,6 +142,13 @@ public class PlayerMovement : MonoBehaviour
 
         if (collision.gameObject.CompareTag("user") || collision.gameObject.CompareTag("agent"))
         {
+            collided = true;
+            collidedPlayer = collision;
+            
+            Vector3 currentPosition = collidedPlayer.transform.position;
+            Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
+            targetPosition = currentPosition2D;
+
             CharacterComponent characterComponent = collision.gameObject.GetComponent<CharacterComponent>();
 
             if (characterComponent != null)
@@ -157,6 +171,11 @@ public class PlayerMovement : MonoBehaviour
     {
         // Hide click to chat button
         InteractButton.SetActive(false);
+        if (collided)
+        {
+            collided = false;
+            collidedPlayer = null;
+        }
     }
 
     // Update is called once per frame
@@ -165,4 +184,3 @@ public class PlayerMovement : MonoBehaviour
         await MovePlayerByClick();
     }
 }
-

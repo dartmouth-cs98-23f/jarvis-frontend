@@ -40,8 +40,8 @@ public class GameClient : MonoBehaviour
         // worldId = httpClient.CurrentWorldId();
 
         // TODO: Comment below out for backend connection
-        userId = new Guid("c0c973f7-5f80-437e-8418-f3c401780274");
-        worldId = new Guid("3b490737-6d3f-4bb8-9593-15e8a1c80dab");
+        userId = new Guid("40797c18-b6ef-41eb-992c-5281d0ea1570");
+        worldId = new Guid("9119bd21-e16a-4822-a751-7d087583b4e0");
 
         InitializeGame();
     }
