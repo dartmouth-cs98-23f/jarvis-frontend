@@ -142,7 +142,7 @@ public class ChatManager : MonoBehaviour
 
         Debug.Log("In chat manager, otherCharacterId: " + otherCharacterId.ToString());
 
-        SignalRClient.Initialize("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
+        SignalRClient.Initialize(httpClient.AuthToken);
 
         // TODO: Uncomment for connection with backend signalR
         SignalRClient.Instance.MessageHandler(this); // handles incoming messages

@@ -36,14 +36,18 @@ public class GameClient : MonoBehaviour
     {
         httpClient = HTTPClient.Instance; // get httpClient
         // TODO: Uncomment below for backend connection
-        // userId = httpClient.MyId;
-        // worldId = httpClient.CurrentWorldId();
+        userId = httpClient.MyId;
+        worldId = httpClient.CurrentWorldId;
+        Debug.Log("userId: " + userId);
+        Debug.Log("worldId: " + worldId);
 
         // TODO: Comment below out for backend connection
-        userId = new Guid("c0c973f7-5f80-437e-8418-f3c401780274");
-        worldId = new Guid("3b490737-6d3f-4bb8-9593-15e8a1c80dab");
+        // userId = new Guid("c0c973f7-5f80-437e-8418-f3c401780274");
+        // worldId = new Guid("3b490737-6d3f-4bb8-9593-15e8a1c80dab");
 
         InitializeGame();
+        string authToken = HTTPClient.Instance.AuthToken;
+        SignalRClient.Initialize(authToken);
     }
 
     void Update()

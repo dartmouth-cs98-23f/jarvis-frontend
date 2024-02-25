@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     public Tilemap tilemap; // Reference to the Tilemap
 
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -106,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
             PlayerPrefs.SetString("coordY", yCoordinate.ToString()); 
 
             // TODO: Backend api connection. Send the updated location to the server
-            // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
+            await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
         }
         else
         {

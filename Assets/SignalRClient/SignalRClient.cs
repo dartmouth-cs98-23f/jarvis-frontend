@@ -17,11 +17,9 @@ public class SignalRClient
 
     private SignalRClient(string url, string authToken)
     {
+        string urlWithToken = url + "?access_token=" + authToken;
         _connection = new HubConnectionBuilder()
-            .WithUrl(url, options =>
-            { 
-                options.AccessTokenProvider = () => Task.FromResult(authToken);
-            })
+            .WithUrl(urlWithToken)
             .Build();
     }
 
@@ -39,11 +37,12 @@ public class SignalRClient
 
     public static async Task Initialize(string authToken)
     {
+        Debug.Log("In SignalR Initialize method");
         if (instance == null)
         {
-            // string baseURL = "http://localhost:5000/unity";
-            string baseURL = "https://simyou.azurewebsites.net/unity";
-            Debug.Log("Initializing SignalRClient with URL:" + baseURL);
+            string baseURL = "http://localhost:5000/unity";
+//             string baseURL = "https://simyou.azurewebsites.net/unity";
+            Debug.Log("Initializing SignalRClient with URL:" + baseURL + "with token: " + authToken);
             instance = new SignalRClient(baseURL, authToken);
             Debug.Log("Post instance assignment" + instance);
             await instance.ConnectAsync();
