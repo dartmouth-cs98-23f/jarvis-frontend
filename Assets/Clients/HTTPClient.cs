@@ -150,7 +150,12 @@ namespace Clients {
             public string response;
         }
 
-        public async Task<bool> PostResponses(Guid targetId, Guid responderId, List<PostResponse> responses)
+        public class PostResponseResp
+        {
+            public string summary;
+        }
+
+        public async Task<PostResponseResp> PostResponses(Guid targetId, Guid responderId, List<PostResponse> responses)
         {
             string apiUrl = $"{url}/questions/responses";
 
@@ -168,19 +173,21 @@ namespace Clients {
 
                 if (response.IsSuccessStatusCode)
                 {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    PostResponseResp resp = JsonConvert.DeserializeObject<PostResponseResp>(jsonResponse);
                     Debug.Log("Responses posted successfully. Count: " + req.responses.Count);
-                    return true; // Responses posted successfully
+                    return resp; // Responses posted successfully
                 }
                 else
                 {
                     Debug.LogError("PostResponsesError: " + response.StatusCode);
-                    return false; // Posting responses failed
+                    return null; // Posting responses failed
                 }
             }
             catch (HttpRequestException e)
             {
                 Debug.LogError("PostResponses HTTP Request Exception: " + e.Message);
-                return false; // Posting responses failed due to exception
+                return null; // Posting responses failed due to exception
             }
         }
 

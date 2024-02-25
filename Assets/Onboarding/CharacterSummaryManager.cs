@@ -10,6 +10,7 @@ public class CharacterSummaryManager : MonoBehaviour
     public Text username;
     public Image userImage;
     public Text userSummary;
+    public GameObject userPrefabObject;
 
 
     // Use OnEnable so that it will be called before SetCharacterSummary
@@ -18,22 +19,20 @@ public class CharacterSummaryManager : MonoBehaviour
         // TODO: Connect to backend to get user data
         username.GetComponent<Text>().text = "@" + "testUsername";
         userSummary.GetComponent<Text>().text = "You are a compassionate, wise, and brave Jedi Master. You're known for your strategic mind, moral integrity, mentorship skills, patience, and a subtle sense of humor. You are a compassionate, wise, and brave Jedi Master. You're known for your strategic mind, moral integrity, mentorship skills, patience, and a subtle sense of humor.";
-        userImage.sprite = Resources.Load<Sprite>("Shapes/obi_wan_kenobi");
+        // userImage.sprite = Resources.Load<Sprite>("Shapes/obi_wan_kenobi");
+        userPrefabObject.GetComponent<BodyPartsManager>().SetSprite(new List<int> { 0, 0, 0, 0 });
         Debug.Log("CharacterSummaryManager OnEnable");
     }
 
-    public void SetCharacterSummary(string username, string sprite_URL, string userSummary)
+    public void SetCharacterSummary(string username, List<int> spriteAnimations, string userSummary)
     {
         Debug.Log("setting character summary");
         this.username.GetComponent<Text>().text = "@" + username;
         this.userSummary.GetComponent<Text>().text = userSummary;
-        if (!string.IsNullOrEmpty(sprite_URL) || Uri.IsWellFormedUriString(sprite_URL, UriKind.Absolute))
-        {
-            Debug.Log("loading character sprite");
-            StartCoroutine(LoadCharacterSprite(sprite_URL));
-        }
+        userPrefabObject.GetComponent<BodyPartsManager>().SetSprite(spriteAnimations);
     }
 
+    // @Deprecated. This was used for when backend stored user's sprite as sprite_URL. Now it's been changed to spriteAnimations
     IEnumerator LoadCharacterSprite(string sprite_URL)
     {
         // Basic validation of the URL

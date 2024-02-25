@@ -196,8 +196,8 @@ public class ChatManager : MonoBehaviour
                 location = new HTTPClient.Location { coordX = 10, coordY = 20 },
                 createdTime = DateTime.Parse("2024-01-01T00:01:00Z"),
                 isOnline = true,
-                sprite_URL = "https://example.com/currentuser_sprite.png",
-                sprite_headshot_URL = "https://ibb.co/XZYT5xg"
+                sprite_headshot_URL = "https://ibb.co/XZYT5xg",
+                spriteAnimations = new List<int> {0, 0, 0, 0}
             };
         }
         else if (userId == otherCharacterId)
@@ -210,8 +210,8 @@ public class ChatManager : MonoBehaviour
                 location = new HTTPClient.Location { coordX = 30, coordY = 40 },
                 createdTime = DateTime.Parse("2024-01-02T00:01:00Z"),
                 isOnline = true,
-                sprite_URL = "https://example.com/otheruser_sprite.png",
-                sprite_headshot_URL = "https://picsum.photos/id/237/200"
+                sprite_headshot_URL = "https://picsum.photos/id/237/200",
+                spriteAnimations = new List<int> {0, 0, 0, 0}
             };
         }
 

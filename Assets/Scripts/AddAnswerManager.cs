@@ -50,9 +50,9 @@ public class AddAnswerManager : MonoBehaviour
         responses.Add(response);
 
         // Call the PostResponses method to send the answer
-        bool sendAnswerSuccessful = await httpClient.PostResponses(agentID, httpClient.MyId, responses);
+        HTTPClient.PostResponseResp sendAnswerResponse = await httpClient.PostResponses(agentID, httpClient.MyId, responses);
 
-        if (sendAnswerSuccessful)
+        if (sendAnswerResponse != null)
         {
             Debug.Log("Answer sent successfully.");
         }
