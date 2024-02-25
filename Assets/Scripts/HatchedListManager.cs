@@ -184,18 +184,14 @@ public class HatchedListManager : MonoBehaviour
 
             // Access child components directly
             HatchedInfoComponent hatchedInfoComponent = hatchedListGO.GetComponent<HatchedInfoComponent>();
-            Image spriteHead = hatchedInfoComponent.displayUserImage; // Access the child Image component
             TextMeshProUGUI username = hatchedInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             hatchedInfoComponent.agentInfoPanel = agentInfoPanel;
             hatchedInfoComponent.agentInfoManager = agentInfoManager;
             hatchedInfoComponent.hatchedId = hatchedId.id;
-
-            // Call the LoadSprite method with the desired URL
-            spriteLoader.LoadSprite(hatchedInfo.sprite_headshot_URL, (sprite) => {
+            hatchedInfoComponent.spriteHeadshotPrefab.GetComponent<BodyPartsManager>().SetSprite(new List<int> {1, 0, 1, 1});
 
             // Set player details dynamically
-                hatchedInfoComponent.SetPlayerDetails(sprite, hatchedInfo.username);
-            });
+            hatchedInfoComponent.SetPlayerDetails(hatchedInfo.username);
         }
         sideMenuManager.ToggleHatchedPanel();
     }
@@ -222,17 +218,12 @@ public class HatchedListManager : MonoBehaviour
 
             // Access child components directly
             HatchedInfoComponent hatchedInfoComponent = hatchedListGO.GetComponent<HatchedInfoComponent>();
-            Image spriteHead = hatchedInfoComponent.displayUserImage; // Access the child Image component
             TextMeshProUGUI username = hatchedInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             hatchedInfoComponent.agentInfoPanel = agentInfoPanel;
             hatchedInfoComponent.hatchedId = hatchedData.id;
 
-            // Call the LoadSprite method with the desired URL
-            spriteLoader.LoadSprite(agentData.sprite_headshot_URL, (sprite) => {
-
             // Set player details dynamically
-                hatchedInfoComponent.SetPlayerDetails(sprite, agentData.username);
-            });
+            hatchedInfoComponent.SetPlayerDetails(agentData.username);
         }
         sideMenuManager.ToggleHatchedPanel();
     }
