@@ -780,7 +780,6 @@ namespace Clients {
             public string username;
             public string summary;
             public Location location;
-            public string sprite_URL;
             public string sprite_headshot_URL;
             public DateTime createdTime;
         }
@@ -791,6 +790,7 @@ namespace Clients {
             public Guid creatorId;
             public bool isHatched;
             public DateTime hatchTime;
+            public string sprite_URL;
         }
 
         [System.Serializable]
@@ -798,6 +798,7 @@ namespace Clients {
         {
             public string email;
             public bool isOnline;
+            public List<int> spriteAnimations;
         }
 
         [System.Serializable]
