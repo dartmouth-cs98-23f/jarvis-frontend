@@ -809,6 +809,42 @@ namespace Clients {
             }
         }
 
+        public async Task<bool> UpdateUserSprite(Guid userId, List<int> spriteAnimations)
+        {
+            string apiUrl = $"{url}/users/{userId}/sprite";
+
+            try
+            {
+                var requestData = new
+                {
+                    animations = spriteAnimations
+                };
+                
+                // Serialize the request object to JSON
+                string jsonRequest = JsonConvert.SerializeObject(requestData);
+                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Send the POST request
+                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Debug.Log("Sprite updated successfully.");
+                    return true; // user sprite updated successfully
+                }
+                else
+                {
+                    Debug.LogError("UpdateUserSpriteError: " + response.StatusCode);
+                    return false; // user sprite update failed
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.LogError("UpdateUserSprite HTTP Request Exception: " + e.Message);
+                return null; // user sprite update failed due to exception
+            }
+        }
+
         public class CharacterData
         {
             public Guid id;
@@ -893,10 +929,10 @@ namespace Clients {
         }
 
         [System.Serializable]
-        public class UpdateSprite
+        public class UpdateUserSpriteResponse
         {
-            public string Description;
-            public bool isURL;
+            [JsonProperty("animations")]
+            public List<int> spriteAnimations;
         }
 
         [System.Serializable]
