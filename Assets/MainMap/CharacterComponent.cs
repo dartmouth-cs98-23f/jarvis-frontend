@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-// This component stores the character details
 public class CharacterComponent : MonoBehaviour
 {
     // TODO: Generate by sprite

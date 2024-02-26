@@ -150,7 +150,12 @@ namespace Clients {
             public string response;
         }
 
-        public async Task<bool> PostResponses(Guid targetId, Guid responderId, List<PostResponse> responses)
+        public class PostResponseResp
+        {
+            public string summary;
+        }
+
+        public async Task<PostResponseResp> PostResponses(Guid targetId, Guid responderId, List<PostResponse> responses)
         {
             string apiUrl = $"{url}/questions/responses";
 
@@ -168,19 +173,21 @@ namespace Clients {
 
                 if (response.IsSuccessStatusCode)
                 {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    PostResponseResp resp = JsonConvert.DeserializeObject<PostResponseResp>(jsonResponse);
                     Debug.Log("Responses posted successfully. Count: " + req.responses.Count);
-                    return true; // Responses posted successfully
+                    return resp; // Responses posted successfully
                 }
                 else
                 {
                     Debug.LogError("PostResponsesError: " + response.StatusCode);
-                    return false; // Posting responses failed
+                    return null; // Posting responses failed
                 }
             }
             catch (HttpRequestException e)
             {
                 Debug.LogError("PostResponses HTTP Request Exception: " + e.Message);
-                return false; // Posting responses failed due to exception
+                return null; // Posting responses failed due to exception
             }
         }
 
@@ -386,8 +393,36 @@ namespace Clients {
                 Debug.LogError("GetChatHistory Error: " + response.StatusCode);
                 return null; // May need to change null
             }
-            
         }
+
+        public async Task<ChatMessage> AskMeQuestion(Guid senderId, Guid recipientId)
+        {
+            string apiUrl = $"{url}/chats/question?senderId={senderId}&recipientId={recipientId}";
+            try
+            {
+                HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    ChatMessage chatMessage = JsonConvert.DeserializeObject<ChatMessage>(jsonResponse);
+                    return chatMessage;
+                }
+                else
+                {
+                    Debug.LogError("AskMeQuestion Error: " + response.StatusCode);
+                    return null;
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.LogError("AskMeQuestion HTTP Request Exception: " + e.Message);
+                return null;
+            }
+        }
+
+
+
         // Gets the users that are in the world
         public async Task<List<UserData>> GetWorldUsers(Guid worldId) {
             string apiUrl = $"{url}/worlds/{worldId}/users";
@@ -774,13 +809,48 @@ namespace Clients {
             }
         }
 
+        public async Task<bool> UpdateUserSprite(Guid userId, List<int> spriteAnimations)
+        {
+            string apiUrl = $"{url}/users/{userId}/sprite";
+
+            try
+            {
+                var requestData = new
+                {
+                    spriteAnimations = spriteAnimations
+                };
+
+                // Serialize the request object to JSON
+                string jsonRequest = JsonConvert.SerializeObject(requestData);
+                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Send the POST request
+                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Debug.Log("Sprite updated successfully.");
+                    return true; // user sprite updated successfully
+                }
+                else
+                {
+                    Debug.LogError("UpdateUserSpriteError: " + response.StatusCode);
+                    return false; // user sprite update failed
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.LogError("UpdateUserSprite HTTP Request Exception: " + e.Message);
+                return false; // user sprite update failed due to exception
+            }
+        }
+
         public class CharacterData
         {
             public Guid id;
             public string username;
             public string summary;
             public Location location;
-            public string sprite_URL;
             public string sprite_headshot_URL;
             public DateTime createdTime;
         }
@@ -791,6 +861,7 @@ namespace Clients {
             public Guid creatorId;
             public bool isHatched;
             public DateTime hatchTime;
+            public string sprite_URL;
         }
 
         [System.Serializable]
@@ -798,6 +869,7 @@ namespace Clients {
         {
             public string email;
             public bool isOnline;
+            public List<int> spriteAnimations;
         }
 
         [System.Serializable]
@@ -854,13 +926,6 @@ namespace Clients {
         {
             public Guid id;
             public DateTime hatchedTime;
-        }
-
-        [System.Serializable]
-        public class UpdateSprite
-        {
-            public string Description;
-            public bool isURL;
         }
 
         [System.Serializable]

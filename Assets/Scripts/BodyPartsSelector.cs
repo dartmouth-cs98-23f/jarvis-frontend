@@ -1,12 +1,12 @@
 // Code written by tutmo (youtube.com/tutmo)
 // For help, check out the tutorial - https://youtu.be/PNWK5o9l54w
 
+using Clients;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using Newtonsoft.Json;
-using Clients;
 
 public class BodyPartsSelector : MonoBehaviour
 {
@@ -16,6 +16,7 @@ public class BodyPartsSelector : MonoBehaviour
     [SerializeField] private SO_CharacterBody characterBody;
     // Body Part Selections
     [SerializeField] private BodyPartSelection[] bodyPartSelections;
+    private HTTPClient httpClient = HTTPClient.Instance;
 
     private void Start()
     {
@@ -24,6 +25,7 @@ public class BodyPartsSelector : MonoBehaviour
         {
             GetCurrentBodyParts(i);
         }
+        
     }
 
     public void NextBodyPart(int partIndex)
@@ -90,12 +92,13 @@ public class BodyPartsSelector : MonoBehaviour
 
     }
 
-    public void SendPartInfo(){
-        // List<int> indices = new List<int>();
-        // for (int partIndex = 0; partIndex < bodyPartSelections.Length; partIndex++){
-        //     indices.Add(characterBody.characterBodyParts[partIndex].bodyPart.bodyPartAnimationID);
-        // }
+    public async void SendPartInfo(){
+        List<int> indices = new List<int>();
+        for (int partIndex = 0; partIndex < bodyPartSelections.Length; partIndex++){
+            indices.Add(characterBody.characterBodyParts[partIndex].bodyPart.bodyPartAnimationID);
+        }
         // TODO: Post this info to the backend
+        await httpClient.UpdateUserSprite(httpClient.MyId, indices);
     }
 
 }
