@@ -16,7 +16,7 @@ public class BodyPartsSelector : MonoBehaviour
     [SerializeField] private SO_CharacterBody characterBody;
     // Body Part Selections
     [SerializeField] private BodyPartSelection[] bodyPartSelections;
-    // private HTTPClient httpClient;
+    private HTTPClient httpClient = HTTPClient.Instance;
 
     private void Start()
     {
@@ -26,8 +26,6 @@ public class BodyPartsSelector : MonoBehaviour
             GetCurrentBodyParts(i);
         }
         
-        // httpClient = HTTPClient.Instance;
-
     }
 
     public void NextBodyPart(int partIndex)
@@ -100,7 +98,7 @@ public class BodyPartsSelector : MonoBehaviour
             indices.Add(characterBody.characterBodyParts[partIndex].bodyPart.bodyPartAnimationID);
         }
         // TODO: Post this info to the backend
-        // await httpClient.UpdateUserSprite(httpClient.MyId, indices);
+        await httpClient.UpdateUserSprite(httpClient.MyId, indices);
     }
 
 }
