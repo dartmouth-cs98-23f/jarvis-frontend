@@ -558,6 +558,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InteractButton: {fileID: 0}
   tilemap: {fileID: 0}
+  collided: 0
 --- !u!114 &896048580768174645
 MonoBehaviour:
   m_ObjectHideFlags: 0

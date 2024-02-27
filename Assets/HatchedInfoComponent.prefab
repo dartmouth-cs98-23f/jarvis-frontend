@@ -130,6 +130,8 @@ MonoBehaviour:
   usernameTMP: {fileID: 3659782956276251465}
   displayUserImage: {fileID: 8390418066993921812}
   agentInfoPanel: {fileID: 0}
+  agentInfoManager: {fileID: 0}
+  spriteHeadshotPrefab: {fileID: 0}
 --- !u!1 &8114834945802953722
 GameObject:
   m_ObjectHideFlags: 0

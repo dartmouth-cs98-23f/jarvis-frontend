@@ -93,7 +93,7 @@ public class GameClient : MonoBehaviour
             agentComponent.SetCharacterId(agent.id);
             agentComponent.SetCharacterType(CharacterType.Agent);
 
-            DisableCharacterRigidBody(agentComponent);
+            // DisableCharacterRigidBody(agentComponent);
         }
     }
 
@@ -148,6 +148,9 @@ public class GameClient : MonoBehaviour
             CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
             userComponent.SetCharacterId(user.id);
             userComponent.SetCharacterType(CharacterType.User);
+
+            BodyPartsManager bpComponent = userGO.GetComponent<BodyPartsManager>();
+            bpComponent.SetSprite(new List<int> {0, 0, 1, 0}); // TODO: Replace with user.spriteAnimations
             
             if (user.location == null)
             {
@@ -159,7 +162,7 @@ public class GameClient : MonoBehaviour
             }
             
             // Disable the Rigidbody2D to stop character from moving due to collisions
-            DisableCharacterRigidBody(userComponent);
+            // DisableCharacterRigidBody(userComponent);
         }
     }
 

@@ -24,6 +24,10 @@ public class CreateAgentManager : MonoBehaviour
     private HTTPClient httpClient = HTTPClient.Instance;
     public SideMenu sideMenuManager;
     public IncubatingListManager incubatingListManager;
+    public string sprite_URL;
+    public string sprite_headshot_URL;
+    public GameObject eggPrefab;
+    public SpriteLoader spriteLoader;
 
     public void StoreInput()
     {
@@ -37,10 +41,12 @@ public class CreateAgentManager : MonoBehaviour
         incubation = incubationTime.value;
     }
 
-    public void StoreVisualDesc(){
+    public async void StoreVisualDesc(){
         visual = agentVisualDesc.text;
 
-        // TODO: Send this information to the backend upon clicking the next button
+        HTTPClient.PostVisualResponse resp = await httpClient.PostVisualDescription(visual);
+        sprite_URL = resp.sprite_URL;
+        sprite_headshot_URL = resp.sprite_headshot_URL;
     }
 
     public void ResetInputFields()
@@ -53,10 +59,11 @@ public class CreateAgentManager : MonoBehaviour
     }
 
     public void FillConfirmCreateFields(){
-        // TODO: Add sprite visual method here
-        HTTPClient.AgentData agent = new HTTPClient.AgentData();
-        agent.sprite_URL = "Sprites/master_yoda";
-        confirmSpriteObject.GetComponent<Image>().sprite = Resources.Load<Sprite>(agent.sprite_URL);
+        // Call the LoadSprite method with the desired URL
+        spriteLoader.LoadSprite(sprite_headshot_URL, (sprite) => {
+            confirmSpriteObject.GetComponent<Image>().sprite = sprite;
+        });
+
         confirmNameObject.GetComponent<TextMeshProUGUI>().text = name;
         confirmDescObject.GetComponent<TextMeshProUGUI>().text = desc;
         confirmIncObject.GetComponent<TextMeshProUGUI>().text = "Incubation Time: " + incubation.ToString("F0") + "h";
@@ -72,21 +79,34 @@ public class CreateAgentManager : MonoBehaviour
     {
         // Update the position of the text component to follow the position of the slider handle
         Vector3 handlePosition = handleRect.position;
-        Vector3 textPosition = new Vector3(handlePosition.x, handlePosition.y - 2.5f, handlePosition.z); // Adjust the offset as needed
+        Vector3 textPosition = new Vector3(handlePosition.x, handlePosition.y - 60f, handlePosition.z); // Adjust the offset as needed
         sliderValueText.transform.position = textPosition;
     }
 
     public async void SendAgentInfo()
     {
-        HTTPClient.IdData agent = await httpClient.CreateAgent(name, desc, httpClient.MyId, (int)incubation);
+        // TODO: Update CreateAgent to send sprite_URL and sprite_headshotURL as well
+        HTTPClient.IdData agent = await httpClient.CreateAgent(name, desc, httpClient.MyId, (int)incubation, sprite_URL, sprite_headshot_URL);
         Guid agentId = agent.id;
-
+        HTTPClient.UserData user = await httpClient.GetUser(httpClient.MyId);
+        
         if (agentId != null)
         {
-            // bool addSuccess = await httpClient.AddAgentToWorld(agentId);
+            bool addSuccess = await httpClient.AddAgentToWorld(agentId);
+            if (!addSuccess){
+                Debug.Log("Failed to add agent to world");
+            }
+            
             sideMenuManager.ToggleConfirmCreatePanel();
+            sideMenuManager.ToggleHatchedPanel();
             incubatingListManager.CloseIncubatingListPanel();
-            incubatingListManager.localDisplayIncubatingList(); // TODO: Change to non-local when backend working
+
+            HTTPClient.AgentData agentInfo = await httpClient.GetAgent(agentId);
+            if (agentInfo == null){
+                Debug.Log("Failed to get agent data to create egg with");
+            }
+            GameObject eggGO = Instantiate(eggPrefab, new Vector3(user.location.coordX, user.location.coordY, 0f), Quaternion.identity);
+            eggGO.GetComponent<EggPrefabManager>().SetEggDetails(agentInfo.hatchTime, agentInfo.createdTime);
         }
         else
         {
