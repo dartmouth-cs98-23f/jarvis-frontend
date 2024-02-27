@@ -90,11 +90,11 @@ public class BodyPartsSelector : MonoBehaviour
 
     }
 
-    public void SendPartInfo(){
-        // List<int> indices = new List<int>();
-        // for (int partIndex = 0; partIndex < bodyPartSelections.Length; partIndex++){
-        //     indices.Add(characterBody.characterBodyParts[partIndex].bodyPart.bodyPartAnimationID);
-        // }
+    public async void SendPartInfo(){
+        List<int> indices = new List<int>();
+        for (int partIndex = 0; partIndex < bodyPartSelections.Length; partIndex++){
+            indices.Add(characterBody.characterBodyParts[partIndex].bodyPart.bodyPartAnimationID);
+        }
         // TODO: Post this info to the backend
     }
 

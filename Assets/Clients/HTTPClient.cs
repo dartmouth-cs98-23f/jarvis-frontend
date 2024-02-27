@@ -24,7 +24,7 @@ namespace Clients {
 
         // private Guid myId = new Guid("c3480195-64e8-4915-8326-391125d7d880"); // TODO: delete this id, just using for testing
         private Guid myId; // TODO: delete this id, just using for testing
-        private Guid worldId;
+        private Guid worldId = new Guid("9119bd21-e16a-4822-a751-7d087583b4e0");
         private string authToken;
         private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 

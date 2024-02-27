@@ -10,21 +10,17 @@ public class PlayerInfoComponent : MonoBehaviour
 {
     public GameObject onlineIndicator;
     public TextMeshProUGUI usernameTMP;
-    public Image displayUserImage;
     public GameObject owner;
     public GameObject kick;
     public GameObject kickPanel;
     public GameObject playersListPanel;
     public PlayersListManager playersListManager;
     public Guid playerId;
+    public GameObject spriteHeadshotPrefab;
 
     // A method to set the player details
-    public void SetPlayerDetails(Sprite profileImage, string username)
+    public void SetPlayerDetails(string username)
     {
-        displayUserImage.sprite = profileImage;
-        Color color = displayUserImage.color;
-        color.a = 1;
-        displayUserImage.color = color;
         usernameTMP.text = username;
     }
 
