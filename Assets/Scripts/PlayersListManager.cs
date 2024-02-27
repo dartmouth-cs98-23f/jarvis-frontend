@@ -102,7 +102,6 @@ public class PlayersListManager : MonoBehaviour
         playersListGO.tag = "PlayerInfoPrefab";
 
         PlayerInfoComponent playerInfoComponent = playersListGO.GetComponent<PlayerInfoComponent>();
-        Image spriteHead = playerInfoComponent.displayUserImage;
         TextMeshProUGUI username = playerInfoComponent.usernameTMP;
         GameObject onlineIndicator = playerInfoComponent.onlineIndicator;
 
@@ -114,38 +113,38 @@ public class PlayersListManager : MonoBehaviour
         if (playerInfo.id == new Guid("22222222-2222-2222-2222-222222222222")){
                 playerInfoComponent.IsOwner();
             }
+        
+        playerInfoComponent.spriteHeadshotPrefab.GetComponent<BodyPartsManager>().SetSprite(new List<int> {1, 0, 1, 1});
 
-        spriteLoader.LoadSprite(playerInfo.sprite_headshot_URL, (sprite) => {
-            // Set player details dynamically
-            playerInfoComponent.SetPlayerDetails(sprite, playerInfo.username);
+        // Set player details dynamically
+        playerInfoComponent.SetPlayerDetails(playerInfo.username);
 
-            // Change color based on online/offline status
-            if (playerInfo.isOnline)
-            {
-                Color color = onlineIndicator.GetComponent<Image>().color;
-                color = new Color(110 / 255.0f, 140 / 255.0f, 51 / 255.0f);
-                color.a = 1;
-                onlineIndicator.GetComponent<Image>().color = color;
-                Outline outline = onlineIndicator.GetComponent<Outline>();
-                Color outlineColor = outline.effectColor;
-                outlineColor.a = 0.5f;
-                outline.effectColor = outlineColor;
-                onlineIndicator.GetComponent<Outline>().enabled = false;
+        // Change color based on online/offline status
+        if (playerInfo.isOnline)
+        {
+            Color color = onlineIndicator.GetComponent<Image>().color;
+            color = new Color(110 / 255.0f, 140 / 255.0f, 51 / 255.0f);
+            color.a = 1;
+            onlineIndicator.GetComponent<Image>().color = color;
+            Outline outline = onlineIndicator.GetComponent<Outline>();
+            Color outlineColor = outline.effectColor;
+            outlineColor.a = 0.5f;
+            outline.effectColor = outlineColor;
+            onlineIndicator.GetComponent<Outline>().enabled = false;
 
-            }
-            else
-            {
-                Color color = onlineIndicator.GetComponent<Image>().color;
-                color = new Color(0f, 0f, 0f, 0f);
-                onlineIndicator.GetComponent<Image>().color = color;
-                Outline outline = onlineIndicator.GetComponent<Outline>();
-                Color outlineColor = outline.effectColor;
-                outlineColor = new Color(115/255.0f, 123/255.0f, 125/255.0f);
-                outlineColor.a = 0.5f;
-                outline.effectColor = outlineColor;
-                onlineIndicator.GetComponent<Outline>().enabled = true;
-            }
-        });
+        }
+        else
+        {
+            Color color = onlineIndicator.GetComponent<Image>().color;
+            color = new Color(0f, 0f, 0f, 0f);
+            onlineIndicator.GetComponent<Image>().color = color;
+            Outline outline = onlineIndicator.GetComponent<Outline>();
+            Color outlineColor = outline.effectColor;
+            outlineColor = new Color(115/255.0f, 123/255.0f, 125/255.0f);
+            outlineColor.a = 0.5f;
+            outline.effectColor = outlineColor;
+            onlineIndicator.GetComponent<Outline>().enabled = true;
+        }
     }
     sideMenuManager.TogglePlayersListPanel();
 }
@@ -176,7 +175,6 @@ public class PlayersListManager : MonoBehaviour
 
             // Access child components directly
             PlayerInfoComponent playerInfoComponent = playersListGO.GetComponent<PlayerInfoComponent>();
-            Image spriteHead = playerInfoComponent.displayUserImage; // Access the child Image component
             TextMeshProUGUI username = playerInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             GameObject onlineIndicator = playerInfoComponent.onlineIndicator; // Access the child GameObject
 
@@ -184,18 +182,18 @@ public class PlayersListManager : MonoBehaviour
             playerInfoComponent.playersListPanel = playersListPanel;
             playerInfoComponent.playersListManager = playersListManager.GetComponent<PlayersListManager>();
             playerInfoComponent.playerId = playerInfo.id;
+            playerInfoComponent.spriteHeadshotPrefab.GetComponent<BodyPartsManager>().SetSprite(playerInfo.spriteAnimations);
 
             HTTPClient.IdData creator = await httpClient.GetWorldCreator();
-            if (httpClient.MyId == creator.id){
+            if (playerInfo.id == creator.id){
                 playerInfoComponent.IsOwner();
             }
+            else if (httpClient.MyId == creator.id){
+                playerInfoComponent.ShowKick();
+            }
 
-            spriteLoader = GameObject.FindObjectOfType<SpriteLoader>();
-
-            // Call the LoadSprite method with the desired URL
-            spriteLoader.LoadSprite(playerInfo.sprite_headshot_URL, (sprite) => {
             // Set player details dynamically
-            playerInfoComponent.SetPlayerDetails(sprite, playerInfo.username);
+            playerInfoComponent.SetPlayerDetails(playerInfo.username);
 
             // Change color based on online/offline status
             if (playerInfo.isOnline)
@@ -209,9 +207,7 @@ public class PlayersListManager : MonoBehaviour
                 onlineIndicator.GetComponent<Outline>().enabled = true;
                 onlineIndicator.GetComponent<Outline>().effectColor = new Color(115/255.0f, 123/255.0f, 125/255.0f);
             }
-        });
     }
-    await Task.Delay(500);
     sideMenuManager.TogglePlayersListPanel();
     }
 

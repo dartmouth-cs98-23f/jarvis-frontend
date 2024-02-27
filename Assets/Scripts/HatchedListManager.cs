@@ -17,6 +17,7 @@ public class HatchedListManager : MonoBehaviour
     public SpriteLoader spriteLoader;
     public SideMenu sideMenuManager;
     public AgentInfoManager agentInfoManager;
+    public GameObject spriteHeadshotPrefab;
 
     public async void localDisplayHatchedList()
     {
@@ -188,6 +189,7 @@ public class HatchedListManager : MonoBehaviour
             hatchedInfoComponent.agentInfoPanel = agentInfoPanel;
             hatchedInfoComponent.agentInfoManager = agentInfoManager;
             hatchedInfoComponent.hatchedId = hatchedId.id;
+            
 
             // Call the LoadSprite method with the desired URL
             spriteLoader.LoadSprite(hatchedInfo.sprite_headshot_URL, (sprite) => {

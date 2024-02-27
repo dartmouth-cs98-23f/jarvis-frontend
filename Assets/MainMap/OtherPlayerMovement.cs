@@ -51,7 +51,6 @@ public class OtherPlayerMovement : MonoBehaviour
             Debug.Log("Stopping other player movement. player was automatically going to 0, 0");
             rb.velocity = Vector2.zero;
             animator.SetBool("moving", false);
-            return;
         }
         // Debug.Log("transform.position: " + transform.position);
         Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
