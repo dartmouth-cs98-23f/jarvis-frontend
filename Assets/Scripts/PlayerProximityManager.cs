@@ -28,8 +28,8 @@ public class PlayerProximityManager : MonoBehaviour
             if (playerId != currentPlayerId)
             {
                 SignalRClient.Location otherPlayerPosition = userLocations[playerId];
-                float distance = Mathf.Sqrt(Mathf.Pow(otherPlayerPosition.X_coordinate - currentPlayerPosition.X_coordinate, 2) +
-                            Mathf.Pow(otherPlayerPosition.Y_coordinate - currentPlayerPosition.Y_coordinate, 2));
+                float distance = Mathf.Sqrt(Mathf.Pow(otherPlayerPosition.X_coord - currentPlayerPosition.X_coord, 2) +
+                            Mathf.Pow(otherPlayerPosition.Y_coord - currentPlayerPosition.Y_coord, 2));
 
                 if (distance <= proximityThreshold)
                 {

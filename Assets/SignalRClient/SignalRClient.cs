@@ -17,10 +17,12 @@ public class SignalRClient
 
     private SignalRClient(string url, string authToken)
     {
-        string urlWithToken = url + "?access_token=" + authToken;
-        _connection = new HubConnectionBuilder()
-            .WithUrl(urlWithToken)
-            .Build();
+        _connection = new HubConnectionBuilder()
+            .WithUrl(url, options =>
+            { 
+                options.AccessTokenProvider = () => Task.FromResult(authToken);
+            })
+            .Build();
     }
 
     public static SignalRClient Instance
@@ -41,7 +43,7 @@ public class SignalRClient
         if (instance == null)
         {
             string baseURL = "http://localhost:5000/unity";
-//             string baseURL = "https://simyou.azurewebsites.net/unity";
+//             string baseURL = "http://api.simugameservice.lekina.me/unity";
             Debug.Log("Initializing SignalRClient with URL:" + baseURL + "with token: " + authToken);
             instance = new SignalRClient(baseURL, authToken);
             Debug.Log("Post instance assignment" + instance);
@@ -53,7 +55,9 @@ public class SignalRClient
             else{
                 Debug.Log("I am not actually connected");
             }
-        }         
+        } else {
+            Debug.Log("SignalRClient already initialized");
+        }
     }
 
     public static bool IsConnected()
@@ -106,13 +110,14 @@ public class SignalRClient
     {
             var location = new Location
             {
-                X_coordinate = xCoordinate,
-                Y_coordinate = yCoordinate
+                X_coord = xCoordinate,
+                Y_coord = yCoordinate
             };
 
             try
             {
-                await _connection.SendAsync("UpdateLocation", location.X_coordinate, location.Y_coordinate);
+                await _connection.SendAsync("UpdateLocation", location);
+                Debug.Log("update location sent " + location.X_coord + " " + location.Y_coord);
             } catch (Exception ex) 
             {
                 Debug.Log("In updateLocation not Connected, failed to update");
@@ -126,12 +131,12 @@ public class SignalRClient
         {
             Debug.Log($"Error: {error}");
         });
-        _connection.On<Guid, int, int>("UpdateLocation", (userId, xCoord, yCoord) =>
+        _connection.On<Guid, Location>("UpdateLocation", (userId, location) =>
         {
-            Debug.Log($"User {userId} moved to X: {xCoord}, Y: {yCoord}");
+            Debug.Log($"User {userId} moved to X: {location.X_coord}, Y: {location.Y_coord}");
             
-            userLocations[userId] = new Location { X_coordinate = xCoord, Y_coordinate = yCoord }; // TODO: Check if this is needed
-            otherPlayerMovementScript.UpdateLocation(userId, xCoord, yCoord);
+            userLocations[userId] = new Location { X_coord = location.X_coord, Y_coord = location.Y_coord }; // TODO: Check if this is needed
+            otherPlayerMovementScript.UpdateLocation(userId, location.X_coord, location.Y_coord);
         });
     }
 
@@ -295,8 +300,8 @@ public class SignalRClient
 
     public class Location
     {
-        public int X_coordinate { get; set; }
-        public int Y_coordinate { get; set; }
+        public int X_coord { get; set; }
+        public int Y_coord { get; set; }
     }
     public Dictionary<Guid, Location> UserLocations
     {

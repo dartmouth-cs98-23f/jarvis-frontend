@@ -24,7 +24,7 @@ public class OtherPlayerMovement : MonoBehaviour
     void Start()
     {
         // TODO: Uncomment when SignalR is ready
-        // SignalRClient.Instance.RegisterUpdateLocationHandler(this);
+        SignalRClient.Instance.RegisterUpdateLocationHandler(this);
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         gameClientGO = GameObject.Find("GameClient");

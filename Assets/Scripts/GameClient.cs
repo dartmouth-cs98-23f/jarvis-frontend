@@ -29,15 +29,17 @@ public class GameClient : MonoBehaviour
     private HTTPClient httpClient;
     private HTTPClient.UserData currentUserData;
 
-    private List<HTTPClient.UserData> allUsers = new List<HTTPClient.UserData>();
-    private List<HTTPClient.AgentData> allAgents = new List<HTTPClient.AgentData>();
+    private List<HTTPClient.UserData> allUsers;
+    private List<HTTPClient.AgentData> allAgents;
     private HashSet<Guid> characterIdSet = new HashSet<Guid>();
-    void Awake()
+    void OnEnable()
     {
         httpClient = HTTPClient.Instance; // get httpClient
         // TODO: Uncomment below for backend connection
         userId = httpClient.MyId;
         worldId = httpClient.CurrentWorldId;
+        allUsers = new List<HTTPClient.UserData>();
+        allAgents = new List<HTTPClient.AgentData>();
         Debug.Log("userId: " + userId);
         Debug.Log("worldId: " + worldId);
 
@@ -46,8 +48,6 @@ public class GameClient : MonoBehaviour
         // worldId = new Guid("3b490737-6d3f-4bb8-9593-15e8a1c80dab");
 
         InitializeGame();
-        string authToken = HTTPClient.Instance.AuthToken;
-        SignalRClient.Initialize(authToken);
     }
 
     void Update()
@@ -126,7 +126,7 @@ public class GameClient : MonoBehaviour
         allUsers = await httpClient.GetWorldUsers(worldId);
         foreach (HTTPClient.UserData user in allUsers)
         {
-            Debug.Log("Building user: " + user.username + " with id: " + user.id);
+            Debug.Log("Building user: " + user.username + " with id: " + user.id + " at location: " + user.location.coordX + ", " + user.location.coordY);
             if (characterIdSet != null && characterIdSet.Contains(user.id))
             {
                 Debug.Log("User with id: " + user.id + " already exists. Skipping...");
@@ -139,6 +139,10 @@ public class GameClient : MonoBehaviour
             GameObject userGO = Instantiate(userPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
             userGO.tag = CharacterType.User;
 
+            CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
+            userComponent.SetCharacterId(user.id);
+            userComponent.SetCharacterType(CharacterType.User);
+
             if (user.id == userId)
             {
                 PlayerMovement userMovementScript = userGO.GetComponent<PlayerMovement>();
@@ -147,11 +151,10 @@ public class GameClient : MonoBehaviour
                 userMovementScript.SetTilemap(GameObject.Find("Tilemap").GetComponent<Tilemap>());
             } else {
                 OtherPlayerMovement otherUserMovementScript = userGO.GetComponent<OtherPlayerMovement>();
+                // Disable the Rigidbody2D to stop character from moving due to collisions
+                DisableCharacterRigidBody(userComponent);
             }
 
-            CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
-            userComponent.SetCharacterId(user.id);
-            userComponent.SetCharacterType(CharacterType.User);
             
             if (user.location == null)
             {
@@ -159,11 +162,11 @@ public class GameClient : MonoBehaviour
                 userComponent.SetPosition(0, 0, 0);
                 continue;
             } else {
+                Debug.Log("Setting user " + user.username + " location to: " + user.location.coordX + ", " + user.location.coordY);
                 userComponent.SetPosition(user.location.coordX, user.location.coordY, 0);
             }
             
-            // Disable the Rigidbody2D to stop character from moving due to collisions
-            DisableCharacterRigidBody(userComponent);
+
         }
     }
 

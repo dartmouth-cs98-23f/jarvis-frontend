@@ -308,6 +308,7 @@ namespace Clients {
             public string thumbnail_URL;
         }
 
+        // @Deprecated
         public async Task<string> GetUserSummary(Guid userId)
         {
             Debug.Log("Called GetUserSummary in httpClient userid: " + userId.ToString());
@@ -932,9 +933,9 @@ namespace Clients {
         public class Location
         {
 
-            [JsonProperty("x_coord")]
+            [JsonProperty("X_coord")]
             public int coordX;
-            [JsonProperty("y_coord")]
+            [JsonProperty("Y_coord")]
             public int coordY;
         }
         [System.Serializable]
