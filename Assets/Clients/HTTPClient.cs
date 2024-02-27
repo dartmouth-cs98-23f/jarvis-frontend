@@ -22,9 +22,9 @@ namespace Clients {
         // private const string url = "http://localhost:5000";  
         private const string url = "https://api.simugameservice.lekina.me";  
 
-        // private Guid myId = new Guid("c3480195-64e8-4915-8326-391125d7d880"); // TODO: delete this id, just using for testing
-        private Guid myId; // TODO: delete this id, just using for testing
-        private Guid worldId = new Guid("9119bd21-e16a-4822-a751-7d087583b4e0");
+        private Guid myId = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5"); // TODO: delete this id, just using for testing
+        // private Guid myId; 
+        private Guid worldId = new Guid("9119bd21-e16a-4822-a751-7d087583b4e0"); // TODO: delete this id, just using for testing
         private string authToken;
         private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 
@@ -553,7 +553,7 @@ namespace Clients {
             
         }
 
-        public async Task<IdData> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours)
+        public async Task<IdData> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours, string sprite_URL, string sprite_headshot_URL)
         {
             string apiUrl = $"{url}/agents";
 
@@ -564,7 +564,10 @@ namespace Clients {
                     Username = username,
                     Description = description,
                     CreatorId = creatorId,
-                    IncubationDurationInHours = incubationDurationInHours
+                    IncubationDurationInHours = incubationDurationInHours,
+                    Sprite_URL = sprite_URL,
+                    Sprite_Headshot_URL = sprite_headshot_URL
+                    
                 };
 
                 string jsonRequest = JsonConvert.SerializeObject(createAgentData);
@@ -588,7 +591,45 @@ namespace Clients {
             catch (HttpRequestException e)
             {
                 // Handle other exceptions if needed
-                Debug.LogError("Login HTTP Request Exception: " + e.Message);
+                Debug.LogError("Create Agent HTTP Request Exception: " + e.Message);
+                return null; // Registration failed due to exception
+            }
+        }
+
+        public async Task<PostVisualResponse> PostVisualDescription(string description)
+        {
+            // TODO: Update this URL when Alan fixes
+            string apiUrl = $"{url}/agents/description";
+
+            try
+            {
+                UpdateUserSummaryData desc = new UpdateUserSummaryData
+                {
+                    summary = description
+                };
+
+                string jsonRequest = JsonConvert.SerializeObject(desc);
+                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    PostVisualResponse urls = JsonConvert.DeserializeObject<PostVisualResponse>(jsonResponse);
+                    Debug.Log("Visual description posted successfully");
+                    return urls;
+                }
+                else
+                {
+                    Debug.LogError("PostVisualDescription Error: " + response.StatusCode);
+                    return null; // Create agent failed
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                // Handle other exceptions if needed
+                Debug.LogError("PostVisualDescription HTTP Request Exception: " + e.Message);
                 return null; // Registration failed due to exception
             }
         }
@@ -889,6 +930,8 @@ namespace Clients {
             public string Description;
             public Guid CreatorId;
             public int IncubationDurationInHours;
+            public string Sprite_URL;
+            public string Sprite_Headshot_URL;
         }
 
         [System.Serializable]
@@ -979,6 +1022,13 @@ namespace Clients {
         {
             public Guid responderId;
             public string response;
+        }
+
+        [System.Serializable]
+        public class PostVisualResponse
+        {
+            public string sprite_URL;
+            public string sprite_headshot_URL;
         }
 
         [System.Serializable]

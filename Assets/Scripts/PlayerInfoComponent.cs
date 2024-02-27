@@ -26,6 +26,10 @@ public class PlayerInfoComponent : MonoBehaviour
 
     public void IsOwner(){
         owner.SetActive(true);
+        kick.SetActive(false);
+    }
+    public void ShowKick(){
+        owner.SetActive(false);
         kick.SetActive(true);
     }
 

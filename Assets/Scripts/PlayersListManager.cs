@@ -185,8 +185,11 @@ public class PlayersListManager : MonoBehaviour
             playerInfoComponent.spriteHeadshotPrefab.GetComponent<BodyPartsManager>().SetSprite(playerInfo.spriteAnimations);
 
             HTTPClient.IdData creator = await httpClient.GetWorldCreator();
-            if (httpClient.MyId == creator.id){
+            if (playerInfo.id == creator.id){
                 playerInfoComponent.IsOwner();
+            }
+            else if (httpClient.MyId == creator.id){
+                playerInfoComponent.ShowKick();
             }
 
             // Set player details dynamically

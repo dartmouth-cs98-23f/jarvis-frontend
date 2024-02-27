@@ -93,7 +93,7 @@ public class GameClient : MonoBehaviour
             agentComponent.SetCharacterId(agent.id);
             agentComponent.SetCharacterType(CharacterType.Agent);
 
-            DisableCharacterRigidBody(agentComponent);
+            // DisableCharacterRigidBody(agentComponent);
         }
     }
 
@@ -162,7 +162,7 @@ public class GameClient : MonoBehaviour
             }
             
             // Disable the Rigidbody2D to stop character from moving due to collisions
-            DisableCharacterRigidBody(userComponent);
+            // DisableCharacterRigidBody(userComponent);
         }
     }
 
