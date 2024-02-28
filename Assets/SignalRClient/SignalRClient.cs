@@ -131,7 +131,7 @@ public class SignalRClient
         {
             Debug.Log($"Error: {error}");
         });
-        _connection.On<Guid, Location>("UpdateLocation", (userId, location) =>
+        _connection.On<Guid, Location>("UpdateLocationHandler", (userId, location) =>
         {
             Debug.Log($"User {userId} moved to X: {location.X_coord}, Y: {location.Y_coord}");
             
@@ -156,6 +156,22 @@ public class SignalRClient
         {
             Console.WriteLine($"Error sending message: {ex.Message}");
         }
+    }
+
+
+    /// <summary>
+    /// Handles a message received from another client through the server.
+    /// </summary>
+    /// <param name="sender">The client (can also be the server) sending the message</param>
+    /// <param name="message">The content of the message</param>
+    /// <returns></returns>
+    public void ChatHandler(ChatManager.ChatManager chatManager)
+    {
+        _connection.On<Guid, Guid, string, bool>("ChatHandler", (Guid messageId, Guid senderId, string message, bool isOnline) =>
+        {
+            Debug.Log($"Message {messageId} received from user {senderId}: {message}. User is online: {isOnline}");
+            chatManager.ReceiveMessage(messageId, senderId, message, isOnline);
+        });
     }
 
 
@@ -296,6 +312,16 @@ public class SignalRClient
         {
             Debug.Log($"User {userId} has been removed from the world. Removing user to world...");
         });
+    }
+
+    public class ChatResponse {
+        public Guid Id { get; set; }
+        public Guid SenderId { get; set; }
+        public Guid ReceiverId { get; set; }
+        public string Content { get; set; }
+        public bool IsGroupChat { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public bool IsOnline { get; set; }
     }
 
     public class Location
