@@ -135,7 +135,7 @@ public class SignalRClient
         {
             Debug.Log($"User {userId} moved to X: {location.X_coord}, Y: {location.Y_coord}");
             
-            userLocations[userId] = new Location { X_coord = location.X_coord, Y_coord = location.Y_coord }; // TODO: Check if this is needed
+//             userLocations[userId] = new Location { X_coord = location.X_coord, Y_coord = location.Y_coord }; // TODO: Check if this is needed
             otherPlayerMovementScript.UpdateLocation(userId, location.X_coord, location.Y_coord);
         });
     }
@@ -148,6 +148,7 @@ public class SignalRClient
     /// <returns></returns>
     public async Task SendChat(Guid receiverId, string message)
     {
+        Debug.Log("Sending chat message to " + receiverId + " with message: " + message);
         try
         {
             await _connection.SendAsync("SendChat", receiverId, message);
@@ -162,15 +163,14 @@ public class SignalRClient
     /// <summary>
     /// Handles a message received from another client through the server.
     /// </summary>
-    /// <param name="sender">The client (can also be the server) sending the message</param>
-    /// <param name="message">The content of the message</param>
+    /// <param name="ChatResponse">The chat message object from the server</param>
     /// <returns></returns>
     public void ChatHandler(ChatManager.ChatManager chatManager)
     {
-        _connection.On<Guid, Guid, string, bool>("ChatHandler", (Guid messageId, Guid senderId, string message, bool isOnline) =>
+        _connection.On<ChatResponse>("ChatHandler", (ChatResponse chatResp) =>
         {
-            Debug.Log($"Message {messageId} received from user {senderId}: {message}. User is online: {isOnline}");
-            chatManager.ReceiveMessage(messageId, senderId, message, isOnline);
+            Debug.Log($"Message {chatResp.Id} received from user id: {chatResp.SenderId} sending to {chatResp.ReceiverId}. User is online: {chatResp.IsOnline}");
+            chatManager.ReceiveMessage(chatResp.Id, chatResp.SenderId, chatResp.Content, chatResp.IsOnline);
         });
     }
 
@@ -181,12 +181,11 @@ public class SignalRClient
     /// <param name="sender">The client (can also be the server) sending the message</param>
     /// <param name="message">The content of the message</param>
     /// <returns></returns>
-    public void MessageHandler(ChatManager.ChatManager chatManager)
+    public void MessageHandler()
     {
-        _connection.On<Guid, Guid, string, bool>("MessageHandler", (Guid messageId, Guid senderId, string message, bool isOnline) =>
+        _connection.On<string>("MessageHandler", (string message) =>
         {
-            Debug.Log($"Message {messageId} received from user {senderId}: {message}. User is online: {isOnline}");
-            chatManager.ReceiveMessage(messageId, senderId, message, isOnline);
+            Debug.Log($"Message received from server: {message}");
         });
     }
 

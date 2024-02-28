@@ -305,8 +305,11 @@ namespace Clients {
         public class CreateWorldResponse
         {
             public Guid id;
+            public Guid creatorId;
             public string name;
             public string thumbnail_URL;
+            public string description;
+            public string worldCode;
         }
 
         // @Deprecated
@@ -1080,7 +1083,5 @@ namespace Clients {
         {
             get { return authToken; }
         }
-
-        public Guid CurrentWorldId { get; set; }
     }
 }

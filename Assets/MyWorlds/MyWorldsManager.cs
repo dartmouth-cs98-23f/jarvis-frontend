@@ -93,7 +93,7 @@ public class MyWorldsManager : MonoBehaviour
     {
         // Set current world id and navigate to game
         if (worldSwiper != null && worldSwiper.GetCurrentWorldId() != null) {
-            httpClient.CurrentWorldId = new Guid(worldSwiper.GetCurrentWorldId());
+            httpClient.WorldId = new Guid(worldSwiper.GetCurrentWorldId());
             SceneNavigator.LoadGame();
         }
     }
