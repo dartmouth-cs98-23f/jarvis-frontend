@@ -146,7 +146,7 @@ public class ChatManager : MonoBehaviour
         SignalRClient.Initialize(httpClient.AuthToken);
 
         // TODO: Uncomment for connection with backend signalR
-        SignalRClient.Instance.MessageHandler(this); // handles incoming messages
+        SignalRClient.Instance.ChatHandler(this); // handles incoming messages
         SignalRClient.Instance.OnUserLoggedInChatHandler(this);
         SignalRClient.Instance.OnUserLoggedOutChatHandler(this);
 
