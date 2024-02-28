@@ -47,9 +47,9 @@ public class ChatManager : MonoBehaviour
     // private Guid otherCharacterId; // TODO: uncomment for actual backend testing
 
     // public Guid currentUserId = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41"); // TODO: Comment for backend testing
-    public Guid currentUserId = new Guid("c0c973f7-5f80-437e-8418-f3c401780274"); // TODO: Comment for backend testing
+    public Guid currentUserId; // TODO: Comment for backend testing
     // public Guid otherCharacterId = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559"); // TODO: Comment for backend testing
-    public Guid otherCharacterId = new Guid("40797c18-b6ef-41eb-992c-5281d0ea1570"); // TODO: Comment for backend testing
+    public Guid otherCharacterId; // TODO: Comment for backend testing
 
     private Guid yodaID = new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559");
     private Guid georgeWashID = new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41");
@@ -101,9 +101,10 @@ public class ChatManager : MonoBehaviour
 
     async void Start()
     {
+        currentUserId = httpClient.MyId;
         // TODO: Uncomment these when connecting with main game map to get Ids and type accordingly
-        // otherCharacterId = new Guid(PlayerPrefs.GetString("CollidedCharacterId"));
-        // otherCharacterType = PlayerPrefs.GetString("CollidedCharacterType");
+        otherCharacterId = new Guid(PlayerPrefs.GetString("CollidedCharacterId"));
+        otherCharacterType = PlayerPrefs.GetString("CollidedCharacterType");
         otherCharacterType = "user";
         if (otherCharacterType == "user")
         {
@@ -120,7 +121,7 @@ public class ChatManager : MonoBehaviour
                 otherCharacterIsOnline = false;
             }
             // TODO: Uncomment for backend
-            // otherCharacterData = await GetUser(otherCharacterId);
+            otherCharacterData = await GetUser(otherCharacterId);
 
         } else { // if the other character is an agent
             // otherCharacterData = await LocalGetAgent(otherCharacterId);

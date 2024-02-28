@@ -126,7 +126,7 @@ public class GameClient : MonoBehaviour
         allUsers = await httpClient.GetWorldUsers(worldId);
         foreach (HTTPClient.UserData user in allUsers)
         {
-            Debug.Log("Building user: " + user.username + " with id: " + user.id + " at location: " + user.location.coordX + ", " + user.location.coordY);
+            // Debug.Log("Building user: " + user.username + " with id: " + user.id + " at location: " + user.location.coordX + ", " + user.location.coordY);
             if (characterIdSet != null && characterIdSet.Contains(user.id))
             {
                 Debug.Log("User with id: " + user.id + " already exists. Skipping...");
@@ -156,7 +156,7 @@ public class GameClient : MonoBehaviour
             }
 
             BodyPartsManager bpComponent = userGO.GetComponent<BodyPartsManager>();
-            bpComponent.SetSprite(new List<int> {0, 0, 1, 0}); // TODO: Replace with user.spriteAnimations
+            bpComponent.SetSprite(user.spriteAnimations); // TODO: Replace with user.spriteAnimations
             
             if (user.location == null)
             {
