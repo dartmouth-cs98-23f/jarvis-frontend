@@ -28,7 +28,7 @@ public class CharacterComponent : MonoBehaviour
 
     public void SetCharacterType(string characterType)
     {
-        if (characterType == "user" || characterType == "agent")
+        if (characterType == "user" || characterType == "agent" || characterType == "egg")
         {
             this.characterType = characterType;
         } else 
