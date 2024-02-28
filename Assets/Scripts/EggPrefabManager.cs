@@ -22,7 +22,6 @@ public class EggPrefabManager : MonoBehaviour
 
         isSet = true;
     }
-
     // Update is called once per frame
     void Update()
     {

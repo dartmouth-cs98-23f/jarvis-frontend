@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     private Guid collidedCharacterId;
 
     public GameObject InteractButton;
+    public GameObject NurtureButton;
     public Tilemap tilemap; // Reference to the Tilemap
     public bool collided = false;
     public Collision2D collidedPlayer;
@@ -136,12 +137,10 @@ public class PlayerMovement : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log($"Collided with GameObject: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
-
-        // Show click to chat button
-        InteractButton.SetActive(true);
-
+        
         if (collision.gameObject.CompareTag("user") || collision.gameObject.CompareTag("agent"))
         {
+            InteractButton.SetActive(true);
             collided = true;
             collidedPlayer = collision;
             
@@ -165,12 +164,36 @@ public class PlayerMovement : MonoBehaviour
                 PlayerPrefs.SetString("CollidedCharacterType", collidedCharacterType);
             }
         }
+        else if (collision.gameObject.CompareTag("egg")){
+            collided = true;
+            collidedPlayer = collision;
+            
+            Vector3 currentPosition = collidedPlayer.transform.position;
+            Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
+            targetPosition = currentPosition2D;
+
+            CharacterComponent eggComponent = collision.gameObject.GetComponent<CharacterComponent>();
+
+            if (eggComponent != null)
+            {
+                // Access NPC information
+                collidedCharacterId = eggComponent.GetCharacterId();
+                string collidedCharacterType = eggComponent.GetCharacterType();
+
+                Debug.Log($"Collided with Character Type: {collidedCharacterType} (ID: {collidedCharacterId})");
+
+                GameObject gameClient = GameObject.Find("GameClient");
+                gameClient.GetComponent<GameClient>().eggId = collidedCharacterId;
+        }
+        NurtureButton.SetActive(true);
+    }
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
         // Hide click to chat button
         InteractButton.SetActive(false);
+        NurtureButton.SetActive(false);
         if (collided)
         {
             collided = false;

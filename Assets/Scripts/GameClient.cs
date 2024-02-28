@@ -18,6 +18,7 @@ public class GameClient : MonoBehaviour
 
     private Guid userId;
     private Guid worldId;
+    public Guid eggId;
     public GameObject currentUserPrefab;
     public GameObject otherUserPrefab;
     public GameObject AgentPrefab;
@@ -32,6 +33,7 @@ public class GameClient : MonoBehaviour
     private List<HTTPClient.UserData> allUsers = new List<HTTPClient.UserData>();
     private List<HTTPClient.AgentData> allAgents = new List<HTTPClient.AgentData>();
     private HashSet<Guid> characterIdSet = new HashSet<Guid>();
+    public AgentInfoManager agentInfoManager;
     void Awake()
     {
         httpClient = HTTPClient.Instance; // get httpClient
@@ -139,7 +141,9 @@ public class GameClient : MonoBehaviour
             {
                 PlayerMovement userMovementScript = userGO.GetComponent<PlayerMovement>();
                 userMovementScript.InteractButton = GameObject.Find("ChatButton");
+                userMovementScript.NurtureButton = GameObject.Find("NurtureButton");
                 userMovementScript.InteractButton.SetActive(false);
+                userMovementScript.NurtureButton.SetActive(false);
                 userMovementScript.SetTilemap(GameObject.Find("Tilemap").GetComponent<Tilemap>());
             } else {
                 OtherPlayerMovement otherUserMovementScript = userGO.GetComponent<OtherPlayerMovement>();
@@ -179,6 +183,10 @@ public class GameClient : MonoBehaviour
             Debug.Log("Generating other user prefab with userId: " + userId);
             return otherUserPrefab; // this prefab would have the otherPlayerMovement script attached
         }
+    }
+
+    public void OnNurturePressed(){
+        agentInfoManager.SetAgentID(eggId);
     }
 
     // c8268729-e4f5-4df3-85fc-51779d7c2b35
