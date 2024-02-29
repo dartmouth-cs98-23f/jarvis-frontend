@@ -45,12 +45,12 @@ public class OtherPlayerMovement : MonoBehaviour
     void MovePlayer(int x, int y)
     {
         Debug.Log("Moving other player to: " + x + ", " + y);
+        targetPosition = new Vector2(x, y);
         // This fixes the player automatically going to 0,0 on start
         if (targetPosition.x == 0f && targetPosition.y == 0f)
         {
             Debug.Log("Stopping other player movement. player was automatically going to 0, 0");
             rb.velocity = Vector2.zero;
-            animator.SetBool("moving", false);
         }
         // Debug.Log("transform.position: " + transform.position);
         Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
