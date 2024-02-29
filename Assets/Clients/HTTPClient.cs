@@ -358,7 +358,7 @@ namespace Clients {
                 };
                 string jsonRequest = JsonConvert.SerializeObject(req);
                 HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+                HttpResponseMessage response = await httpClient.PutAsync(apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
                 {
