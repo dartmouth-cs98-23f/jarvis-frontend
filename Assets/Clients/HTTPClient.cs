@@ -307,9 +307,9 @@ namespace Clients {
             public Guid id;
             public Guid creatorId;
             public string name;
-            public string thumbnail_URL;
             public string description;
             public string worldCode;
+            public string thumbnail_URL;
         }
 
         // @Deprecated
