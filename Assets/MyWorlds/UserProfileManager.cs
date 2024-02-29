@@ -21,11 +21,13 @@ public class UserProfileManager : MonoBehaviour
     public GameObject saveButton;
     private HTTPClient httpClient = HTTPClient.Instance;
     public GameObject userPrefabGO;
+    public Text errorText;
 
     // Start is called before the first frame update
     void OnEnable()
     {
         InitializeUserProfile();
+        errorText.text = "";
     }
 
     private async Task InitializeText()
@@ -108,6 +110,13 @@ public class UserProfileManager : MonoBehaviour
 
     public async void OnPressSave()
     {
+        if (string.IsNullOrEmpty(userSummaryInputField.text))
+        {
+            errorText.text = "Summary cannot be empty";
+            return;
+        } else {
+            errorText.text = "";
+        }
         // TODO: Switch this method for backend API
         bool updateSummarySuccessful = true;
         // bool updateSummarySuccessful = await httpClient.UpdateUserSummary(httpClient.MyId, userSummaryInputField.text);
@@ -121,6 +130,7 @@ public class UserProfileManager : MonoBehaviour
         }
         else
         {
+            errorText.text = "Failed to update summary. Please try again.";
             // TODO: Add UI error message on failure to update summary
             Debug.Log("Failed to update summary. Please try again.");
         }

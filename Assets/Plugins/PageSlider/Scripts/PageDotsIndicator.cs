@@ -77,8 +77,12 @@ namespace TS.PageSlider
 
         public void ChangeActiveDot(int fromIndex, int toIndex)
         {
+            Debug.Log("ChangeActiveDot fromIndex: " + fromIndex + " toIndex: " + toIndex);
             _dots[fromIndex].ChangeActiveState(false);
             _dots[toIndex].ChangeActiveState(true);
+
+            _dots[fromIndex].SetColor(new Color(222 / 255f, 207 / 255f, 191 / 255f));
+            _dots[toIndex].SetColor(new Color(108 / 255f, 98 / 255f, 86 / 255f));
         }
 
 #if UNITY_EDITOR

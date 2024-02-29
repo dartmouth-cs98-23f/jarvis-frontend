@@ -18,16 +18,26 @@ public class CreateWorldManager : MonoBehaviour
 
     public GameObject generatedWorldPanel;
     public GameObject navbarPanel;
+    public Text worldNameErrorText;
+    public Text worldDescriptionErrorText;
     private HTTPClient httpClient = HTTPClient.Instance;
     // Start is called before the first frame update
     void OnEnable()
     {
         worldNameInputField.text = ""; // reset world name input field
         worldDescriptionInputField.text = ""; // reset world description input field
+        worldNameErrorText.text = ""; // reset world name error text
+        worldDescriptionErrorText.text = ""; // reset world description error text
     }
 
     public async void OnPressCreate()
     {
+
+        if (IsUserInputError())
+        {
+            return;
+        }
+
         string worldName = worldNameInputField.text;
         string worldDescription = worldDescriptionInputField.text;
         StartLoading();
@@ -41,6 +51,29 @@ public class CreateWorldManager : MonoBehaviour
             }
         } catch (Exception e) {
             Debug.Log("Failed to create world: " + e.Message); // TODO: Add UI error message on failure to create world
+        }
+    }
+
+    private bool IsUserInputError()
+    {
+        if (string.IsNullOrEmpty(worldNameInputField.text) && string.IsNullOrEmpty(worldDescriptionInputField.text))
+        {
+            worldNameErrorText.text = "World name cannot be empty";
+            worldDescriptionErrorText.text = "World description cannot be empty";
+            return true;
+        } else if (string.IsNullOrEmpty(worldDescriptionInputField.text))
+        {
+            worldNameErrorText.text = "";
+            worldDescriptionErrorText.text = "World description cannot be empty";
+            return true;
+        } else if (string.IsNullOrEmpty(worldNameInputField.text)){
+            worldNameErrorText.text = "World name cannot be empty";
+            worldDescriptionErrorText.text = "";
+            return true;
+        } else {
+            worldNameErrorText.text = ""; // reset world name error text
+            worldDescriptionErrorText.text = ""; // reset world description error text
+            return false;
         }
     }
 
