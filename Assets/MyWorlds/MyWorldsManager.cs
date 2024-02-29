@@ -63,7 +63,6 @@ public class MyWorldsManager : MonoBehaviour
         navbarManager = navBarObject.GetComponent<NavbarManager>();
         navbarManager.SetCurrentPanel(myWorldsPanel);
 
-        userWorlds = null;
         if (userWorlds == null || userWorlds.Count == 0)
         {
             currentWorldObject.SetActive(false);
