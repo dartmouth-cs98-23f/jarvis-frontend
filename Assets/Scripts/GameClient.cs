@@ -39,7 +39,7 @@ public class GameClient : MonoBehaviour
         httpClient = HTTPClient.Instance; // get httpClient
         // TODO: Uncomment below for backend connection
         userId = httpClient.MyId;
-        worldId = httpClient.CurrentWorldId;
+        worldId = httpClient.WorldId;
         allUsers = new List<HTTPClient.UserData>();
         allAgents = new List<HTTPClient.AgentData>();
         Debug.Log("userId: " + userId);
@@ -99,17 +99,6 @@ public class GameClient : MonoBehaviour
             agentComponent.SetCharacterId(agent.id);
             agentComponent.SetCharacterType(CharacterType.Agent);
 
-            // DisableCharacterRigidBody(agentComponent);
-        }
-    }
-
-    // Disable the Rigidbody2D to stop character from moving due to collisions
-    void DisableCharacterRigidBody(CharacterComponent characterComponent)
-    {
-        Rigidbody2D characterRigidbody = characterComponent.GetComponent<Rigidbody2D>();
-        if (characterRigidbody != null)
-        {
-            characterRigidbody.bodyType = RigidbodyType2D.Static; 
         }
     }
 
@@ -156,7 +145,6 @@ public class GameClient : MonoBehaviour
             } else {
                 OtherPlayerMovement otherUserMovementScript = userGO.GetComponent<OtherPlayerMovement>();
                 // Disable the Rigidbody2D to stop character from moving due to collisions
-                DisableCharacterRigidBody(userComponent);
             }
 
             BodyPartsManager bpComponent = userGO.GetComponent<BodyPartsManager>();
@@ -173,7 +161,6 @@ public class GameClient : MonoBehaviour
             }
             
             // Disable the Rigidbody2D to stop character from moving due to collisions
-            // DisableCharacterRigidBody(userComponent);
         }
     }
 

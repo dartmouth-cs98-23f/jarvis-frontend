@@ -1074,6 +1074,7 @@ namespace Clients {
         public Guid WorldId
         {
             get { return worldId; }
+            set { worldId = value; }
         }
 
         public string AuthToken

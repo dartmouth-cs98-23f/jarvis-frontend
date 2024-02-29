@@ -23,7 +23,7 @@ public class GeneratedWorldManager : MonoBehaviour
         navbarPanel.GetComponent<NavbarManager>().NavigateBackToMyWorlds();
         
         Debug.Log("Navigating to game map, current world id: " + worldId.ToString());
-        httpClient.CurrentWorldId = worldId;
+        httpClient.WorldId = worldId;
         SceneNavigator.LoadGame();
     }
 

@@ -58,7 +58,8 @@ public class ChatManager : MonoBehaviour
     public Transform contentPanel;
     public GameObject chatMessagePrefab;
     public Text displayOtherCharacterName;
-    public Image displayOtherCharacterHeadImage;
+    public GameObject displayotherCharacterHeadImage;
+    public GameObject otherCharacterHeadImage;
     public Image displayOtherCharacterActivityStatus;
     HashSet<Guid> generatedMessageIds = new HashSet<Guid>();
     private HTTPClient.UserData currentUserData;
@@ -356,7 +357,17 @@ public class ChatManager : MonoBehaviour
         }
 
         displayOtherCharacterName.GetComponent<Text>().text = username;
-        displayOtherCharacterHeadImage.sprite = charHeadSprite;
+        if (otherCharacterType == "agent"){
+            otherCharacterHeadImage.SetActive(false);
+            displayotherCharacterHeadImage.SetActive(true); 
+            displayotherCharacterHeadImage.GetComponent<Image>().sprite = charHeadSprite;
+        }
+        else{
+            HTTPClient.UserData otherUserData = otherCharacterData as HTTPClient.UserData;
+            displayotherCharacterHeadImage.SetActive(false);
+            otherCharacterHeadImage.SetActive(true);
+            otherCharacterHeadImage.GetComponent<BodyPartsManager>().SetSprite(otherUserData.spriteAnimations);
+        }
         Debug.Log("Other Character Type is " + otherCharacterType);
         // set activity status
         if (otherCharacterType == "user") {
