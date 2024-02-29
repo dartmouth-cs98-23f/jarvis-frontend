@@ -259,7 +259,7 @@ namespace Clients {
         }
 
         public async Task<Guid?> GetWorldIdFromWorldCode(string worldCode) {
-            string apiUrl = $"{url}/code/{worldCode}";
+            string apiUrl = $"{url}/worlds/code/{worldCode}";
 
             HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 

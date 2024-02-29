@@ -53,6 +53,12 @@ public class PlayerMovement : MonoBehaviour
             if (touch.phase == TouchPhase.Began)
             {
                 targetPosition = Camera.main.ScreenToWorldPoint(touch.position);
+                if (IsWithinTilemapBounds(targetPosition)){
+                    await SignalRClient.Instance.UpdateLocation((int) targetPosition.x, (int) targetPosition.y);
+                }
+                else {
+                    Debug.Log("Not going to send this location to the backend, it is out of the tilemap boundary.");
+                }
             }
         }
 
@@ -74,11 +80,9 @@ public class PlayerMovement : MonoBehaviour
         // Check if the distance between the player and the target is greater than the stopping distance
         if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
         {
-            // Calculate the next position
-            Vector2 nextPosition = (Vector2)transform.position + direction * moveSpeed * Time.deltaTime;
 
             // Check if the next position is within the bounds of the tilemap
-            if (IsWithinTilemapBounds(nextPosition))
+            if (IsWithinTilemapBounds(targetPosition))
             {
                 if (!collided){
                 // Move the player towards the target position
@@ -103,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 // Stop the player if the next position is outside the tilemap bounds
+                targetPosition = transform.position;
                 animator.SetBool("moving", false);
                 rb.velocity = Vector2.zero;
             }
@@ -116,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
 
             // TODO: Backend api connection. Send the updated location to the server
             // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
-            await SignalRClient.Instance.UpdateLocation((int) targetPosition.x, (int) targetPosition.y);
+            // await SignalRClient.Instance.UpdateLocation((int) targetPosition.x, (int) targetPosition.y);
 
         }
         else
