@@ -1,6 +1,7 @@
 #region Includes
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 #endregion
 
 namespace TS.PageSlider
@@ -20,18 +21,24 @@ namespace TS.PageSlider
 
         private void Start()
         {
-            ChangeActiveState(Index == 0);
+            ChangeActiveState(Index == 1);
         }
 
         public virtual void ChangeActiveState(bool active)
         {
             IsActive = active;
-
             OnActiveStateChanged?.Invoke(active);
+            Debug.Log("ChangeActiveState: " + active);
         }
         public void Press()
         {
             OnPressed?.Invoke(Index);
+        }
+
+        public void SetColor(Color color)
+        {
+            Debug.Log("Setting color: " + color);
+            GetComponent<Image>().color = color;
         }
     }
 }
