@@ -85,7 +85,6 @@ public class CreateAgentManager : MonoBehaviour
 
     public async void SendAgentInfo()
     {
-        // TODO: Update CreateAgent to send sprite_URL and sprite_headshotURL as well
         HTTPClient.IdData agent = await httpClient.CreateAgent(name, desc, httpClient.MyId, (int)incubation, sprite_URL, sprite_headshot_URL);
         Guid agentId = agent.id;
         HTTPClient.UserData user = await httpClient.GetUser(httpClient.MyId);

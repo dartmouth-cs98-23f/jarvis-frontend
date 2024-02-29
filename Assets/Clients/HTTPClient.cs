@@ -345,6 +345,10 @@ namespace Clients {
         {
             public string summary;
         }
+        public class VisualDescriptionData
+        {
+            public string description;
+        }
 
 
         public async Task<bool> UpdateUserSummary(Guid userId, string summary)
@@ -603,14 +607,13 @@ namespace Clients {
 
         public async Task<PostVisualResponse> PostVisualDescription(string description)
         {
-            // TODO: Update this URL when Alan fixes
             string apiUrl = $"{url}/agents/description";
 
             try
             {
-                UpdateUserSummaryData desc = new UpdateUserSummaryData
+                VisualDescriptionData desc = new VisualDescriptionData
                 {
-                    summary = description
+                    description = description
                 };
 
                 string jsonRequest = JsonConvert.SerializeObject(desc);
@@ -880,7 +883,7 @@ namespace Clients {
             {
                 var requestData = new
                 {
-                    spriteAnimations = spriteAnimations
+                    animations = spriteAnimations
                 };
 
                 // Serialize the request object to JSON
@@ -888,7 +891,7 @@ namespace Clients {
                 HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
                 // Send the POST request
-                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+                HttpResponseMessage response = await httpClient.PutAsync(apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
                 {
