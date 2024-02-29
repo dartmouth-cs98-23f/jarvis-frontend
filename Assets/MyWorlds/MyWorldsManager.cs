@@ -19,6 +19,7 @@ public class MyWorldsManager : MonoBehaviour
     public GameObject currentWorldObject;
     public GameObject leftArrowButton;
     public GameObject rightArrowButton;
+    public GameObject enterWorldButton;
     public GameObject navBarObject;
     public GameObject userProfilePanel;
     private NavbarManager navbarManager;
@@ -68,11 +69,13 @@ public class MyWorldsManager : MonoBehaviour
             currentWorldObject.SetActive(false);
             leftArrowButton.SetActive(false);
             rightArrowButton.SetActive(false);
+            enterWorldButton.SetActive(false);
             return;
         } else {
             currentWorldObject.SetActive(true);
             leftArrowButton.SetActive(true);
             rightArrowButton.SetActive(true);
+            enterWorldButton.SetActive(true);
         }
 
         worldSwiper = currentWorldObject.GetComponent<ImageSwiper>();
@@ -186,6 +189,7 @@ public class MyWorldsManager : MonoBehaviour
                 currentWorldObject.SetActive(true);
                 leftArrowButton.SetActive(true);
                 rightArrowButton.SetActive(true);
+                enterWorldButton.SetActive(true);
             }
             // TODO: Uncomment this if using for backend
             userWorlds = await GetUserWorlds(); // re-render all of user's worlds
@@ -217,6 +221,7 @@ public class MyWorldsManager : MonoBehaviour
                 currentWorldObject.SetActive(false);
                 leftArrowButton.SetActive(false);
                 rightArrowButton.SetActive(false);
+                enterWorldButton.SetActive(false);
             }
         }
     }
