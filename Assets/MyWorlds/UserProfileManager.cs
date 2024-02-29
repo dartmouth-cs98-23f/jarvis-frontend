@@ -34,7 +34,7 @@ public class UserProfileManager : MonoBehaviour
     {
         // TODO: Replace this text with user's actual summary by getting it from the backend
         // await Task.Delay(1000);
-        // userSummary.text = "Silly silly user summary is silly";
+        // userSummary.text = "This is a summary used for testing";
         string userSummaryResponse = await httpClient.GetUserSummary(httpClient.MyId);
 
         if (userSummary != null)

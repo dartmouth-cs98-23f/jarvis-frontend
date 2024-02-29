@@ -45,6 +45,7 @@ public class OtherPlayerMovement : MonoBehaviour
     void MovePlayer(int x, int y)
     {
         Debug.Log("Moving other player to: " + x + ", " + y);
+        targetPosition = new Vector2(x, y);
         // This fixes the player automatically going to 0,0 on start
         if (targetPosition.x == 0f && targetPosition.y == 0f)
         {
