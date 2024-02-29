@@ -118,8 +118,8 @@ public class UserProfileManager : MonoBehaviour
             errorText.text = "";
         }
         // TODO: Switch this method for backend API
-        bool updateSummarySuccessful = true;
-        // bool updateSummarySuccessful = await httpClient.UpdateUserSummary(httpClient.MyId, userSummaryInputField.text);
+        // bool updateSummarySuccessful = true;
+        bool updateSummarySuccessful = await httpClient.UpdateUserSummary(httpClient.MyId, userSummaryInputField.text);
         if (updateSummarySuccessful)
         {
             editButton.SetActive(true);
