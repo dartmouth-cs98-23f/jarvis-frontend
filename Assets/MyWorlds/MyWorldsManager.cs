@@ -17,6 +17,8 @@ public class MyWorldsManager : MonoBehaviour
 
     public List<HTTPClient.UserWorld> userWorlds;
     public GameObject currentWorldObject;
+    public GameObject leftArrowButton;
+    public GameObject rightArrowButton;
     public GameObject navBarObject;
     public GameObject userProfilePanel;
     private NavbarManager navbarManager;
@@ -60,14 +62,20 @@ public class MyWorldsManager : MonoBehaviour
         navbarManager = navBarObject.GetComponent<NavbarManager>();
         navbarManager.SetCurrentPanel(myWorldsPanel);
 
+        userWorlds = null;
         if (userWorlds == null || userWorlds.Count == 0)
         {
             currentWorldObject.SetActive(false);
+            leftArrowButton.SetActive(false);
+            rightArrowButton.SetActive(false);
             return;
+        } else {
+            currentWorldObject.SetActive(true);
+            leftArrowButton.SetActive(true);
+            rightArrowButton.SetActive(true);
         }
 
         worldSwiper = currentWorldObject.GetComponent<ImageSwiper>();
-        Debug.Log("world swiper: " + worldSwiper);
         if (worldSwiper != null)
         {
 
@@ -172,9 +180,15 @@ public class MyWorldsManager : MonoBehaviour
 
         if (addWorldResponse != null) // if successfully added to user's worlds on backend
         {
+
+            if (userWorlds != null && userWorlds.Count == 0) // if user had no worlds before and now added successfully, show the world and the arrow buttons
+            {
+                currentWorldObject.SetActive(true);
+                leftArrowButton.SetActive(true);
+                rightArrowButton.SetActive(true);
+            }
             // TODO: Uncomment this if using for backend
             userWorlds = await GetUserWorlds(); // re-render all of user's worlds
-
             worldSwiper.AddWorld();
             return true;
         } else {
@@ -197,6 +211,13 @@ public class MyWorldsManager : MonoBehaviour
             userWorlds = await GetUserWorlds(); // TODO: Uncomment this for backend version 
             // re-render user's worlds
             worldSwiper.RemoveWorld();
+
+            if (userWorlds == null || userWorlds.Count == 0)
+            {
+                currentWorldObject.SetActive(false);
+                leftArrowButton.SetActive(false);
+                rightArrowButton.SetActive(false);
+            }
         }
     }
 }
