@@ -30,5 +30,6 @@ public class HatchedInfoComponent : MonoBehaviour
     public void ClickPrefab()
     {
         agentInfoManager.SetAgentID(hatchedId);
+        agentInfoManager.SetPanelDetails(displayUserImage.sprite);
     }
 }

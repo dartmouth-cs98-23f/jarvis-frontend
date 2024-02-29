@@ -17,12 +17,17 @@ public class AgentInfoManager : MonoBehaviour
     public GameObject agentInfoSummary;
     private HTTPClient httpClient = HTTPClient.Instance;
     public SpriteLoader spriteLoader;
+    public GameObject spriteHead;
 
     // Method to set the agent ID and fetch agent data
     public void SetAgentID(Guid agentId)
     {
         FillAgentInfoFields(agentId);
         // FetchAgentInfo(agentId); // Fetch agent data based on the ID, uncomment when testing with backend, and comment line above
+    }
+
+    public void SetPanelDetails(Sprite sprite){
+        spriteHead.GetComponent<Image>().sprite = sprite;
     }
 
     // Local testing method
@@ -165,11 +170,11 @@ public class AgentInfoManager : MonoBehaviour
         agentInfoSummary.GetComponent<TextMeshProUGUI>().text = "Summary:\n" + curr.summary;
 
         // Call the LoadSprite method with the desired URL
-        spriteLoader.LoadSprite(curr.sprite_headshot_URL, (sprite) => {
+        // spriteLoader.LoadSprite(curr.sprite_headshot_URL, (sprite) => {
 
-                agentInfoSprite.GetComponent<Image>().sprite = sprite;
-            });
-            agentInfoPanel.SetActive(true);
+        //         agentInfoSprite.GetComponent<Image>().sprite = sprite;
+        //     });
+        agentInfoPanel.SetActive(true);
         }
     
     public async void FetchAgentInfo(Guid agentId){
@@ -182,10 +187,10 @@ public class AgentInfoManager : MonoBehaviour
         agentInfoSummary.GetComponent<TextMeshProUGUI>().text = "Summary:\n" + agent.summary;
 
         // Call the LoadSprite method with the desired URL
-        spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
+        // spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
 
-                agentInfoSprite.GetComponent<Image>().sprite = sprite;
-            });
-            agentInfoPanel.SetActive(true);
+        //         agentInfoSprite.GetComponent<Image>().sprite = sprite;
+        //     });
+        agentInfoPanel.SetActive(true);
         }
     }
