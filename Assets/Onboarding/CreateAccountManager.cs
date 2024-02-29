@@ -112,7 +112,9 @@ public class CreateAccountNavigator : MonoBehaviour
                 await SignalRClient.Initialize(httpClient.AuthToken);
             }
             else
-            {
+            {   
+                // TODO: Most errors are due to existing emails. Once backend has created error handling, then we can remove this line.
+                emailErrorText.text = "Email address already exists"; 
                 Debug.Log("Failed to create account due to backend error");
             }
         }
@@ -136,7 +138,7 @@ public class CreateAccountNavigator : MonoBehaviour
         bool registrationSuccessful = await httpClient.RegisterUser(username, email, password); 
         if (registrationSuccessful){
             return true;
-    }
+        }
         else{
             return false; 
         }
