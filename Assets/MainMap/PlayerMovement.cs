@@ -115,7 +115,9 @@ public class PlayerMovement : MonoBehaviour
             // PlayerPrefs.SetString("coordY", yCoordinate.ToString()); 
 
             // TODO: Backend api connection. Send the updated location to the server
-            await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
+            // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
+            await SignalRClient.Instance.UpdateLocation((int) targetPosition.x, (int) targetPosition.y);
+
         }
         else
         {
