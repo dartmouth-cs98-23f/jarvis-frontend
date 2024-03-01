@@ -24,8 +24,8 @@ public class TrainAgentManager : MonoBehaviour
 
     public void SetAgentID(Guid agentId){
         agentID = agentId;
-        FillTrainAgentFields(agentId);
-        // FetchTrainAgentInfo(agentId);
+        // FillTrainAgentFields(agentId);
+        FetchTrainAgentInfo(agentId);
     }
 
     public void SetPanelDetails(Sprite sprite, TextMeshProUGUI name){

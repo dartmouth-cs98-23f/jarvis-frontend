@@ -35,7 +35,7 @@ public class GameClient : MonoBehaviour
     private List<HTTPClient.UserData> allUsers;
     private List<HTTPClient.AgentData> allAgents;
     private HashSet<Guid> characterIdSet = new HashSet<Guid>();
-    public AgentInfoManager agentInfoManager;
+    public TrainAgentManager trainAgentManager;
     void OnEnable()
     {
         httpClient = HTTPClient.Instance; // get httpClient
@@ -94,7 +94,7 @@ public class GameClient : MonoBehaviour
             }
             GameObject agentPrefab = GenerateAgentPrefab(agent);
             
-            if (agent.isHatched){
+            if (!agent.isHatched){
                 GameObject agentGO = Instantiate(agentPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
                 agentGO.tag = CharacterType.Agent;
                 CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
@@ -103,21 +103,18 @@ public class GameClient : MonoBehaviour
                 agentComponent.SetCharacterId(agent.id);
             }
             else {
-                GameObject agentGO = Instantiate(agentPrefab, eggTransform);
-                agentGO.tag = CharacterType.Egg;
-                CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
-                agentComponent.SetCharacterType(CharacterType.Egg);
-                agentComponent.SetPosition(agent.location.coordX, agent.location.coordY, 0);
-                agentComponent.SetCharacterId(agent.id);
+                BuildEgg(agent.hatchTime, agent.createdTime, agent.location.coordX, agent.location.coordY, agent);
             }
         }
     }
 
     GameObject GenerateAgentPrefab(HTTPClient.AgentData agent)
     {
-        if (agent.isHatched) {
+        if (!agent.isHatched) {
+            Debug.Log("Generating agent prefab with id: " + agent.id);
             return AgentPrefab; // TODO: Add logic to get actual agent prefab
         } else {
+            Debug.Log("Generating egg prefab with id: " + agent.id);
             return EggPrefab; // TODO: Add logic for this to display the incubation time and to interact with it - nurture it
         }
     }
@@ -187,17 +184,20 @@ public class GameClient : MonoBehaviour
         }
     }
 
-    public void BuildEgg(DateTime hatchTime, DateTime createdTime, int x, int y, Guid id){
+    public void BuildEgg(DateTime hatchTime, DateTime createdTime, int x, int y, HTTPClient.AgentData agent){
         hatchTime = new DateTime(DateTime.Now.Year, 3, 2, 12, 0, 0); // TODO: Delete, let user pass from backend
         createdTime = DateTime.Now; // TODO: Delete, let user pass from backend
         GameObject eggGO = Instantiate(EggPrefab, eggTransform);
-        eggGO.GetComponent<EggPrefabManager>().SetEggDetails(hatchTime, createdTime);
+        eggGO.GetComponent<EggPrefabManager>().SetEggDetails(hatchTime, createdTime, agent.username);
         eggGO.GetComponent<CharacterComponent>().SetPosition(x, y, 0);
-        eggGO.GetComponent<CharacterComponent>().SetCharacterId(id);
+        eggGO.GetComponent<CharacterComponent>().SetCharacterId(agent.id);
+        eggGO.GetComponent<CharacterComponent>().SetCharacterType(CharacterType.Egg);
+        eggGO.tag = CharacterType.Egg;
     }
 
     public void OnNurturePressed(){
-        agentInfoManager.SetAgentID(eggId);
+        Debug.Log("Nurture pressed");
+        trainAgentManager.SetAgentID(eggId);
     }
 
     // c8268729-e4f5-4df3-85fc-51779d7c2b35

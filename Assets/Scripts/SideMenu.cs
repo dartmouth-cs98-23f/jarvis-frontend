@@ -68,15 +68,7 @@ public class SideMenu : MonoBehaviour
             agents.enabled = false;
             shadow.SetActive(true);
         }
-        else {
-            characters.enabled = true;
-            worldSettings.enabled = true;
-            exitWorld.enabled = true;
-            players.enabled = true;
-            agents.enabled = true;
-            shadow.SetActive(false);
-        }
-        if( createAgentPanel.activeSelf ||
+        if (createAgentPanel.activeSelf ||
         visualDescPanel.activeSelf ||
         confirmCreatePanel.activeSelf ||
         agentInfoPanel.activeSelf ||
@@ -92,13 +84,48 @@ public class SideMenu : MonoBehaviour
             agents.enabled = false;
             largerShadow.SetActive(true);
         }
-        else
+        if (!worldSettingsPanel.activeSelf &&
+            !ownerWorldSettingsPanel.activeSelf &&
+            !playersListPanel.activeSelf &&
+            !hatchedPanel.activeSelf &&
+            !incubatingPanel.activeSelf &&
+            !swipePrefab.activeSelf)
+        {
+            shadow.SetActive(false);
+        }
+        if (!createAgentPanel.activeSelf &&
+            !visualDescPanel.activeSelf &&
+            !confirmCreatePanel.activeSelf &&
+            !agentInfoPanel.activeSelf &&
+            !trainAgentPanel.activeSelf &&
+            !agentCollabPanel.activeSelf &&
+            !viewAnswersPanel.activeSelf &&
+            !typeAnswerPanel.activeSelf)
+        {
+            largerShadow.SetActive(false);
+        }
+        
+        if (!worldSettingsPanel.activeSelf &&
+            !ownerWorldSettingsPanel.activeSelf &&
+            !playersListPanel.activeSelf &&
+            !hatchedPanel.activeSelf &&
+            !incubatingPanel.activeSelf &&
+            !swipePrefab.activeSelf &&
+            !createAgentPanel.activeSelf &&
+            !visualDescPanel.activeSelf &&
+            !confirmCreatePanel.activeSelf &&
+            !agentInfoPanel.activeSelf &&
+            !trainAgentPanel.activeSelf &&
+            !agentCollabPanel.activeSelf &&
+            !viewAnswersPanel.activeSelf &&
+            !typeAnswerPanel.activeSelf)
         {
             characters.enabled = true;
             worldSettings.enabled = true;
             exitWorld.enabled = true;
             players.enabled = true;
             agents.enabled = true;
+            shadow.SetActive(false);
             largerShadow.SetActive(false);
         }
     }

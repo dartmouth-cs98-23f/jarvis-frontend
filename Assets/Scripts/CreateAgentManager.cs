@@ -110,7 +110,7 @@ public class CreateAgentManager : MonoBehaviour
                 Debug.Log("Failed to get agent data to create egg with");
             }
             GameObject gameClient = GameObject.Find("GameClient");
-            gameClient.GetComponent<GameClient>().BuildEgg(agentInfo.hatchTime, agentInfo.createdTime, user.location.coordX, user.location.coordY, agentId);
+            gameClient.GetComponent<GameClient>().BuildEgg(agentInfo.hatchTime, agentInfo.createdTime, user.location.coordX, user.location.coordY, agentInfo);
         }
         else
         {

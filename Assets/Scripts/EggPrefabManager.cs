@@ -12,13 +12,15 @@ public class EggPrefabManager : MonoBehaviour
     public DateTime hatchTime;
     public double totalHours;
     private bool isSet = false;
+    public TextMeshProUGUI name;
 
-    public void SetEggDetails(DateTime hatch, DateTime create){
+    public void SetEggDetails(DateTime hatch, DateTime create, string username){
         hatchTime = hatch;
 
         TimeSpan total = hatchTime - create;
         totalHours = total.TotalHours;
         slider.maxValue = (float)totalHours;
+        name.text = username;
 
         isSet = true;
     }

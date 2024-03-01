@@ -31,7 +31,7 @@ public class CollabAgentManager : MonoBehaviour
 
     public void SetAgentID(Guid agentId){
         agentID = agentId;
-        localDisplayCollabQuestions();
+        DisplayCollabQuestions();
     }
     public void SetPanelDetails(Sprite sprite, TextMeshProUGUI name){
         spriteHead.GetComponent<Image>().sprite = sprite;
@@ -173,12 +173,12 @@ public class CollabAgentManager : MonoBehaviour
             count++;
         }
 
-        // Call the LoadSprite method with the desired URL
-        spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
+        // // Call the LoadSprite method with the desired URL
+        // spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
 
-                spriteHead.GetComponent<Image>().sprite = sprite;
-            });
-            collabAgentPanel.SetActive(true);
+        //         spriteHead.GetComponent<Image>().sprite = sprite;
+        //     });
+        collabAgentPanel.SetActive(true);
     }
 
     // Deletes instantiations of the prefab that shows up on the collab list when the panel is closed out

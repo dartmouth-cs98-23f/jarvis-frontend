@@ -22,8 +22,8 @@ public class AgentInfoManager : MonoBehaviour
     // Method to set the agent ID and fetch agent data
     public void SetAgentID(Guid agentId)
     {
-        FillAgentInfoFields(agentId);
-        // FetchAgentInfo(agentId); // Fetch agent data based on the ID, uncomment when testing with backend, and comment line above
+        // FillAgentInfoFields(agentId);
+        FetchAgentInfo(agentId); // Fetch agent data based on the ID, uncomment when testing with backend, and comment line above
     }
 
     public void SetPanelDetails(Sprite sprite){

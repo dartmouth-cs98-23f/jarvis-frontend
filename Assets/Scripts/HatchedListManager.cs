@@ -226,6 +226,7 @@ public class HatchedListManager : MonoBehaviour
             Image spriteHead = hatchedInfoComponent.displayUserImage; // Access the child Image component
             TextMeshProUGUI username = hatchedInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             hatchedInfoComponent.agentInfoPanel = agentInfoPanel;
+            hatchedInfoComponent.agentInfoManager = agentInfoManager;
             hatchedInfoComponent.hatchedId = hatchedData.id;
 
             // Call the LoadSprite method with the desired URL
