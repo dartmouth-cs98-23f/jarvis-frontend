@@ -27,7 +27,7 @@ public class ImageSwiper : MonoBehaviour
     private List<HTTPClient.UserWorld> userWorlds;
     private List<WorldSprite> worldSprites;
     public Text displayWorldName;
-
+    public Camera uiCamera;
     public GameObject leaveWorldPanel;
     private bool isLongPress = false;
     private float timeTouchStarted;
@@ -35,7 +35,6 @@ public class ImageSwiper : MonoBehaviour
 
     void OnEnable()
     {
-        Debug.Log("ImageSwiper enabled");
         if (myWorldsPanel != null) {
             MyWorldsManager myWorldsManager = myWorldsPanel.GetComponent<MyWorldsManager>();
             // if (myWorldsManager.userWorlds != null)
@@ -89,7 +88,7 @@ public class ImageSwiper : MonoBehaviour
             Touch touch = Input.GetTouch(0);
             Vector2 localPoint;
 
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, touch.position, null, out localPoint))
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, touch.position, uiCamera, out localPoint))
             {
                 if (rectTransform.rect.Contains(localPoint)) // Check if the localPoint is within the rect
                 {
@@ -99,6 +98,7 @@ public class ImageSwiper : MonoBehaviour
                             startTouchPosition = touch.position;
                             timeTouchStarted = Time.time; // Record the time when the touch starts
                             isLongPress = false; // Reset long press flag
+                            Debug.Log("Touch began");
                             break;
 
                         case TouchPhase.Moved:
@@ -123,11 +123,8 @@ public class ImageSwiper : MonoBehaviour
 
                         case TouchPhase.Stationary:
                             // Check if it's been a long press
-                            // Debug.Log("Touch stationary");
                             if (Time.time - timeTouchStarted > longPressDuration && !isLongPress)
                             {
-                                // Debug.Log("Touch stationary, is long press");
-
                                 isLongPress = true; // Prevents further swipe detection for this touch
                                 ShowLeaveWorldPanel(); // Show your delete confirmation
                             }
@@ -137,7 +134,6 @@ public class ImageSwiper : MonoBehaviour
                         case TouchPhase.Canceled:
                             // Reset everything for the next touch
                             isLongPress = false;
-                            // Debug.Log("Touch ended");
                             break;
                     }
                 }
