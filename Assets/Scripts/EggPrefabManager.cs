@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using System;
 using UnityEngine.UI;
+using Clients;
 
 public class EggPrefabManager : MonoBehaviour
 {
@@ -12,12 +13,13 @@ public class EggPrefabManager : MonoBehaviour
     public DateTime hatchTime;
     public double totalHours;
     private bool isSet = false;
+    private bool hasBuiltAgent;
     public TextMeshProUGUI name;
+    private HTTPClient httpClient = HTTPClient.Instance;
+    public HTTPClient.AgentData agent;
 
     public void SetEggDetails(DateTime hatch, DateTime create, string username){
         hatchTime = hatch;
-        Debug.Log("Hatch Time in SetEggDetails " + hatchTime);
-        Debug.Log("Create Time in SetEggDetails " + create);
 
         TimeSpan total = hatchTime - create;
         totalHours = total.TotalHours;
@@ -25,12 +27,26 @@ public class EggPrefabManager : MonoBehaviour
         name.text = username;
 
         isSet = true;
+        
     }
     // Update is called once per frame
+    async void Start(){
+        Guid agentId = gameObject.GetComponent<CharacterComponent>().GetCharacterId();
+        agent = await httpClient.GetAgent(agentId);
+        hasBuiltAgent = false;
+    }
     void Update()
     {
-        if (isSet){
+        if (isSet && !hasBuiltAgent){
             TimeSpan remaining = hatchTime - DateTime.UtcNow;
+            if (remaining < TimeSpan.Zero)
+            {
+                GameObject gameClientGO = GameObject.Find("GameClient");
+                gameClientGO.GetComponent<GameClient>().BuildAgent(agent);
+                gameObject.SetActive(false);
+                Destroy(this);
+                hasBuiltAgent = true; // Mark that the agent has been built
+                }
             double remainingHours = remaining.TotalHours;
             int hours = (int)remainingHours;
             int minutes = (int)((remainingHours - hours) * 60); // to calculate minutes to display in the text box

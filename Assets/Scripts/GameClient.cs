@@ -93,23 +93,11 @@ public class GameClient : MonoBehaviour
             } else {
                 characterIdSet.Add(agent.id);
             }
-            GameObject agentPrefab = GenerateAgentPrefab(agent);
             
             if (agent.isHatched){
-                GameObject agentGO = Instantiate(agentPrefab, mainMap);
-                agentGO.tag = CharacterType.Agent;
-                CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
-                agentComponent.SetCharacterType(CharacterType.Agent);
-                agentComponent.SetPosition(agent.location.coordX, agent.location.coordY, 0);
-                agentComponent.SetCharacterId(agent.id);
-                // Call the LoadSprite method with the desired URL
-                spriteLoader.LoadSprite(agent.sprite_URL, (sprite) => {
-
-                    agentGO.GetComponent<SpriteRenderer>().sprite = sprite;
-                });
+                BuildAgent(agent);
             }
             else {
-                Debug.Log("Agent created time " + agent.createdTime);
                 BuildEgg(agent.hatchTime, agent.createdTime, agent.location.coordX, agent.location.coordY, agent);
             }
         }
@@ -198,6 +186,19 @@ public class GameClient : MonoBehaviour
         eggGO.GetComponent<CharacterComponent>().SetCharacterId(agent.id);
         eggGO.GetComponent<CharacterComponent>().SetCharacterType(CharacterType.Egg);
         eggGO.tag = CharacterType.Egg;
+    }
+    
+    public void BuildAgent(HTTPClient.AgentData agent){
+        GameObject agentGO = Instantiate(AgentPrefab, mainMap);
+        agentGO.tag = CharacterType.Agent;
+        CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
+        agentComponent.SetCharacterType(CharacterType.Agent);
+        agentComponent.SetPosition(agent.location.coordX, agent.location.coordY, 0);
+        agentComponent.SetCharacterId(agent.id);
+
+        spriteLoader.LoadSprite(agent.sprite_URL, (sprite) => {
+            agentGO.GetComponent<SpriteRenderer>().sprite = sprite;
+        });
     }
 
     public void OnNurturePressed(){
