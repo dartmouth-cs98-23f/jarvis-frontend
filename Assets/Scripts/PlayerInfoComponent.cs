@@ -13,6 +13,7 @@ public class PlayerInfoComponent : MonoBehaviour
     public GameObject owner;
     public GameObject kick;
     public GameObject kickPanel;
+    public GameObject kickShadow;
     public GameObject playersListPanel;
     public PlayersListManager playersListManager;
     public Guid playerId;
@@ -38,5 +39,6 @@ public class PlayerInfoComponent : MonoBehaviour
         playersListManager.SetKickUsername(usernameTMP);
         playersListManager.SetPlayerID(playerId);
         kickPanel.SetActive(true);
+        kickShadow.SetActive(true);
     }
 }

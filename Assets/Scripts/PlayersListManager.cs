@@ -17,6 +17,7 @@ public class PlayersListManager : MonoBehaviour
     public SpriteLoader spriteLoader;
     public SideMenu sideMenuManager;
     public GameObject kickPanel;
+    public GameObject kickShadow;
     public GameObject playersListPanel;
     public GameObject playersListManager;
     public TextMeshProUGUI kickUsername;
@@ -106,6 +107,7 @@ public class PlayersListManager : MonoBehaviour
         GameObject onlineIndicator = playerInfoComponent.onlineIndicator;
 
         playerInfoComponent.kickPanel = kickPanel;
+        playerInfoComponent.kickShadow = kickShadow;
         playerInfoComponent.playersListPanel = playersListPanel;
         playerInfoComponent.playersListManager = playersListManager.GetComponent<PlayersListManager>();
         playerInfoComponent.playerId = playerInfo.id;
@@ -179,6 +181,7 @@ public class PlayersListManager : MonoBehaviour
             GameObject onlineIndicator = playerInfoComponent.onlineIndicator; // Access the child GameObject
 
             playerInfoComponent.kickPanel = kickPanel;
+            playerInfoComponent.kickShadow = kickShadow;
             playerInfoComponent.playersListPanel = playersListPanel;
             playerInfoComponent.playersListManager = playersListManager.GetComponent<PlayersListManager>();
             playerInfoComponent.playerId = playerInfo.id;
@@ -243,11 +246,13 @@ public class PlayersListManager : MonoBehaviour
 
     public void OnCancelPressed(){
         kickPanel.SetActive(false);
+        kickShadow.SetActive(false);
         playersListPanel.SetActive(true);
     }
 
     public async void OnKickPressed(){
         kickPanel.SetActive(false);
+        kickShadow.SetActive(false);
         playersListPanel.SetActive(true);
         
         // Call the method to remove the user from the world

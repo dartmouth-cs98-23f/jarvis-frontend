@@ -191,9 +191,9 @@ public class PlayerMovement : MonoBehaviour
 
                 GameObject gameClient = GameObject.Find("GameClient");
                 gameClient.GetComponent<GameClient>().eggId = collidedCharacterId;
+            }
+            NurtureButton.SetActive(true);
         }
-        NurtureButton.SetActive(true);
-    }
     }
 
     void OnCollisionExit2D(Collision2D collision)
