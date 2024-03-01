@@ -19,8 +19,8 @@ namespace Clients {
         public UserData currentUserData = new UserData();
 
         private readonly HttpClient httpClient = new HttpClient();
-        // private const string url = "http://localhost:5000";  
-        private const string url = "https://api.simugameservice.lekina.me";  
+        private const string url = "http://localhost:5000";  
+        // private const string url = "https://api.simugameservice.lekina.me";  
 
         private Guid myId = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5"); // TODO: delete this id, just using for testing
         // private Guid myId; 
@@ -458,6 +458,7 @@ namespace Clients {
             if (response.IsSuccessStatusCode) {
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 UserWorld worldInfo = JsonConvert.DeserializeObject<UserWorld>(jsonResponse);
+                Debug.Log("World got with name: " + worldInfo.name + " description " + worldInfo.description + " and world code " + worldInfo.worldCode);
             
                 return worldInfo;
             } else {
@@ -859,40 +860,31 @@ namespace Clients {
 
         public async Task<bool> AddAgentToWorld(Guid agentId)
         {
-            string apiUrl = $"{url}/worlds/{worldId}/agents";
+            string apiUrl = $"{url}/worlds/{worldId}/agents/{agentId}";
 
             try
             {
-                // Create a request object containing the agent's ID
-                var requestData = new
-                {
-                    agentId = agentId
-                };
-
-                // Serialize the request object to JSON
-                string jsonRequest = JsonConvert.SerializeObject(requestData);
-                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-
-                // Send the POST request
-                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+                // Send the POST request without a request body
+                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, null);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Debug.Log("Responses posted successfully.");
-                    return true; // Responses posted successfully
+                    Debug.Log("Agent added to world successfully.");
+                    return true; // Agent added to world successfully
                 }
                 else
                 {
                     Debug.LogError("AddAgentToWorldError: " + response.StatusCode);
-                    return false; // Posting responses failed
+                    return false; // Adding agent to world failed
                 }
             }
             catch (HttpRequestException e)
             {
                 Debug.LogError("AddAgentToWorld HTTP Request Exception: " + e.Message);
-                return false; // Posting responses failed due to exception
+                return false; // Adding agent to world failed due to exception
             }
         }
+
 
         public async Task<bool> UpdateUserSprite(Guid userId, List<int> spriteAnimations)
         {

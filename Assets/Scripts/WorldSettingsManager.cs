@@ -50,27 +50,30 @@ public class WorldSettingsManager : MonoBehaviour
     }
 
     public async void OnButtonPressed(){
-        // HTTPClient.UserWorld worldInfo = await httpClient.GetWorld(httpClient.WorldId);
-        HTTPClient.IdData creator = new HTTPClient.IdData();
-        creator.id = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5");
-        if (httpClient.MyId == creator.id){
+        HTTPClient.UserWorld worldInfo = await httpClient.GetWorld(httpClient.WorldId);
+        Guid creator = worldInfo.creatorId;
+        // HTTPClient.IdData creator = new HTTPClient.IdData();
+        // creator.id = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5");
+        if (httpClient.MyId == creator){
             // sideMenuManager.ToggleOwnerWorldSettingsPanel(); // TODO: Uncomment if we ever update the desc if the owner edits it
             sideMenuManager.ToggleWorldSettingsPanel();
             // namePlaceholder.text = worldInfo.name;
             // descPlaceholder.text = worldInfo.description;
-            // inviteCodeText.text = "Invite Code: " + worldInfo.worldCode;
-            localDisplayInviteCode();
-            localDisplayNamePlaceholder();
-            localDisplayDescPlaceholder();
+            worldNameText.text = "Name: " + worldInfo.name;
+            worldDescText.text = "Description: \n" + worldInfo.description;
+            inviteCodeText.text = "Invite Code: " + worldInfo.worldCode;
+            // localDisplayInviteCode();
+            // localDisplayNamePlaceholder();
+            // localDisplayDescPlaceholder();
         }
         else{
             sideMenuManager.ToggleWorldSettingsPanel();
-            // worldNameText.text = "Name: " + worldInfo.name;
-            // worldDescText.text = "Description: \n" + worldInfo.description;
-            // inviteCodeText.text = "Invite Code: " + worldInfo.worldCode;
-            localDisplayInviteCode();
-            localDisplayWorldDesc();
-            localDisplayWorldName();
+            worldNameText.text = "Name: " + worldInfo.name;
+            worldDescText.text = "Description: \n" + worldInfo.description;
+            inviteCodeText.text = "Invite Code: " + worldInfo.worldCode;
+            // localDisplayInviteCode();
+            // localDisplayWorldDesc();
+            // localDisplayWorldName();
         }
     }
 }
