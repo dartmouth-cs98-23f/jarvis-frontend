@@ -16,6 +16,7 @@ public class ChatMessageComponent : MonoBehaviour
     // A method to set the chat details
     public void SetChatDetails(string username, string content, bool isOnline)
     {
+        Debug.Log("In ChatMessageComponent: " + username + " " + content + " " + isOnline);
         displayUsername.text = username;
         displayContentGO.text = content;
         if (isOnline)
