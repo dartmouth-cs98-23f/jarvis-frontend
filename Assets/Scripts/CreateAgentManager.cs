@@ -109,8 +109,8 @@ public class CreateAgentManager : MonoBehaviour
             if (agentInfo == null){
                 Debug.Log("Failed to get agent data to create egg with");
             }
-            GameObject eggGO = Instantiate(eggPrefab, new Vector3(user.location.coordX, user.location.coordY, 0f), Quaternion.identity);
-            eggGO.GetComponent<EggPrefabManager>().SetEggDetails(agentInfo.hatchTime, agentInfo.createdTime);
+            GameObject gameClient = GameObject.Find("GameClient");
+            gameClient.GetComponent<GameClient>().BuildEgg(agentInfo.hatchTime, agentInfo.createdTime, user.location.coordX, user.location.coordY, agentId);
         }
         else
         {

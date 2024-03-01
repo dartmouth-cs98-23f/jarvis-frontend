@@ -12,6 +12,7 @@ TagManager:
   - QuestionAnswerPrefab
   - user
   - egg
+  - agent
   layers:
   - Default
   - TransparentFX

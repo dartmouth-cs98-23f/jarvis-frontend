@@ -11,6 +11,7 @@ public class CharacterType
 {
     public static string User = "user";
     public static string Agent = "agent";
+    public static string Egg = "egg";
 }
 
 public class GameClient : MonoBehaviour
@@ -26,6 +27,7 @@ public class GameClient : MonoBehaviour
     public GameObject georgePrefab;
     public GameObject yodaPrefab;
     public Transform mainMap;
+    public Transform eggTransform;
 
     private HTTPClient httpClient;
     private HTTPClient.UserData currentUserData;
@@ -92,12 +94,18 @@ public class GameClient : MonoBehaviour
             }
             GameObject agentPrefab = GenerateAgentPrefab(agent);
             GameObject agentGO = Instantiate(agentPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
-            agentGO.tag = CharacterType.Agent;
 
             CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
             agentComponent.SetPosition(agent.location.coordX, agent.location.coordY, 0);
             agentComponent.SetCharacterId(agent.id);
-            agentComponent.SetCharacterType(CharacterType.Agent);
+            if (agent.isHatched){
+                agentGO.tag = CharacterType.Agent;
+                agentComponent.SetCharacterType(CharacterType.Agent);
+            }
+            else {
+                agentGO.tag = CharacterType.Egg;
+                agentComponent.SetCharacterType(CharacterType.Egg);
+            }
 
         }
     }
@@ -174,6 +182,15 @@ public class GameClient : MonoBehaviour
             Debug.Log("Generating other user prefab with userId: " + userId);
             return otherUserPrefab; // this prefab would have the otherPlayerMovement script attached
         }
+    }
+
+    public void BuildEgg(DateTime hatchTime, DateTime createdTime, int x, int y, Guid id){
+        hatchTime = new DateTime(DateTime.Now.Year, 3, 2, 12, 0, 0); // TODO: Delete, let user pass from backend
+        createdTime = DateTime.Now; // TODO: Delete, let user pass from backend
+        GameObject eggGO = Instantiate(EggPrefab, eggTransform);
+        eggGO.GetComponent<EggPrefabManager>().SetEggDetails(hatchTime, createdTime);
+        eggGO.GetComponent<CharacterComponent>().SetPosition(x, y, 0);
+        eggGO.GetComponent<CharacterComponent>().SetCharacterId(id);
     }
 
     public void OnNurturePressed(){
