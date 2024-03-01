@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Clients;
+using System;
 
 public class OnboardingPanelsManager : MonoBehaviour
 {
@@ -10,7 +12,7 @@ public class OnboardingPanelsManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (PlayerPrefs.GetString("SkipToIntroQuestions") == "true")
+        if (HTTPClient.Instance.MyId != null && HTTPClient.Instance.MyId != Guid.Empty) // if user has already signed up
         {
             LandingPanel.SetActive(false);
             InfoPanel.SetActive(true);

@@ -131,7 +131,6 @@ public class UserProfileManager : MonoBehaviour
         else
         {
             errorText.text = "Failed to update summary. Please try again.";
-            // TODO: Add UI error message on failure to update summary
             Debug.Log("Failed to update summary. Please try again.");
         }
     }
