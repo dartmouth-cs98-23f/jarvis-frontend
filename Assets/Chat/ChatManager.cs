@@ -106,7 +106,7 @@ public class ChatManager : MonoBehaviour
         // TODO: Uncomment these when connecting with main game map to get Ids and type accordingly
         otherCharacterId = new Guid(PlayerPrefs.GetString("CollidedCharacterId"));
         otherCharacterType = PlayerPrefs.GetString("CollidedCharacterType");
-        otherCharacterType = "user";
+        // otherCharacterType = "user";
         if (otherCharacterType == "user")
         {
             // TODO: Comment for backend
@@ -137,7 +137,7 @@ public class ChatManager : MonoBehaviour
 
         // Initialize other user's head sprite
 
-
+        Debug.Log(otherCharacterData);
         StartCoroutine(GetCharacterHeadSprite(otherCharacterData.sprite_headshot_URL, userHeadSprite => {
             BuildOtherCharacterProfile(otherCharacterData.username, userHeadSprite);
         }));
@@ -275,8 +275,8 @@ public class ChatManager : MonoBehaviour
     // TODO: Write the actual method for backend API
     private async Task<HTTPClient.AgentData> GetAgent(Guid agentId)
     {
-        // return await httpClient.GetAgent(agentId);
-        return null;
+        return await httpClient.GetAgent(agentId);
+        // return null;
     }
     
     // Update is called once per frame

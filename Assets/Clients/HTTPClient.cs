@@ -916,8 +916,8 @@ namespace Clients {
             public string username;
             public string summary;
             public Location location;
-            public string sprite_headshot_URL;
             public DateTime createdTime;
+            public string sprite_headshot_URL;
         }
         [System.Serializable]
         public class AgentData : CharacterData
