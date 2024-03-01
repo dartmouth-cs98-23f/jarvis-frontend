@@ -30,6 +30,8 @@ public class SideMenu : MonoBehaviour
     public GameObject agentCollabPanel;
     public GameObject viewAnswersPanel;
     public GameObject typeAnswerPanel;
+    public GameObject shadow;
+    public GameObject largerShadow;
     void Start()
     {
         // Disable the submenu initially
@@ -58,8 +60,23 @@ public class SideMenu : MonoBehaviour
         playersListPanel.activeSelf ||
         hatchedPanel.activeSelf ||
         incubatingPanel.activeSelf ||
-        swipePrefab.activeSelf ||
-        createAgentPanel.activeSelf ||
+        swipePrefab.activeSelf){
+            characters.enabled = false;
+            worldSettings.enabled = false;
+            exitWorld.enabled = false;
+            players.enabled = false;
+            agents.enabled = false;
+            shadow.SetActive(true);
+        }
+        else {
+            characters.enabled = true;
+            worldSettings.enabled = true;
+            exitWorld.enabled = true;
+            players.enabled = true;
+            agents.enabled = true;
+            shadow.SetActive(false);
+        }
+        if( createAgentPanel.activeSelf ||
         visualDescPanel.activeSelf ||
         confirmCreatePanel.activeSelf ||
         agentInfoPanel.activeSelf ||
@@ -68,19 +85,21 @@ public class SideMenu : MonoBehaviour
         viewAnswersPanel.activeSelf ||
         typeAnswerPanel.activeSelf)
         {
-            // characters.enabled = false;
-            // worldSettings.enabled = false;
-            // exitWorld.enabled = false;
-            // players.enabled = false;
-            // agents.enabled = false;
+            characters.enabled = false;
+            worldSettings.enabled = false;
+            exitWorld.enabled = false;
+            players.enabled = false;
+            agents.enabled = false;
+            largerShadow.SetActive(true);
         }
         else
         {
-            // characters.enabled = true;
-            // worldSettings.enabled = true;
-            // exitWorld.enabled = true;
-            // players.enabled = true;
-            // agents.enabled = true;
+            characters.enabled = true;
+            worldSettings.enabled = true;
+            exitWorld.enabled = true;
+            players.enabled = true;
+            agents.enabled = true;
+            largerShadow.SetActive(false);
         }
     }
 
