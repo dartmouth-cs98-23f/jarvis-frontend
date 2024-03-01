@@ -36,6 +36,7 @@ public class GameClient : MonoBehaviour
     private List<HTTPClient.AgentData> allAgents;
     private HashSet<Guid> characterIdSet = new HashSet<Guid>();
     public TrainAgentManager trainAgentManager;
+    public SpriteLoader spriteLoader;
     void OnEnable()
     {
         httpClient = HTTPClient.Instance; // get httpClient
@@ -74,7 +75,7 @@ public class GameClient : MonoBehaviour
         }
     }
 
-    void BuildAllCharactersV2()
+    async void BuildAllCharactersV2()
     {
         BuildAllUsers();
         BuildAllAgents();
@@ -94,15 +95,21 @@ public class GameClient : MonoBehaviour
             }
             GameObject agentPrefab = GenerateAgentPrefab(agent);
             
-            if (!agent.isHatched){
-                GameObject agentGO = Instantiate(agentPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
+            if (agent.isHatched){
+                GameObject agentGO = Instantiate(agentPrefab, mainMap);
                 agentGO.tag = CharacterType.Agent;
                 CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
                 agentComponent.SetCharacterType(CharacterType.Agent);
                 agentComponent.SetPosition(agent.location.coordX, agent.location.coordY, 0);
                 agentComponent.SetCharacterId(agent.id);
+                // Call the LoadSprite method with the desired URL
+                spriteLoader.LoadSprite(agent.sprite_URL, (sprite) => {
+
+                    agentGO.GetComponent<SpriteRenderer>().sprite = sprite;
+                });
             }
             else {
+                Debug.Log("Agent created time " + agent.createdTime);
                 BuildEgg(agent.hatchTime, agent.createdTime, agent.location.coordX, agent.location.coordY, agent);
             }
         }
@@ -110,7 +117,7 @@ public class GameClient : MonoBehaviour
 
     GameObject GenerateAgentPrefab(HTTPClient.AgentData agent)
     {
-        if (!agent.isHatched) {
+        if (agent.isHatched) {
             Debug.Log("Generating agent prefab with id: " + agent.id);
             return AgentPrefab; // TODO: Add logic to get actual agent prefab
         } else {
@@ -185,8 +192,6 @@ public class GameClient : MonoBehaviour
     }
 
     public void BuildEgg(DateTime hatchTime, DateTime createdTime, int x, int y, HTTPClient.AgentData agent){
-        hatchTime = new DateTime(DateTime.Now.Year, 3, 2, 12, 0, 0); // TODO: Delete, let user pass from backend
-        createdTime = DateTime.Now; // TODO: Delete, let user pass from backend
         GameObject eggGO = Instantiate(EggPrefab, eggTransform);
         eggGO.GetComponent<EggPrefabManager>().SetEggDetails(hatchTime, createdTime, agent.username);
         eggGO.GetComponent<CharacterComponent>().SetPosition(x, y, 0);

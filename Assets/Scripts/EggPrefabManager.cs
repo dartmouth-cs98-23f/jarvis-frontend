@@ -16,6 +16,8 @@ public class EggPrefabManager : MonoBehaviour
 
     public void SetEggDetails(DateTime hatch, DateTime create, string username){
         hatchTime = hatch;
+        Debug.Log("Hatch Time in SetEggDetails " + hatchTime);
+        Debug.Log("Create Time in SetEggDetails " + create);
 
         TimeSpan total = hatchTime - create;
         totalHours = total.TotalHours;
@@ -28,7 +30,7 @@ public class EggPrefabManager : MonoBehaviour
     void Update()
     {
         if (isSet){
-            TimeSpan remaining = hatchTime - DateTime.Now;
+            TimeSpan remaining = hatchTime - DateTime.UtcNow;
             double remainingHours = remaining.TotalHours;
             int hours = (int)remainingHours;
             int minutes = (int)((remainingHours - hours) * 60); // to calculate minutes to display in the text box

@@ -170,7 +170,7 @@ public class TrainAgentManager : MonoBehaviour
         trainAgentDesc.GetComponent<TextMeshProUGUI>().text = agent.description;
 
         TimeSpan total = agent.hatchTime - agent.createdTime;
-        TimeSpan remaining = agent.hatchTime - DateTime.Now;
+        TimeSpan remaining = agent.hatchTime - DateTime.UtcNow;
         double totalHours = total.TotalHours;
         double remainingHours = remaining.TotalHours;
         int hours = (int)remainingHours;
@@ -196,7 +196,7 @@ public class TrainAgentManager : MonoBehaviour
         trainAgentDesc.GetComponent<TextMeshProUGUI>().text = agent.description;
 
         TimeSpan total = agent.hatchTime - agent.createdTime;
-        TimeSpan remaining = agent.hatchTime - DateTime.Now;
+        TimeSpan remaining = agent.hatchTime - DateTime.UtcNow;
         double totalHours = total.TotalHours;
         double remainingHours = remaining.TotalHours;
         int hours = (int)remainingHours;

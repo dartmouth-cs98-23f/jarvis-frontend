@@ -187,7 +187,7 @@ public class IncubatingListManager : MonoBehaviour
             incubatingInfoComponent.trainAgentManager = trainAgentManager;
             incubatingInfoComponent.incubatingId = incubatingId.id;
             TimeSpan total = incubatingInfo.hatchTime - incubatingInfo.createdTime;
-            TimeSpan remaining = incubatingInfo.hatchTime - DateTime.Now;
+            TimeSpan remaining = incubatingInfo.hatchTime - DateTime.UtcNow;
             double totalHours = total.TotalHours;
             double remainingHours = remaining.TotalHours;
 
