@@ -129,7 +129,7 @@ public class MyWorldsManager : MonoBehaviour
         navbarManager.SetCurrentPanel(addWorldPanel);
     }
 
-    async Task<HTTPClient.AddUserToWorldResponse> LocalAddUserToWorld(Guid worldId, Guid userId)
+    async Task<bool> LocalAddUserToWorld(Guid worldId, Guid userId)
     {
         await Task.Delay(1000);
 
@@ -143,13 +143,7 @@ public class MyWorldsManager : MonoBehaviour
                 thumbnail_URL = "https://picsum.photos/201"
             }
         );
-        return new HTTPClient.AddUserToWorldResponse { 
-            id = worldId, 
-            creatorId = userId,
-            name = "Existing world",
-            description = "description test",
-            thumbnail_URL = "https://picsum.photos/201"
-        };
+        return true;
     }
 
     public async Task<string> AddWorld(string worldCode)
@@ -178,9 +172,9 @@ public class MyWorldsManager : MonoBehaviour
             }
         }
 
-        HTTPClient.AddUserToWorldResponse addWorldResponse = await httpClient.AddUserToWorld(worldId, httpClient.MyId);
+        bool addWorldSuccessful = await httpClient.AddUserToWorld(worldId, httpClient.MyId);
 
-        if (addWorldResponse != null) // if successfully added to user's worlds on backend
+        if (addWorldSuccessful) // if successfully added to user's worlds on backend
         {
 
             if (userWorlds != null && userWorlds.Count == 0) // if user had no worlds before and now added successfully, show the world and the arrow buttons

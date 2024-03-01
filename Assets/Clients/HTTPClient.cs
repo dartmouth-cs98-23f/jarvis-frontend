@@ -275,19 +275,8 @@ namespace Clients {
             }
         }
 
-
-
         public class UserSummary {
             public string summary;
-        }
-
-        public class AddUserToWorldResponse
-        {
-            public Guid id;
-            public Guid creatorId;
-            public string name;
-            public string description;
-            public string thumbnail_URL;
         }
 
         public class GetWorldIdFromWorldCodeResponse
@@ -790,7 +779,7 @@ namespace Clients {
             }
         }
 
-        public async Task<AddUserToWorldResponse> AddUserToWorld(Guid worldId, Guid userId)
+        public async Task<bool> AddUserToWorld(Guid worldId, Guid userId)
         {
             string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
 
@@ -804,21 +793,20 @@ namespace Clients {
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
-                    AddUserToWorldResponse addWorldResponse = JsonConvert.DeserializeObject<AddUserToWorldResponse>(jsonResponse);
-                    Debug.Log("World added successfully to user with world id: " + addWorldResponse.id + " and creator id: " + addWorldResponse.creatorId + " and name: " + addWorldResponse.name + " and description: " + addWorldResponse.description + " and thumbnail_URL: " + addWorldResponse.thumbnail_URL);
-                    return addWorldResponse;
+                    Debug.Log($"User (id: {userId}) added to world {worldId} successfully.");
+                    return true;
                 }
                 else
                 {
                     Debug.LogError("Add world failed: " + response.StatusCode);
-                    return null;
+                    return false;
                 }
             }
             catch (HttpRequestException e)
             {
                 // Handle other exceptions if needed
                 Debug.LogError("HTTP Request Exception: " + e.Message);
-                return null; // Registration failed due to exception
+                return false; // Registration failed due to exception
             }
         }
 
