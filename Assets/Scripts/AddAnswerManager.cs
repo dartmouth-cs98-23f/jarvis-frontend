@@ -13,6 +13,7 @@ public class AddAnswerManager : MonoBehaviour
     public InputField answerInput;
     public string answer;
     private Guid agentID;
+    private Guid questionID;
     private HTTPClient httpClient = HTTPClient.Instance;
     public GameObject spriteHead;
     public GameObject agentName;
@@ -24,8 +25,9 @@ public class AddAnswerManager : MonoBehaviour
         answerInput.text = "";
     }
 
-    public void SetAgentID(Guid agentId){
+    public void SetIDs(Guid agentId, Guid questionId){
         agentID = agentId;
+        questionID = questionId;
     }
 
     public void SetPanelDetails(Sprite sprite, string name, string q){
@@ -41,20 +43,12 @@ public class AddAnswerManager : MonoBehaviour
         // Get the answer from the input field
         string answer = answerInput.text;
 
-        // Create a list to store the question-response data
-        List<HTTPClient.PostResponse> responses = new List<HTTPClient.PostResponse>();
-
-        // Add the answer to the responses list
-        HTTPClient.PostResponse response = new HTTPClient.PostResponse();
-        response.response = answer;
-        responses.Add(response);
-
         // Call the PostResponses method to send the answer
-        HTTPClient.PostResponseResp sendAnswerResponse = await httpClient.PostResponses(agentID, httpClient.MyId, responses);
+        HTTPClient.PostResponseResp sendAnswerResponse = await httpClient.PostResponse(agentID, httpClient.MyId, questionID, answer);
 
         if (sendAnswerResponse != null)
         {
-            Debug.Log("Answer sent successfully.");
+            Debug.Log("Answer sent successfully. User summary is now " + sendAnswerResponse.summary);
         }
         else
         {

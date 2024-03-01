@@ -142,10 +142,17 @@ namespace Clients {
         {
             public Guid targetId;
             public Guid responderId;
-            public List<PostResponse> responses;
+            public List<PostResponseData> responses;
+        }
+        public class PostResponseRequest
+        {
+            public Guid targetId;
+            public Guid responderId;
+            public Guid questionId;
+            public string response;
         }
 
-        public class PostResponse
+        public class PostResponseData
         {
             public Guid questionId;
             public string response;
@@ -156,7 +163,7 @@ namespace Clients {
             public string summary;
         }
 
-        public async Task<PostResponseResp> PostResponses(Guid targetId, Guid responderId, List<PostResponse> responses)
+        public async Task<PostResponseResp> PostResponses(Guid targetId, Guid responderId, List<PostResponseData> responses)
         {
             string apiUrl = $"{url}/questions/responses";
 
@@ -188,6 +195,42 @@ namespace Clients {
             catch (HttpRequestException e)
             {
                 Debug.LogError("PostResponses HTTP Request Exception: " + e.Message);
+                return null; // Posting responses failed due to exception
+            }
+        }
+        public async Task<PostResponseResp> PostResponse(Guid targetId, Guid responderId, Guid questionId, string responseText)
+        {
+            string apiUrl = $"{url}/questions/response";
+
+            try
+            {
+                PostResponseRequest req = new PostResponseRequest{
+                    targetId = targetId, 
+                    responderId = responderId, 
+                    questionId = questionId,
+                    response = responseText,
+                };
+                string jsonRequest = JsonConvert.SerializeObject(req);
+                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    PostResponseResp resp = JsonConvert.DeserializeObject<PostResponseResp>(jsonResponse);
+                    Debug.Log("Response posted successfully: " + req.response);
+                    return resp; // Responses posted successfully
+                }
+                else
+                {
+                    Debug.LogError("PostResponseError: " + response.StatusCode);
+                    return null; // Posting responses failed
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.LogError("PostResponse HTTP Request Exception: " + e.Message);
                 return null; // Posting responses failed due to exception
             }
         }

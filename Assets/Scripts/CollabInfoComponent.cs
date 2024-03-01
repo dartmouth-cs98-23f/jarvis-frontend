@@ -75,7 +75,7 @@ public class CollabInfoComponent : MonoBehaviour
 
     public void Answer()
     {
-        addAnswerManager.SetAgentID(agentID);
+        addAnswerManager.SetIDs(agentID, questionID);
         addAnswerManager.SetPanelDetails(spriteHead, username.text, questionTMP.text);
         // Toggle the panel visibility
         if (typeAnswerPanel != null)

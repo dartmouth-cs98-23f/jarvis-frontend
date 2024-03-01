@@ -16,7 +16,7 @@ public class IntroQuestions : MonoBehaviour
     public GameObject characterSummaryPanel;
     public List<Text> errorTexts = new List<Text>();
     public List<InputField> questionInputFields = new List<InputField>();
-    public List<HTTPClient.PostResponse> answers = new List<HTTPClient.PostResponse>();
+    public List<HTTPClient.PostResponseData> answers = new List<HTTPClient.PostResponseData>();
     public GameObject loadingPanel;
     private HTTPClient httpClient = HTTPClient.Instance;
     private int questionIdx = 0; // index of the current question. Note: 0th-index refers to design character question panel
@@ -219,7 +219,7 @@ public class IntroQuestions : MonoBehaviour
     {
         for (int i = 0; i < questionInputFields.Count; i++)
         {
-            answers.Add(new HTTPClient.PostResponse {
+            answers.Add(new HTTPClient.PostResponseData {
                 questionId = userQuestions[i].id,
                 response = questionInputFields[i].text
             });
