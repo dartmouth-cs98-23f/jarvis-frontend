@@ -169,8 +169,10 @@ public class SignalRClient
     {
         _connection.On<ChatResponse>("ChatHandler", (ChatResponse chatResp) =>
         {
-            Debug.Log($"Message {chatResp.Id} received from user id: {chatResp.SenderId} sending to {chatResp.ReceiverId}. User is online: {chatResp.IsOnline}");
-            chatManager.ReceiveMessage(chatResp.Id, chatResp.SenderId, chatResp.Content, chatResp.IsOnline);
+            Message message = JsonUtility.FromJson<Message>(chatResp.Content);
+            Debug.Log("In ChatHandler SignalR: " + message.response);
+            Debug.Log($"Message {chatResp.Id} received from user id: {chatResp.SenderId} sending to {chatResp.ReceiverId}. User is online: {chatResp.IsSenderOnline}. Message: {message.response}");
+            chatManager.ReceiveMessage(chatResp.Id, chatResp.SenderId, message.response, chatResp.IsSenderOnline);
         });
     }
 
@@ -318,9 +320,8 @@ public class SignalRClient
         public Guid SenderId { get; set; }
         public Guid ReceiverId { get; set; }
         public string Content { get; set; }
-        public bool IsGroupChat { get; set; }
+        public bool IsSenderOnline { get; set; }
         public DateTime CreatedTime { get; set; }
-        public bool IsOnline { get; set; }
     }
 
     public class Location
@@ -332,6 +333,12 @@ public class SignalRClient
     {
         get { return userLocations; }
     }
+
+    [System.Serializable]
+    public class Message
+    {
+        public string response;
+    }
 
 }
 }

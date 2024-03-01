@@ -9,6 +9,8 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Clients;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
+
 
 
 // For testing:
@@ -66,6 +68,7 @@ public class ChatManager : MonoBehaviour
     private HTTPClient.CharacterData otherCharacterData;
     private bool otherCharacterIsOnline; // true for online, false for offline or agent
     private string otherCharacterType; // check if the other character is user or agent
+    private ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
 
     private string chatTestJsonString = @"
     [
@@ -278,6 +281,10 @@ public class ChatManager : MonoBehaviour
         return await httpClient.GetAgent(agentId);
         // return null;
     }
+    public void Enqueue(Action action)
+    {
+        _actions.Enqueue(action);
+    }
     
     // Update is called once per frame
     void Update()
@@ -304,22 +311,33 @@ public class ChatManager : MonoBehaviour
         //     SignalRClient.Message = null;
         //     SignalRClient.IsOnline = null;
         // }
+
+        while (_actions.TryDequeue(out var action))
+        {
+            action.Invoke();
+        }
     }
 
     public void ReceiveMessage(Guid messageId, Guid senderId, string message, bool isOnline)
     {
-        if (generatedMessageIds.Add(messageId)) // if chatMessage has not been created yet
+
+        Enqueue(() =>
         {
-            GenerateChatMessageObject(new HTTPClient.ChatMessage
+            Debug.Log("In ReceiveMessage, enqueing: " + message);
+            if (generatedMessageIds.Add(messageId)) // if chatMessage has not been created yet
             {
-                SenderId = senderId,
-                ReceiverId = currentUserId,
-                Content = StringParser.ParseInput(message),
-                IsOnline = isOnline,
-                IsGroupChat = false,
-                CreatedTime = DateTime.UtcNow
-            });
-        }
+                Debug.Log("Chat message not generated yet. Generating message");
+                GenerateChatMessageObject(new HTTPClient.ChatMessage
+                {
+                    SenderId = senderId,
+                    ReceiverId = currentUserId,
+                    Content = message,
+                    IsOnline = isOnline,
+                    IsGroupChat = false,
+                    CreatedTime = DateTime.UtcNow
+                });
+            }
+        });
     }
 
     IEnumerator GetCharacterHeadSprite(string url, System.Action<Sprite> onCompleted)
@@ -462,17 +480,25 @@ public class ChatManager : MonoBehaviour
 
     public void GenerateChatMessageObject(HTTPClient.ChatMessage chatMessage)
     {
-        // Debug.Log("Calling GCMO");
-        GameObject chatGO = Instantiate(chatMessagePrefab, contentPanel);
+        GameObject chatGO;
+        try {
+            chatGO = Instantiate(chatMessagePrefab, contentPanel);
+        } catch (Exception e) {
+            Debug.LogError("Error instantiating chatGO: " + e.Message);
+            return;
+        }
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
-        string messageContent = StringParser.ParseInput(chatMessage.Content);
+        // string messageContent = StringParser.ParseInput(chatMessage.Content);
+        // Debug.Log("IN GCMO: after parse " + messageContent);
         if (chatMessage.SenderId == currentUserId)
-        {
-            chatMessageComponent.SetChatDetails(currentUserData.username, messageContent, chatMessage.IsOnline);
+        {   
+            Debug.Log("Setting chat details for current user");
+            chatMessageComponent.SetChatDetails(currentUserData.username, chatMessage.Content, chatMessage.IsOnline);
         }
         else
         {
-            chatMessageComponent.SetChatDetails(otherCharacterData.username, messageContent, chatMessage.IsOnline);
+            Debug.Log("Setting chat details for current user");
+            chatMessageComponent.SetChatDetails(otherCharacterData.username, chatMessage.Content, chatMessage.IsOnline);
         }
     }
 
@@ -491,6 +517,7 @@ public class ChatManager : MonoBehaviour
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
 
         await SignalRClient.Instance.SendChat(otherCharacterId, content);
+        GenerateChatMessageObject(message);
     }
 
     // For local frontend testing
