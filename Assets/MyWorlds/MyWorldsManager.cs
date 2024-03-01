@@ -152,7 +152,7 @@ public class MyWorldsManager : MonoBehaviour
         };
     }
 
-    public async Task<bool> AddWorld(string worldCode)
+    public async Task<string> AddWorld(string worldCode)
     {
 
         Debug.Log("Adding world" + " " + worldCode);
@@ -164,7 +164,7 @@ public class MyWorldsManager : MonoBehaviour
         if (nullableWorldId == null || nullableWorldId == Guid.Empty)
         {
             Debug.Log("World not found");
-            return false;
+            return "Invalid world code. Please try again.";
         }
         Guid worldId = nullableWorldId.Value;
 
@@ -174,7 +174,7 @@ public class MyWorldsManager : MonoBehaviour
             if (userWorlds[i].id == worldId)
             {
                 Debug.Log("World already exists in user's worlds");
-                return false;
+                return "You've already added this world.";
             }
         }
 
@@ -193,9 +193,9 @@ public class MyWorldsManager : MonoBehaviour
             // TODO: Uncomment this if using for backend
             userWorlds = await GetUserWorlds(); // re-render all of user's worlds
             worldSwiper.AddWorld();
-            return true;
+            return "success";
         } else {
-            return false;
+            return "Failed to add world. Please try again.";
         }
     }
 

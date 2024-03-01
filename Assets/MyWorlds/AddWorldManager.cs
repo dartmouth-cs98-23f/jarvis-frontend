@@ -10,27 +10,27 @@ public class AddWorldManager : MonoBehaviour
     public InputField worldCodeInputField;
     private MyWorldsManager myWorldsManager;
     public GameObject navbarPanel;
+    public Text errorText;
 
     // Start is called before the first frame update
     void OnEnable()
     {
         myWorldsManager = myWorldsPanel.GetComponent<MyWorldsManager>();
         worldCodeInputField.text = ""; // reset code input field
+        errorText.text = ""; // reset error text
     }
 
     public async void OnPressAdd()
     {
         // TODO: Check if world code is valid format
-        bool addedSuccessfully = await myWorldsManager.AddWorld(worldCodeInputField.text);
-        if (addedSuccessfully)
-        {
+        string addWorldResponse = await myWorldsManager.AddWorld(worldCodeInputField.text);
+
+        if (addWorldResponse == "success") {
             addWorldPanel.SetActive(false);
             myWorldsPanel.SetActive(true);
             navbarPanel.GetComponent<NavbarManager>().NavigateBackToMyWorlds();
-        } else 
-        {
-            // TODO: Add UI error message on failure to add world
-            Debug.Log("Failed to add world");
+        } else {
+            errorText.text = addWorldResponse;
         }
     }
 }
