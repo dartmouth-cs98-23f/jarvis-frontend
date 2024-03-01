@@ -54,7 +54,8 @@ public class WorldSettingsManager : MonoBehaviour
         HTTPClient.IdData creator = new HTTPClient.IdData();
         creator.id = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5");
         if (httpClient.MyId == creator.id){
-            sideMenuManager.ToggleOwnerWorldSettingsPanel();
+            // sideMenuManager.ToggleOwnerWorldSettingsPanel(); // TODO: Uncomment if we ever update the desc if the owner edits it
+            sideMenuManager.ToggleWorldSettingsPanel();
             // namePlaceholder.text = worldInfo.name;
             // descPlaceholder.text = worldInfo.description;
             // inviteCodeText.text = "Invite Code: " + worldInfo.worldCode;

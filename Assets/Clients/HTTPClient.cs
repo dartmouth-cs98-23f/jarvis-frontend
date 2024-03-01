@@ -562,7 +562,7 @@ namespace Clients {
             
         }
 
-        public async Task<IdData> CreateAgent(string username, string description, Guid creatorId, int incubationDurationInHours, string sprite_URL, string sprite_headshot_URL)
+        public async Task<IdData> CreateAgent(string username, string description, Guid creatorId, float incubationDurationInHours, string sprite_URL, string sprite_headshot_URL)
         {
             string apiUrl = $"{url}/agents";
 
@@ -570,12 +570,12 @@ namespace Clients {
             {
                 CreateAgentData createAgentData = new CreateAgentData
                 {
-                    Username = username,
-                    Description = description,
-                    CreatorId = creatorId,
-                    IncubationDurationInHours = incubationDurationInHours,
-                    Sprite_URL = sprite_URL,
-                    Sprite_Headshot_URL = sprite_headshot_URL
+                    username = username,
+                    description = description,
+                    creatorId = creatorId,
+                    incubationDurationInHours = incubationDurationInHours,
+                    spriteURL = sprite_URL,
+                    spriteHeadshotURL = sprite_headshot_URL
                     
                 };
 
@@ -734,14 +734,33 @@ namespace Clients {
             public string question;
         }
 
-        public async Task<bool> RemoveUserFromWorld(Guid userId)
+        public async Task<bool> RemoveUserFromWorld(Guid userId, Guid ownerId)
         {
             string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
+
             try
             {
+                // Create the request body
+                var requestBody = new
+                {
+                    ownerId = ownerId
+                };
+
+                // Serialize the request body to JSON
+                string jsonRequest = JsonConvert.SerializeObject(requestBody);
+                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Create the DELETE request with the request body
+                HttpRequestMessage request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(apiUrl),
+                    Content = content
+                };
+
                 // Send the DELETE request
-                HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
-                
+                HttpResponseMessage response = await httpClient.SendAsync(request);
+
                 // Check if the request was successful
                 if (response.IsSuccessStatusCode)
                 {
@@ -751,14 +770,14 @@ namespace Clients {
                 else
                 {
                     // Log the error if the request fails
-                    Console.WriteLine($"Error: {response.StatusCode}");
+                    Debug.LogError("Remove User From World failed: " + response.StatusCode);
                     return false;
                 }
             }
             catch (Exception e)
             {
                 // Log any exceptions that occur
-                Console.WriteLine($"Exception: {e.Message}");
+                Debug.LogError("RemoveUserFromWorld HTTP Request Exception: " + e.Message);
                 return false;
             }
         }
@@ -970,12 +989,12 @@ namespace Clients {
         [System.Serializable]
         public class CreateAgentData
         {
-            public string Username;
-            public string Description;
-            public Guid CreatorId;
-            public int IncubationDurationInHours;
-            public string Sprite_URL;
-            public string Sprite_Headshot_URL;
+            public string username;
+            public string description;
+            public Guid creatorId;
+            public float incubationDurationInHours;
+            public string spriteURL;
+            public string spriteHeadshotURL;
         }
 
         [System.Serializable]

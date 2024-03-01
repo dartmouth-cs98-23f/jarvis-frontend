@@ -251,7 +251,7 @@ public class PlayersListManager : MonoBehaviour
         playersListPanel.SetActive(true);
         
         // Call the method to remove the user from the world
-        bool response = await httpClient.RemoveUserFromWorld(playerID);
+        bool response = await httpClient.RemoveUserFromWorld(playerID, httpClient.MyId);
 
         // Handle the response based on the boolean value
         if (response)

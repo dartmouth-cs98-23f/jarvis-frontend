@@ -44,9 +44,14 @@ public class CreateAgentManager : MonoBehaviour
     public async void StoreVisualDesc(){
         visual = agentVisualDesc.text;
 
-        HTTPClient.PostVisualResponse resp = await httpClient.PostVisualDescription(visual);
+        HTTPClient.PostVisualResponse resp = await httpClient.PostVisualDescription(visual); // TODO: Add UI loading while getting image from backend
         sprite_URL = resp.sprite_URL;
         sprite_headshot_URL = resp.sprite_headshot_URL;
+        Debug.Log("Sprite URL " + sprite_URL);
+        Debug.Log("Sprite Headshot URL " + sprite_headshot_URL);
+        FillConfirmCreateFields();
+        sideMenuManager.ToggleVisualDescPanel();
+        sideMenuManager.ToggleConfirmCreatePanel();
     }
 
     public void ResetInputFields()
@@ -85,7 +90,7 @@ public class CreateAgentManager : MonoBehaviour
 
     public async void SendAgentInfo()
     {
-        HTTPClient.IdData agent = await httpClient.CreateAgent(name, desc, httpClient.MyId, (int)incubation, sprite_URL, sprite_headshot_URL);
+        HTTPClient.IdData agent = await httpClient.CreateAgent(name, desc, httpClient.MyId, incubation, sprite_URL, sprite_headshot_URL);
         Guid agentId = agent.id;
         HTTPClient.UserData user = await httpClient.GetUser(httpClient.MyId);
         
