@@ -19,13 +19,13 @@ namespace Clients {
         public UserData currentUserData = new UserData();
 
         private readonly HttpClient httpClient = new HttpClient();
-        private const string url = "http://localhost:5000";  
-        // private const string url = "https://api.simugameservice.lekina.me";  
+        // private const string url = "http://localhost:5000";  
+        private const string url = "https://api.simugameservice.lekina.me";  
 
-        private Guid myId = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5"); // TODO: delete this id, just using for testing
-        // private Guid myId; 
-        // private Guid worldId;
-        private Guid worldId = new Guid("9119bd21-e16a-4822-a751-7d087583b4e0"); // TODO: delete this id, just using for testing
+        // private Guid myId = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5"); // TODO: delete this id, just using for testing
+        private Guid myId; 
+        private Guid worldId;
+        // private Guid worldId = new Guid("9119bd21-e16a-4822-a751-7d087583b4e0"); // TODO: delete this id, just using for testing
         private string authToken;
         private Dictionary<Guid, Location> userLocations = new Dictionary<Guid, Location>(); // userId: location info about user
 

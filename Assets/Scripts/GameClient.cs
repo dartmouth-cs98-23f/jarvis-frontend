@@ -93,20 +93,23 @@ public class GameClient : MonoBehaviour
                 characterIdSet.Add(agent.id);
             }
             GameObject agentPrefab = GenerateAgentPrefab(agent);
-            GameObject agentGO = Instantiate(agentPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
-
-            CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
-            agentComponent.SetPosition(agent.location.coordX, agent.location.coordY, 0);
-            agentComponent.SetCharacterId(agent.id);
+            
             if (agent.isHatched){
+                GameObject agentGO = Instantiate(agentPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
                 agentGO.tag = CharacterType.Agent;
+                CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
                 agentComponent.SetCharacterType(CharacterType.Agent);
+                agentComponent.SetPosition(agent.location.coordX, agent.location.coordY, 0);
+                agentComponent.SetCharacterId(agent.id);
             }
             else {
+                GameObject agentGO = Instantiate(agentPrefab, eggTransform);
                 agentGO.tag = CharacterType.Egg;
+                CharacterComponent agentComponent = agentGO.GetComponent<CharacterComponent>();
                 agentComponent.SetCharacterType(CharacterType.Egg);
+                agentComponent.SetPosition(agent.location.coordX, agent.location.coordY, 0);
+                agentComponent.SetCharacterId(agent.id);
             }
-
         }
     }
 
