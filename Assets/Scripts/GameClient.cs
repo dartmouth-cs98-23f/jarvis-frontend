@@ -103,8 +103,6 @@ public class GameClient : MonoBehaviour
             else {
                 BuildEgg(agent.hatchTime, agent.createdTime, agent.location.coordX, agent.location.coordY, agent);
             }
-        {
-            BuildAgent(agent);
         }
     }
 
@@ -206,6 +204,13 @@ public class GameClient : MonoBehaviour
     {
         HTTPClient.AgentData newAgent = await httpClient.GetAgent(agentId);
         if (newAgent != null) {
+            if (characterIdSet != null && characterIdSet.Contains(newAgent.id))
+            {
+                Debug.Log("Agent with id: " + agentId + " already exists. Skipping...");
+                return;
+            } else {
+                characterIdSet.Add(agentId);
+            }
             BuildAgent(newAgent);
         }
     }
@@ -333,5 +338,5 @@ public class GameClient : MonoBehaviour
     //     yodaComponent.SetCharacterId(new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559")); // Add back httpClient.currentUserData if testing locally
 
     // }
-    
+
 }

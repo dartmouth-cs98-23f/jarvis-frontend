@@ -14,6 +14,7 @@ public class OnboardingPanelsManager : MonoBehaviour
     {
         if (HTTPClient.Instance.MyId != null && HTTPClient.Instance.MyId != Guid.Empty) // if user has already signed up
         {
+            Debug.Log("Skipping to InfoPanel user is signed up: " + HTTPClient.Instance.MyId);
             LandingPanel.SetActive(false);
             InfoPanel.SetActive(true);
         } else {
