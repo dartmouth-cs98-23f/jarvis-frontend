@@ -1061,10 +1061,7 @@ namespace Clients {
 
             [JsonProperty("content")]
             public string Content { get; set; }
-
-            [JsonProperty("isGroupChat")]
-            public bool IsGroupChat { get; set; }
-            [JsonProperty("isOnline")]
+            [JsonProperty("isSenderOnline")]
             public bool IsOnline { get; set; }
 
             [JsonProperty("createdTime")]
