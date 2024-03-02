@@ -279,12 +279,12 @@ public class SignalRClient
     /// </summary>
     /// <param name="agentId">The ID of the newly-added agent</param>
     /// <returns></returns>
-    public void OnAgentAddedHandler()
+    public void OnAgentAddedToWorldHandler(GameClient gameClient)
     {
         _connection.On<Guid>("OnAgentAddedHandler", (Guid agentId) =>
         {
             Debug.Log($"Agent {agentId} has been added to world. Adding agent to world...");
-            // TODO: Add method on gameclient to add agent to world
+            gameClient.AddAgentToWorld(agentId);
         });
     }
 
@@ -293,11 +293,12 @@ public class SignalRClient
     /// </summary>
     /// <param name="userId">The ID of the newly-added user</param>
     /// <returns></returns>
-    public void OnUserAddedToWorldHandler()
+    public void OnUserAddedToWorldHandler(GameClient gameClient)
     {
         _connection.On<Guid>("OnUserAddedToWorldHandler", (Guid userId) =>
         {
             Debug.Log($"User {userId} has joined the world. Adding user to world...");
+            gameClient.AddUserToWorld(userId);
         });
     }
 
@@ -307,11 +308,12 @@ public class SignalRClient
     /// </summary>
     /// <param name="userId">The ID of the user who left the world</param>
     /// <returns></returns>
-    public void OnUserRemovedFromWorldHandler()
+    public void OnUserRemovedFromWorldHandler(GameClient gameClient)
     {
         _connection.On<Guid>("OnUserRemovedFromWorldHandler", (Guid userId) =>
         {
             Debug.Log($"User {userId} has been removed from the world. Removing user to world...");
+            gameClient.RemoveUserFromWorld(userId);
         });
     }
 
