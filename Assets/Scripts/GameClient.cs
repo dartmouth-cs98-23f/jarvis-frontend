@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections.Concurrent;
 
 
 public class CharacterType
@@ -37,6 +38,8 @@ public class GameClient : MonoBehaviour
     private HashSet<Guid> characterIdSet = new HashSet<Guid>();
     public TrainAgentManager trainAgentManager;
     public SpriteLoader spriteLoader;
+    private ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
+
     void OnEnable()
     {
         httpClient = HTTPClient.Instance; // get httpClient
@@ -54,9 +57,17 @@ public class GameClient : MonoBehaviour
         InitializeGame();
     }
 
+    public void Enqueue(Action action)
+    {
+        _actions.Enqueue(action);
+    }
+
     void Update()
     {
-
+        while (_actions.TryDequeue(out var action))
+        {
+            action.Invoke();
+        }
     }
 
     async void InitializeGame()
@@ -176,27 +187,34 @@ public class GameClient : MonoBehaviour
     {
         HTTPClient.UserData newUser = await httpClient.GetUser(userId);
         if (newUser != null) {
-            BuildUser(newUser);
+            Enqueue(() =>
+            {
+                BuildUser(newUser);
+            });
         }
     }
 
     // TODO: This method is called by SignalR to remove a user from the world. It hasn't been tested yet
     public async void RemoveUserFromWorld(Guid userId)
     {
-        // Find all game objects with the User tag
-        GameObject[] userGOs = GameObject.FindGameObjectsWithTag(CharacterType.User);
-
-        // Iterate over each GameObject to find the one with the matching userId
-        foreach (GameObject userGO in userGOs)
+        Enqueue(() =>
         {
-            CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
-            if (userComponent != null && userComponent.GetCharacterId() == userId)
+            // Find all game objects with the User tag
+            GameObject[] userGOs = GameObject.FindGameObjectsWithTag(CharacterType.User);
+
+            // Iterate over each GameObject to find the one with the matching userId
+            foreach (GameObject userGO in userGOs)
             {
-                // If the userId matches, destroy the GameObject
-                Destroy(userGO);
-                break; // Exit the loop if the user is found and removed
+                CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
+                if (userComponent != null && userComponent.GetCharacterId() == userId)
+                {
+                    // If the userId matches, destroy the GameObject
+                    Destroy(userGO);
+                    break; // Exit the loop if the user is found and removed
+                }
             }
-        }
+        });
+
     }
 
     // TODO: This method is called by SignalR to add a user to the world. It hasn't been tested yet
@@ -211,7 +229,10 @@ public class GameClient : MonoBehaviour
             } else {
                 characterIdSet.Add(agentId);
             }
-            BuildAgent(newAgent);
+            Enqueue(() =>
+            {
+                BuildAgent(newAgent);
+            });
         }
     }
 

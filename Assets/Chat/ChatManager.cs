@@ -309,29 +309,6 @@ public class ChatManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO: Uncomment for signalR client connection
-        // Check if there is a received message to process
-        // if (!string.IsNullOrEmpty(SignalRClient.SenderId))
-        // {
-        //     Debug.Log("Got message, going to generate GCMO");
-        //     // Create a ChatMessage object and reset the static variables
-            // GenerateChatMessageObject(new HTTPClient.ChatMessage
-            // {
-            //     SenderId = new Guid(SignalRClient.SenderId),
-            //     ReceiverId = currentUserId,
-            //     Content = StringParser.ParseInput(SignalRClient.Message),
-            //     IsOnline = SignalRClient.IsOnline,
-            //     IsGroupChat = false,
-            //     CreatedTime = DateTime.UtcNow
-            // });
-
-
-        //     // Reset the static variables to indicate that the message has been processed
-        //     SignalRClient.SenderId = null;
-        //     SignalRClient.Message = null;
-        //     SignalRClient.IsOnline = null;
-        // }
-
         while (_actions.TryDequeue(out var action))
         {
             action.Invoke();
