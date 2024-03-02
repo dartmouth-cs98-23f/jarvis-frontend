@@ -320,7 +320,11 @@ public class ChatManager : MonoBehaviour
 
     public void ReceiveMessage(Guid messageId, Guid senderId, string message, bool isOnline)
     {
-
+        if (messageId == Guid.Empty || senderId == Guid.Empty || string.IsNullOrEmpty(message))
+        {
+            Debug.LogWarning("Invalid message received");
+            return;
+        }
         Enqueue(() =>
         {
             Debug.Log("In ReceiveMessage, enqueing: " + message);
@@ -489,7 +493,7 @@ public class ChatManager : MonoBehaviour
         }
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
         // string messageContent = StringParser.ParseInput(chatMessage.Content);
-        // Debug.Log("IN GCMO: after parse " + messageContent);
+        Debug.Log("IN GCMO. Generating chat message object with content: " + chatMessage.Content);
         if (chatMessage.SenderId == currentUserId)
         {   
             Debug.Log("Setting chat details for current user");
