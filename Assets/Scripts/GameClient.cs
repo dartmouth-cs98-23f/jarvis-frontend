@@ -51,7 +51,6 @@ public class GameClient : MonoBehaviour
         // TODO: Comment below out for backend connection
         // userId = new Guid("c0c973f7-5f80-437e-8418-f3c401780274");
         // worldId = new Guid("3b490737-6d3f-4bb8-9593-15e8a1c80dab");
-
         InitializeGame();
     }
 
@@ -66,13 +65,17 @@ public class GameClient : MonoBehaviour
         if (currentUserData != null)
         {
             Debug.Log("InitializeGame: " + currentUserData.username);
-            // BuildAllCharacters(); // Call this method after user data is initialized
             BuildAllCharactersV2(); // Call this method after user data is initialized
         }
         else
         {
             Debug.LogError("Failed to initialize user data.");
         }
+
+        // Initialize the signalR handlers
+        SignalRClient.Instance.OnUserAddedToWorldHandler(this);
+        SignalRClient.Instance.OnUserRemovedFromWorldHandler(this);
+        SignalRClient.Instance.OnAgentAddedToWorldHandler(this);
     }
 
     async void BuildAllCharactersV2()
@@ -100,6 +103,8 @@ public class GameClient : MonoBehaviour
             else {
                 BuildEgg(agent.hatchTime, agent.createdTime, agent.location.coordX, agent.location.coordY, agent);
             }
+        {
+            BuildAgent(agent);
         }
     }
 
@@ -120,47 +125,88 @@ public class GameClient : MonoBehaviour
         allUsers = await httpClient.GetWorldUsers(worldId);
         foreach (HTTPClient.UserData user in allUsers)
         {
-            // Debug.Log("Building user: " + user.username + " with id: " + user.id + " at location: " + user.location.coordX + ", " + user.location.coordY);
-            if (characterIdSet != null && characterIdSet.Contains(user.id))
-            {
-                Debug.Log("User with id: " + user.id + " already exists. Skipping...");
-                continue;
-            } else {
-                characterIdSet.Add(user.id);
-            }
+            BuildUser(user);
+        }
+    }
 
-            GameObject userPrefab = GenerateUserPrefab(user.id);
-            GameObject userGO = Instantiate(userPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
-            userGO.tag = CharacterType.User;
+    void BuildUser(HTTPClient.UserData user)
+    {
+        // Debug.Log("Building user: " + user.username + " with id: " + user.id + " at location: " + user.location.coordX + ", " + user.location.coordY);
+        if (characterIdSet != null && characterIdSet.Contains(user.id))
+        {
+            Debug.Log("User with id: " + user.id + " already exists. Skipping...");
+            return;
+        } else {
+            characterIdSet.Add(user.id);
+        }
 
+        GameObject userPrefab = GenerateUserPrefab(user.id);
+        GameObject userGO = Instantiate(userPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
+        userGO.tag = CharacterType.User;
+
+        CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
+        userComponent.SetCharacterId(user.id);
+        userComponent.SetCharacterType(CharacterType.User);
+
+        if (user.id == userId)
+        {
+            PlayerMovement userMovementScript = userGO.GetComponent<PlayerMovement>();
+            userMovementScript.InteractButton = GameObject.Find("ChatButton");
+            userMovementScript.NurtureButton = GameObject.Find("NurtureButton");
+            userMovementScript.InteractButton.SetActive(false);
+            userMovementScript.NurtureButton.SetActive(false);
+            userMovementScript.SetTilemap(GameObject.Find("Tilemap").GetComponent<Tilemap>());
+        } else {
+            OtherPlayerMovement otherUserMovementScript = userGO.GetComponent<OtherPlayerMovement>();
+        }
+
+        BodyPartsManager bpComponent = userGO.GetComponent<BodyPartsManager>();
+        bpComponent.SetSprite(user.spriteAnimations); // TODO: Replace with user.spriteAnimations
+        
+        if (user.location == null)
+        {
+            Debug.Log("User location is null. Setting coordinates to 0, 0");
+            userComponent.SetPosition(0, 0, 0);
+        } else {
+            Debug.Log("Setting user " + user.username + " location to: " + user.location.coordX + ", " + user.location.coordY);
+            userComponent.SetPosition(user.location.coordX, user.location.coordY, 0);
+        }
+    }
+
+    // TODO: This method is called by SignalR to add a user to the world. It hasn't been tested yet
+    public async void AddUserToWorld(Guid userId)
+    {
+        HTTPClient.UserData newUser = await httpClient.GetUser(userId);
+        if (newUser != null) {
+            BuildUser(newUser);
+        }
+    }
+
+    // TODO: This method is called by SignalR to remove a user from the world. It hasn't been tested yet
+    public async void RemoveUserFromWorld(Guid userId)
+    {
+        // Find all game objects with the User tag
+        GameObject[] userGOs = GameObject.FindGameObjectsWithTag(CharacterType.User);
+
+        // Iterate over each GameObject to find the one with the matching userId
+        foreach (GameObject userGO in userGOs)
+        {
             CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
-            userComponent.SetCharacterId(user.id);
-            userComponent.SetCharacterType(CharacterType.User);
-
-            if (user.id == userId)
+            if (userComponent != null && userComponent.GetCharacterId() == userId)
             {
-                PlayerMovement userMovementScript = userGO.GetComponent<PlayerMovement>();
-                userMovementScript.InteractButton = GameObject.Find("ChatButton");
-                userMovementScript.NurtureButton = GameObject.Find("NurtureButton");
-                userMovementScript.InteractButton.SetActive(false);
-                userMovementScript.NurtureButton.SetActive(false);
-                userMovementScript.SetTilemap(GameObject.Find("Tilemap").GetComponent<Tilemap>());
-            } else {
-                OtherPlayerMovement otherUserMovementScript = userGO.GetComponent<OtherPlayerMovement>();
+                // If the userId matches, destroy the GameObject
+                Destroy(userGO);
+                break; // Exit the loop if the user is found and removed
             }
+        }
+    }
 
-            BodyPartsManager bpComponent = userGO.GetComponent<BodyPartsManager>();
-            bpComponent.SetSprite(user.spriteAnimations); // TODO: Replace with user.spriteAnimations
-            
-            if (user.location == null)
-            {
-                Debug.Log("User location is null. Setting coordinates to 0, 0");
-                userComponent.SetPosition(0, 0, 0);
-                continue;
-            } else {
-                Debug.Log("Setting user " + user.username + " location to: " + user.location.coordX + ", " + user.location.coordY);
-                userComponent.SetPosition(user.location.coordX, user.location.coordY, 0);
-            }
+    // TODO: This method is called by SignalR to add a user to the world. It hasn't been tested yet
+    public async void AddAgentToWorld(Guid agentId)
+    {
+        HTTPClient.AgentData newAgent = await httpClient.GetAgent(agentId);
+        if (newAgent != null) {
+            BuildAgent(newAgent);
         }
     }
 

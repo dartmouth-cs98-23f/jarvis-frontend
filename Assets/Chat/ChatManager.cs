@@ -69,6 +69,26 @@ public class ChatManager : MonoBehaviour
     private bool otherCharacterIsOnline; // true for online, false for offline or agent
     private string otherCharacterType; // check if the other character is user or agent
     private ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
+    private ScrollRect scrollRect;
+
+    private void Awake()
+    {
+        scrollRect = GetComponent<ScrollRect>();
+    }
+
+    public void ScrollToBottom()
+    {
+        StartCoroutine(ScrollToBottomCoroutine());
+    }
+
+    private IEnumerator ScrollToBottomCoroutine()
+    {
+        // Wait for the end of the frame to ensure all UI updates are processed
+        yield return new WaitForEndOfFrame();
+
+        Canvas.ForceUpdateCanvases();
+        scrollRect.verticalNormalizedPosition = 0f;
+    }
 
     private string chatTestJsonString = @"
     [
@@ -493,17 +513,18 @@ public class ChatManager : MonoBehaviour
         }
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
         // string messageContent = StringParser.ParseInput(chatMessage.Content);
-        Debug.Log("IN GCMO. Generating chat message object with content: " + chatMessage.Content);
+        // Debug.Log("IN GCMO. Generating chat message object with content: " + chatMessage.Content);
         if (chatMessage.SenderId == currentUserId)
         {   
-            Debug.Log("Setting chat details for current user");
+            // Debug.Log("Setting chat details for current user");
             chatMessageComponent.SetChatDetails(currentUserData.username, chatMessage.Content, chatMessage.IsOnline);
         }
         else
         {
-            Debug.Log("Setting chat details for current user");
+            // Debug.Log("Setting chat details for current user");
             chatMessageComponent.SetChatDetails(otherCharacterData.username, chatMessage.Content, chatMessage.IsOnline);
         }
+        ScrollToBottom();
     }
 
     async void SendChat(Guid receiverId, string content)
