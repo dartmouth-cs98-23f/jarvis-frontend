@@ -174,7 +174,9 @@ public class ChatManager : MonoBehaviour
 
         // TODO: Switch for backend.
         // LocalBuildChatHistory();
-        BuildChatHistory();
+        await BuildChatHistory();
+        await Task.Delay(500);
+        ScrollToBottom();
     }
 
     // this method is called by SignalRClient to handle the other user's online status
@@ -444,7 +446,7 @@ public class ChatManager : MonoBehaviour
         messageInputField.text = "";
     }
 
-    async void BuildChatHistory()
+    async Task BuildChatHistory()
     {
         sortedChatMessages = await httpClient.GetChatHistory(currentUserId, otherCharacterId);
          if (sortedChatMessages == null) 
