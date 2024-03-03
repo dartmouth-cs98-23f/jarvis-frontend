@@ -14,6 +14,7 @@ public class OtherPlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
     private float moveSpeed = 5f;
+    public Vector2 movementDirection = new Vector2(0.0f, 0.0f);
     public Guid userId;
     private Animator animator;
     private GameObject gameClientGO;
@@ -26,13 +27,9 @@ public class OtherPlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // TODO: Uncomment when SignalR is ready
         SignalRClient.Instance.RegisterUpdateLocationHandler(this);
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        gameClientGO = GameObject.Find("GameClient");
-        TestOtherPlayerMovementController testOtherPlayerMovementController = gameClientGO.GetComponent<TestOtherPlayerMovementController>();
-        testOtherPlayerMovementController.otherPlayerMovementScript = this;
     }
 
     public void Enqueue(Action action)
@@ -42,7 +39,7 @@ public class OtherPlayerMovement : MonoBehaviour
     void Update()
     {
         // Check distance to target position and stop if close enough
-        if (Vector2.Distance(transform.position, targetPosition) <= 0.1f)
+        if (Vector2.Distance(transform.position, targetPosition) <= 0.1f || collided)
         {
             StopMovement();
         }
@@ -72,16 +69,14 @@ public class OtherPlayerMovement : MonoBehaviour
         if (targetPosition == Vector2.zero && rb.position == Vector2.zero)
         {
             return;
-        }
-        
-        // Calculate direction each time MovePlayer is called
-        Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
+        }        
         
         // Start moving towards the new target position
         if (!collided)
         {
-            rb.velocity = direction * moveSpeed;
-            UpdateAnimation(direction);
+            movementDirection = (targetPosition - (Vector2)transform.position).normalized;
+            rb.velocity = movementDirection * moveSpeed;
+            UpdateAnimation(movementDirection);
         }
         else
         {
@@ -103,17 +98,24 @@ public class OtherPlayerMovement : MonoBehaviour
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
+        // collided = true;
+        // collidedPlayer = collision;
+        // Vector3 currentPosition = collidedPlayer.transform.position;
+        // Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
+        // targetPosition = currentPosition2D;
+
         collided = true;
-        collidedPlayer = collision;
-        Vector3 currentPosition = collidedPlayer.transform.position;
-        Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
-        targetPosition = currentPosition2D;
+        if (collision.transform.tag == "user" || collision.transform.tag == "agent" || collision.transform.tag == "egg")
+        {
+            Vector2 positionRelative = transform.InverseTransformPoint(collision.transform.position);
+            movementDirection = positionRelative;
+        }
     }
  
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (!(collision.transform.tag == "user") && !(collision.transform.tag == "agent"))
-            collided = true;
+        if (!(collision.transform.tag == "user") && !(collision.transform.tag == "agent") && !(collision.transform.tag == "egg"))
+            collided = false;
     }
  
     private void OnCollisionExit2D(Collision2D collision)
@@ -122,3 +124,4 @@ public class OtherPlayerMovement : MonoBehaviour
     }
 
 }
+

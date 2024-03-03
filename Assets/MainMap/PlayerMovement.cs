@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 targetPosition;
     private Animator animator;
     private float moveSpeed = 5.0f;
+     public Vector2 direction = Vector2.zero;
     private Guid collidedCharacterId;
 
     public GameObject InteractButton;
@@ -71,7 +72,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Calculate the direction from the current position to the target position
-        Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
+        direction = (targetPosition - (Vector2)transform.position).normalized;
 
         // Update the animator parameters
         animator.SetFloat("moveX", direction.x);
@@ -151,9 +152,9 @@ public class PlayerMovement : MonoBehaviour
             collided = true;
             collidedPlayer = collision;
             
-            Vector3 currentPosition = collidedPlayer.transform.position;
-            Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
-            targetPosition = currentPosition2D;
+            // Vector3 currentPosition = collidedPlayer.transform.position;
+            // Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
+            // targetPosition = currentPosition2D;
 
             CharacterComponent characterComponent = collision.gameObject.GetComponent<CharacterComponent>();
 
@@ -175,9 +176,9 @@ public class PlayerMovement : MonoBehaviour
             collided = true;
             collidedPlayer = collision;
             
-            Vector3 currentPosition = collidedPlayer.transform.position;
-            Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
-            targetPosition = currentPosition2D;
+            // Vector3 currentPosition = collidedPlayer.transform.position;
+            // Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
+            // targetPosition = currentPosition2D;
 
             CharacterComponent eggComponent = collision.gameObject.GetComponent<CharacterComponent>();
 
