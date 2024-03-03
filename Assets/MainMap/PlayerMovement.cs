@@ -54,6 +54,9 @@ public class PlayerMovement : MonoBehaviour
             if (touch.phase == TouchPhase.Began)
             {
                 targetPosition = Camera.main.ScreenToWorldPoint(touch.position);
+                targetPosition.x = (int) targetPosition.x;
+                targetPosition.y = (int) targetPosition.y;
+                
                 if (IsWithinTilemapBounds(targetPosition)){
                     await SignalRClient.Instance.UpdateLocation((int) targetPosition.x, (int) targetPosition.y);
                 }
