@@ -45,8 +45,8 @@ public class SignalRClient
         Debug.Log("In SignalR Initialize method");
         if (instance == null)
         {
-            string baseURL = "http://localhost:5000/unity";
-//             string baseURL = "http://api.simugameservice.lekina.me/unity";
+//             string baseURL = "http://localhost:5000/unity";
+            string baseURL = "https://api.simugameservice.lekina.me/unity";
             Debug.Log("Initializing SignalRClient with URL:" + baseURL + "with token: " + authToken);
             instance = new SignalRClient(baseURL, authToken);
             Debug.Log("Post instance assignment" + instance);
