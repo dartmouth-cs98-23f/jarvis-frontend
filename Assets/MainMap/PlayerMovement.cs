@@ -109,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
                     else
                         rb.velocity = Vector2.zero;
                         animator.SetBool("moving", false);
-                        }
+                    }
             }
             else
             {
