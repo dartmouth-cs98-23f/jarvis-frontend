@@ -18,7 +18,7 @@ public class OtherPlayerMovement : MonoBehaviour
     private Animator animator;
     private GameObject gameClientGO;
     public bool collided = false;
-    public Collision2D collidedPlayer;
+    public Collider2D collidedPlayer;
     private Vector2 targetPosition;
     private ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
 
@@ -101,7 +101,7 @@ public class OtherPlayerMovement : MonoBehaviour
         rb.velocity = Vector2.zero;
         animator.SetBool("moving", false);
     }
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         collided = true;
         collidedPlayer = collision;
@@ -110,13 +110,13 @@ public class OtherPlayerMovement : MonoBehaviour
         targetPosition = currentPosition2D;
     }
  
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (!(collision.transform.tag == "user") && !(collision.transform.tag == "agent"))
             collided = true;
     }
  
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
         collided = false;
     }

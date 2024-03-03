@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject NurtureButton;
     public Tilemap tilemap; // Reference to the Tilemap
     public bool collided = false;
-    public Collision2D collidedPlayer;
+    public Collider2D collidedPlayer;
 
 
     // Start is called before the first frame update
@@ -141,7 +141,7 @@ public class PlayerMovement : MonoBehaviour
         return tilemap.cellBounds.Contains(cellPosition);
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log($"Collided with GameObject: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
         
@@ -196,7 +196,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void OnCollisionExit2D(Collision2D collision)
+    void OnTriggerExit2D(Collider2D collision)
     {
         // Hide click to chat button
         InteractButton.SetActive(false);
