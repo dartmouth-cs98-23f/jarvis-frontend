@@ -821,8 +821,26 @@ namespace Clients {
             Debug.Log("Removing world with id: " + worldId + " from user with id: " + userId);
             try
             {
-                HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
+                // Create the request body
+                var requestBody = new
+                {
+                    ownerId = ownerId
+                };
 
+                // Serialize the request body to JSON
+                string jsonRequest = JsonConvert.SerializeObject(requestBody);
+                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Create the DELETE request with the request body
+                HttpRequestMessage request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(apiUrl),
+                    Content = content
+                };
+
+                // Send the DELETE request
+                HttpResponseMessage response = await httpClient.SendAsync(request);
                 if (response.IsSuccessStatusCode)
                 {
                     Debug.Log("World removed successfully to user with world id: " + worldId + " and user id: " + userId);
