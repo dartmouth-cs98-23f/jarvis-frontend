@@ -83,10 +83,14 @@ public class OtherPlayerMovement : MonoBehaviour
         else
         {
             Vector2 positionRelative = transform.InverseTransformPoint(collidedPlayer.transform.position);
+            Debug.Log($"Position Relative in OPM: {positionRelative}");
             float moveRelative = Vector2.Distance(positionRelative, movementDirection);
+            Debug.Log("moveRelative in OPM " + moveRelative);
 
             if (moveRelative > 1.0f)
             {
+                collided = false;
+                Debug.Log("Got inside this if, " + movementDirection);
                 rb.velocity = movementDirection * moveSpeed;
                 UpdateAnimation(movementDirection);
             }
