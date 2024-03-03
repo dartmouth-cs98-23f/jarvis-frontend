@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using Clients;
 
 public class CharacterSummaryManager : MonoBehaviour
 {
@@ -22,12 +23,14 @@ public class CharacterSummaryManager : MonoBehaviour
         userPrefabObject.GetComponent<BodyPartsManager>().SetSprite(new List<int> { 0, 0, 0, 0 });
     }
 
-    public void SetCharacterSummary(string username, List<int> spriteAnimations, string userSummary)
+    public async void SetCharacterSummary(string username, List<int> spriteAnimations, string userSummary)
     {
-        Debug.Log("setting character summary");
+        string cleanedUserSummary = StringParser.ParseInput(userSummary);
+
         this.username.GetComponent<Text>().text = "@" + username;
-        this.userSummary.GetComponent<Text>().text = userSummary;
+        this.userSummary.GetComponent<Text>().text = cleanedUserSummary;
         userPrefabObject.GetComponent<BodyPartsManager>().SetSprite(spriteAnimations);
+        await HTTPClient.Instance.UpdateUserSummary(HTTPClient.Instance.MyId, cleanedUserSummary);
     }
 
     // @Deprecated. This was used for when backend stored user's sprite as sprite_URL. Now it's been changed to spriteAnimations

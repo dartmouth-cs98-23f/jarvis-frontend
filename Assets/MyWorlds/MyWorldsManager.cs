@@ -183,6 +183,7 @@ public class MyWorldsManager : MonoBehaviour
                 leftArrowButton.SetActive(true);
                 rightArrowButton.SetActive(true);
                 enterWorldButton.SetActive(true);
+                worldSwiper = currentWorldObject.GetComponent<ImageSwiper>();
             }
             // TODO: Uncomment this if using for backend
             userWorlds = await GetUserWorlds(); // re-render all of user's worlds

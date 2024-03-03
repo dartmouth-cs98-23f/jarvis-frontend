@@ -17,11 +17,14 @@ public class SignalRClient
 
     private SignalRClient(string url, string authToken)
     {
+        // _connection = new HubConnectionBuilder()
+        //     .WithUrl(url, options =>
+        //     { 
+        //         options.AccessTokenProvider = () => Task.FromResult(authToken);
+        //     })
+        //     .Build();
         _connection = new HubConnectionBuilder()
-            .WithUrl(url, options =>
-            { 
-                options.AccessTokenProvider = () => Task.FromResult(authToken);
-            })
+            .WithUrl($"{url}?access_token={authToken}")
             .Build();
     }
 
