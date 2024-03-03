@@ -182,18 +182,21 @@ public class ChatManager : MonoBehaviour
     // this method is called by SignalRClient to handle the other user's online status
     public void SetUserIsOnline(Guid userId, bool isOnline)
     {
-        if (userId == otherCharacterId)
+        Enqueue(() =>
         {
-            if (isOnline) {
-                Debug.Log("Setting other user " + userId.ToString() +  " online");
-                otherCharacterIsOnline = true;
-                displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
-            } else {
-                Debug.Log("Setting other user " + userId.ToString() +  " offline");
-                otherCharacterIsOnline = false;
-                displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/red_circle");
+            if (userId == otherCharacterId)
+            {
+                if (isOnline) {
+                    Debug.Log("Setting other user " + userId.ToString() +  " online");
+                    otherCharacterIsOnline = true;
+                    displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
+                } else {
+                    Debug.Log("Setting other user " + userId.ToString() +  " offline");
+                    otherCharacterIsOnline = false;
+                    displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/red_circle");
+                }
             }
-        }
+        });
     }
 
     public async void OnPressAskMeQuestion()
