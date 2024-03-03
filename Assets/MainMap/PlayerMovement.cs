@@ -53,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
             if (touch.phase == TouchPhase.Began)
             {
                 targetPosition = Camera.main.ScreenToWorldPoint(touch.position);
-                if (IsWithinTilemapBounds(targetPosition)){
+                if (IsWithinTilemapBounds(targetPosition) && IsMovingAwayFromCollision(targetPosition)){
                     await SignalRClient.Instance.UpdateLocation((int) targetPosition.x, (int) targetPosition.y);
                 }
                 else {
@@ -85,11 +85,11 @@ public class PlayerMovement : MonoBehaviour
             if (IsWithinTilemapBounds(targetPosition))
             {
                 if (!collided){
-                // Move the player towards the target position
-                animator.SetBool("moving", true);
-                rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
+                    // Move the player towards the target position
+                    animator.SetBool("moving", true);
+                    rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
                 }
-                else{
+                else {
                     Vector2 positionRelative = transform.InverseTransformPoint(collidedPlayer.transform.position);
 
                     float moveRelative = Vector2.Distance(positionRelative, direction);
@@ -102,7 +102,7 @@ public class PlayerMovement : MonoBehaviour
                     else
                         rb.velocity = Vector2.zero;
                         animator.SetBool("moving", false);
-                        }
+                }
             }
             else
             {
@@ -130,6 +130,22 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("moving", false);
             rb.velocity = Vector2.zero;
         }
+    }
+
+    private bool IsMovingAwayFromCollision(Vector2 targetPos)
+    {
+        if (collided && collidedPlayer != null)
+        {
+            // Get the position of the collided object
+            Vector2 collidedPos = collidedPlayer.transform.position;
+            // Current position to collided object direction
+            Vector2 currentToCollidedDir = (collidedPos - (Vector2)transform.position).normalized;
+            // Current position to target position direction
+            Vector2 currentToTargetDir = (targetPos - (Vector2)transform.position).normalized;
+            // Check if the movement is away from the collided object (dot product < 0)
+            return Vector2.Dot(currentToCollidedDir, currentToTargetDir) < 0;
+        }
+        return true; // If not collided, always allow movement
     }
 
     private bool IsWithinTilemapBounds(Vector2 position)
