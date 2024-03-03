@@ -62,6 +62,13 @@ public class OtherPlayerMovement : MonoBehaviour
             {
                 // Set the new target position and start moving towards it
                 targetPosition = new Vector2(x, y);
+                if (collidedPlayer != null){
+                    PlayerMovement playerMovementScript = collidedPlayer.GetComponent<PlayerMovement>();
+                    if (playerMovementScript != null){
+                        playerMovementScript.collided = false;
+                    }
+                }
+                collided = false;
                 MovePlayer();
             });
         }
