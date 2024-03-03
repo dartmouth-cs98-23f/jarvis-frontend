@@ -19,8 +19,8 @@ namespace Clients {
         public UserData currentUserData = new UserData();
 
         private readonly HttpClient httpClient = new HttpClient();
-        private const string url = "http://localhost:5000";  
-        // private const string url = "https://api.simugameservice.lekina.me";  
+        // private const string url = "http://localhost:5000";  
+        private const string url = "https://api.simugameservice.lekina.me";  
 
         // private Guid myId = new Guid("a5e05db4-74c6-48ed-a561-b3a2e46397d5"); // TODO: delete this id, just using for testing
         private Guid myId; 
@@ -773,23 +773,17 @@ namespace Clients {
 
             try
             {
-                // Create the request body
-                var requestBody = new
-                {
-                    ownerId = ownerId
-                };
-
-                // Serialize the request body to JSON
-                string jsonRequest = JsonConvert.SerializeObject(requestBody);
-                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-
-                // Create the DELETE request with the request body
+                // Create the DELETE request
                 HttpRequestMessage request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(apiUrl),
-                    Content = content
+                    RequestUri = new Uri(apiUrl)
                 };
+
+                // Add the Authorization header to the HttpClient instance
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+
+                Debug.Log(request);
 
                 // Send the DELETE request
                 HttpResponseMessage response = await httpClient.SendAsync(request);
@@ -814,6 +808,7 @@ namespace Clients {
                 return false;
             }
         }
+
 
         public async Task<bool> RemoveWorldFromList(Guid worldId, Guid userId)
         {

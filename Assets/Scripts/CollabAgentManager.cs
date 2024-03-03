@@ -161,9 +161,24 @@ public class CollabAgentManager : MonoBehaviour
             List<HTTPClient.QuestionResponseData> responses = await httpClient.GetQuestionResponse(agentID, questionObj.id);
             
             // This loop figures out who has answered each question
-            foreach(HTTPClient.QuestionResponseData responseObj in responses){
+            // Create a HashSet to store unique usernames
+            HashSet<string> uniqueUsernames = new HashSet<string>();
+
+            foreach (HTTPClient.QuestionResponseData responseObj in responses)
+            {
+                // Get the user data for the responder
                 HTTPClient.UserData user = await httpClient.GetUser(responseObj.responderId);
-                collabInfoComponent.answers.Add(user.username);
+                
+                // Check if the username is not already in the HashSet
+                if (!uniqueUsernames.Contains(user.username))
+                {
+                    // Add the username to the HashSet and the collabInfoComponent.answers list
+                    uniqueUsernames.Add(user.username);
+                    collabInfoComponent.answers.Add(user.username);
+                    if (httpClient.MyId == user.id){
+                        collabInfoComponent.Answered();
+                    }
+                }
             }
 
             if (collabInfoComponent.answers.Count == 0){

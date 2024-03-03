@@ -15,6 +15,7 @@ public class CollabInfoComponent : MonoBehaviour
     public GameObject typeAnswerPanel;
     public List<string> answers;
     public Button viewAnswersButton;
+    public Button answersButton;
     public ViewAnswersManager viewAnswersManager;
     public AddAnswerManager addAnswerManager;
     public Sprite spriteHead;
@@ -56,12 +57,15 @@ public class CollabInfoComponent : MonoBehaviour
         viewAnswersButton.gameObject.SetActive(false);
         answeredByTMP.gameObject.SetActive(false);
     }
+    public void Answered(){
+        answersButton.gameObject.SetActive(false);
+    }
 
     public void ViewAnswers()
     {
         viewAnswersManager.SetIDs(agentID, questionID);
         viewAnswersManager.SetPanelDetails(spriteHead, username.text, questionTMP.text);
-        viewAnswersManager.localDisplayAnswers();
+        viewAnswersManager.DisplayAnswers();
         // Toggle the panel visibility
         if (viewAnswersPanel != null)
         {

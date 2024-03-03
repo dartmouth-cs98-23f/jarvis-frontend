@@ -41,14 +41,16 @@ public class AddAnswerManager : MonoBehaviour
     try
     {
         // Get the answer from the input field
-        string answer = answerInput.text;
+        answer = answerInput.text;
+
+        Debug.Log("answer test " + answer);
 
         // Call the PostResponses method to send the answer
         HTTPClient.PostResponseResp sendAnswerResponse = await httpClient.PostResponse(agentID, httpClient.MyId, questionID, answer);
 
         if (sendAnswerResponse != null)
         {
-            Debug.Log("Answer sent successfully. User summary is now " + sendAnswerResponse.summary);
+            Debug.Log("Answer sent successfully. Agent summary is now " + sendAnswerResponse.summary);
         }
         else
         {
