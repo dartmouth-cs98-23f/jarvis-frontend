@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using Clients;
+using System.Collections.Concurrent;
 
 
 // This script is attached to all other user game objects to handle their movement and animation
@@ -12,13 +13,15 @@ using Clients;
 public class OtherPlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private float moveSpeed = 1f;
+    private float moveSpeed = 5f;
     public Guid userId;
     private Animator animator;
     private GameObject gameClientGO;
     public bool collided = false;
     public Collision2D collidedPlayer;
     private Vector2 targetPosition;
+    private ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
+
 
     // Start is called before the first frame update
     void Start()
@@ -32,59 +35,72 @@ public class OtherPlayerMovement : MonoBehaviour
         testOtherPlayerMovementController.otherPlayerMovementScript = this;
     }
 
-    // This method is called by signalR when a new location update is received
-    public async Task UpdateLocation(Guid userId, int x, int y)
+    public void Enqueue(Action action)
     {
-        // if updating another user's position, this script that is attached to a player should not move
-        if (this.userId == userId) 
+        _actions.Enqueue(action);
+    }
+    void Update()
+    {
+        // Check distance to target position and stop if close enough
+        if (Vector2.Distance(transform.position, targetPosition) <= 0.1f)
         {
-            MovePlayer(x, y);
+            StopMovement();
+        }
+        
+        // Process actions
+        while (_actions.TryDequeue(out var action))
+        {
+            action.Invoke();
         }
     }
 
-    void MovePlayer(int x, int y)
+    public async Task UpdateLocation(Guid userId, int x, int y)
     {
-        Debug.Log("Moving other player to: " + x + ", " + y);
-        targetPosition = new Vector2(x, y);
-        // This fixes the player automatically going to 0,0 on start
-        if (targetPosition.x == 0f && targetPosition.y == 0f)
+        if (this.userId == userId) 
         {
-            Debug.Log("Stopping other player movement. player was automatically going to 0, 0");
-            rb.velocity = Vector2.zero;
+            Enqueue(() =>
+            {
+                // Set the new target position and start moving towards it
+                targetPosition = new Vector2(x, y);
+                MovePlayer();
+            });
         }
-        // Debug.Log("transform.position: " + transform.position);
-        Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
-        // Calculate the absolute values of movement in x and y directions
+    }
 
-        animator.SetFloat("moveX", direction.x);
-        animator.SetFloat("moveY", direction.y);
-
-        // Check if the distance between the player and the target is greater than the stopping distance
-        if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
+    void MovePlayer()
+    {
+        if (targetPosition == Vector2.zero && rb.position == Vector2.zero)
         {
-            // Calculate the next position
-            // Vector2 nextPosition = (Vector2)transform.position + direction * moveSpeed * Time.deltaTime;
-
-            // Move the player towards the target position
-            if (!collided){
-            rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
-            animator.SetBool("moving", true);
-            // rb.velocity = direction * moveSpeed;
-            }
-            else{
-                rb.velocity = Vector2.zero;
-                animator.SetBool("moving", false);
-            }
+            return;
+        }
+        
+        // Calculate direction each time MovePlayer is called
+        Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
+        
+        // Start moving towards the new target position
+        if (!collided)
+        {
+            rb.velocity = direction * moveSpeed;
+            UpdateAnimation(direction);
         }
         else
         {
-            Debug.Log("Stopping other player movement player is within stopping distance");
-            // If the player is within the stopping distance, stop its movement and animation
-            rb.velocity = Vector2.zero;
-            animator.SetBool("moving", false);
+            StopMovement();
         }
     }
 
+    void UpdateAnimation(Vector2 direction)
+    {
+        animator.SetFloat("moveX", direction.x);
+        animator.SetFloat("moveY", direction.y);
+        animator.SetBool("moving", true);
+    }
+
+    void StopMovement()
+    {
+        rb.velocity = Vector2.zero;
+        animator.SetBool("moving", false);
+    }
     void OnCollisionEnter2D(Collision2D collision)
     {
         collided = true;
@@ -92,7 +108,6 @@ public class OtherPlayerMovement : MonoBehaviour
         Vector3 currentPosition = collidedPlayer.transform.position;
         Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
         targetPosition = currentPosition2D;
-    
     }
  
     private void OnCollisionStay2D(Collision2D collision)

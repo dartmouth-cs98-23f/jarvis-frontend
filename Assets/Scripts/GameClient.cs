@@ -167,6 +167,7 @@ public class GameClient : MonoBehaviour
             userMovementScript.SetTilemap(GameObject.Find("Tilemap").GetComponent<Tilemap>());
         } else {
             OtherPlayerMovement otherUserMovementScript = userGO.GetComponent<OtherPlayerMovement>();
+            otherUserMovementScript.userId = user.id;
         }
 
         BodyPartsManager bpComponent = userGO.GetComponent<BodyPartsManager>();
