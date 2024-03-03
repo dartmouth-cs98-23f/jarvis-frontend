@@ -815,16 +815,16 @@ namespace Clients {
             }
         }
 
-        public async Task<bool> RemoveWorldFromList(Guid worldId, Guid userId)
+        public async Task<bool> RemoveWorldFromList(Guid worldId, Guid userId, Guid creatorId)
         {
             string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
-            Debug.Log("Removing world with id: " + worldId + " from user with id: " + userId);
+            Debug.Log("Removing world with id: " + worldId + " from user with id: " + userId + " and creator id: " + creatorId);
             try
             {
                 // Create the request body
                 var requestBody = new
                 {
-                    ownerId = ownerId
+                    ownerId = creatorId
                 };
 
                 // Serialize the request body to JSON

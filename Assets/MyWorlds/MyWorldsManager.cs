@@ -194,14 +194,14 @@ public class MyWorldsManager : MonoBehaviour
         }
     }
 
-    public async Task LeaveWorld(string worldId)
+    public async Task LeaveWorld(string worldId, string creatorId)
     {
         // TODO: Local Testing version. Comment out if you want to test backend
         // userWorlds.RemoveAt(worldSwiper.currentIndex);
         // bool removeWorldSuccessful = true; // comment out this line to connect with backend API.
 
         // TODO: Backend version:
-        bool removeWorldSuccessful = await httpClient.RemoveWorldFromList(new Guid(worldId), httpClient.MyId);
+        bool removeWorldSuccessful = await httpClient.RemoveWorldFromList(new Guid(worldId), httpClient.MyId, new Guid(creatorId));
 
         if (removeWorldSuccessful)
         {

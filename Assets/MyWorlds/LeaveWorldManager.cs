@@ -22,7 +22,7 @@ public class LeaveWorldManager : MonoBehaviour
 
     public void OnPressLeave()
     {
-        myWorldsManager.LeaveWorld(worldSwiper.GetCurrentWorldId());
+        myWorldsManager.LeaveWorld(worldSwiper.GetCurrentWorldId(), worldSwiper.GetCurrentWorldCreatorId());
         leaveWorldPanel.SetActive(false);
     }
 
