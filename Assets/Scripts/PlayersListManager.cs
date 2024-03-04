@@ -262,7 +262,7 @@ public class PlayersListManager : MonoBehaviour
             DisplayPlayersList();
             kickPanel.SetActive(false);
             kickShadow.SetActive(false);
-            playersListPanel.SetActive(true);
+            // playersListPanel.SetActive(true);
         }
         else
         {
