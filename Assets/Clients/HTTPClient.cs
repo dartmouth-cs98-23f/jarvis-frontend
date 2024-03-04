@@ -773,17 +773,23 @@ namespace Clients {
 
             try
             {
-                // Create the DELETE request
+                // Create the request body
+                var requestBody = new
+                {
+                    ownerId = ownerId
+                };
+
+                // Serialize the request body to JSON
+                string jsonRequest = JsonConvert.SerializeObject(requestBody);
+                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Create the DELETE request with the request body
                 HttpRequestMessage request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(apiUrl)
+                    RequestUri = new Uri(apiUrl),
+                    Content = content
                 };
-
-                // Add the Authorization header to the HttpClient instance
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
-
-                Debug.Log(request);
 
                 // Send the DELETE request
                 HttpResponseMessage response = await httpClient.SendAsync(request);
@@ -808,6 +814,7 @@ namespace Clients {
                 return false;
             }
         }
+
 
         public async Task<bool> RemoveWorldFromList(Guid worldId, Guid userId, Guid creatorId)
         {
