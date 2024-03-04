@@ -29,10 +29,45 @@ public class CreateAgentManager : MonoBehaviour
     public GameObject eggPrefab;
     public SpriteLoader spriteLoader;
     public GameObject spinner;
+    public Text nameError;
+    public Text descError;
+    public Text visualDescError;
 
     void Start(){
         spinner.SetActive(false);
+        nameInputField.onValueChanged.AddListener(delegate { ValidateUsername(); });
+        descInputField.onValueChanged.AddListener(delegate { CheckEmpty(); });
+        agentVisualDesc.onValueChanged.AddListener(delegate { CheckEmpty(); });
     }
+
+    bool ValidateUsername()
+    {
+        string username = nameInputField.text;
+        string error = InputValidation.ValidateUsername(username);
+        nameError.text = error;
+        if (string.IsNullOrEmpty(error)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    bool CheckEmpty()
+    {
+        string desc = descInputField.text;
+        string error = InputValidation.CheckEmpty(desc);
+        descError.text = error;
+        if (string.IsNullOrEmpty(error)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
     public void StoreInput()
     {
         // Store text input from the username input field
