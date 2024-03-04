@@ -94,6 +94,37 @@ namespace Clients {
             }
         }
 
+        public async Task<bool> LogoutUser()
+        {
+            string apiUrl = $"{url}/authentication/logout/{MyId}";
+
+            Debug.Log("logout called");
+            try
+            {
+                // no content needed for this post request. this is just needed for Post request
+                HttpContent content = new StringContent("", System.Text.Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    Debug.Log($"User (id: {MyId}) logged out successfully.");
+                    return true;
+                }
+                else
+                {
+                    Debug.LogError("Logout failed: " + response.StatusCode);
+                    return false;
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                // Handle other exceptions if needed
+                Debug.LogError("Logout HTTP Request Exception: " + e.Message);
+                return false; // Logout failed due to exception
+            }
+        }
         public async Task<bool> LoginUser(string email, string password)
         {
             string apiUrl = $"{url}/authentication/login";

@@ -1,8 +1,10 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
+using Clients;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class SideMenu : MonoBehaviour
 {
@@ -198,5 +200,22 @@ public class SideMenu : MonoBehaviour
     }
     public void ToggleTypeAnswerPanel(){
         typeAnswerPanel.SetActive(!typeAnswerPanel.activeSelf);
+    }
+
+    public async Task OnPressExitWorld()
+    {
+        try {
+            await HTTPClient.Instance.LogoutUser();
+        } catch (Exception e) {
+            Debug.LogError($"Error logging out: {e.Message}");
+        
+        }
+    }
+
+    // Synchronous wrapper method
+    public void OnPressExitWorldWrapper()
+    {
+        // Call the async method without awaiting it
+        _ = OnPressExitWorld();
     }
 }

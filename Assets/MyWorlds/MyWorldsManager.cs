@@ -99,11 +99,12 @@ public class MyWorldsManager : MonoBehaviour
         return await httpClient.GetUserWorlds(httpClient.MyId);
     }
 
-    public void OnPressEnter()
+    public async void OnPressEnter()
     {
         // Set current world id and navigate to game
         if (worldSwiper != null && worldSwiper.GetCurrentWorldId() != null) {
             httpClient.WorldId = new Guid(worldSwiper.GetCurrentWorldId());
+            await SignalRClient.Instance.PingServer();
             SceneNavigator.LoadGame();
         }
     }
