@@ -33,11 +33,23 @@ public class CreateAgentManager : MonoBehaviour
     public Text descError;
     public Text visualDescError;
 
+    public GameObject incubationTimeInfoPanel;
+    public GameObject incubationTimeInfoButton;
+
     void Start(){
         spinner.SetActive(false);
         nameInputField.onValueChanged.AddListener(delegate { CheckEmpty(nameInputField, nameError); });
         descInputField.onValueChanged.AddListener(delegate { CheckEmpty(descInputField, descError); });
         agentVisualDesc.onValueChanged.AddListener(delegate { CheckEmpty(agentVisualDesc, visualDescError); });
+    }
+
+    public void OnIncubationTimeInfoPanelButtonPressed(){
+        if (incubationTimeInfoPanel.activeSelf){
+            incubationTimeInfoPanel.SetActive(false);
+        }
+        else {
+            incubationTimeInfoPanel.SetActive(true);
+        }
     }
 
     bool CheckEmpty(InputField inputField, Text errorText)
