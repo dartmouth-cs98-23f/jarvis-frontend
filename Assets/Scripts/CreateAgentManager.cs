@@ -107,7 +107,7 @@ public class CreateAgentManager : MonoBehaviour
 
     public void FillConfirmCreateFields(){
         // Call the LoadSprite method with the desired URL
-        spriteLoader.LoadSprite(sprite_headshot_URL, (sprite) => {
+        spriteLoader.LoadSprite(sprite_URL, (sprite) => {
             confirmSpriteObject.GetComponent<Image>().sprite = sprite;
         });
 
@@ -150,12 +150,12 @@ public class CreateAgentManager : MonoBehaviour
             sideMenuManager.ToggleHatchedPanel();
             incubatingListManager.CloseIncubatingListPanel();
 
-            HTTPClient.AgentData agentInfo = await httpClient.GetAgent(agentId);
-            if (agentInfo == null){
-                Debug.Log("Failed to get agent data to create egg with");
-            }
-            GameObject gameClient = GameObject.Find("GameClient");
-            gameClient.GetComponent<GameClient>().BuildEgg(agentInfo.hatchTime, agentInfo.createdTime, user.location.coordX, user.location.coordY, agentInfo);
+            // HTTPClient.AgentData agentInfo = await httpClient.GetAgent(agentId);
+            // if (agentInfo == null){
+            //     Debug.Log("Failed to get agent data to create egg with");
+            // }
+            // GameObject gameClient = GameObject.Find("GameClient");
+            // gameClient.GetComponent<GameClient>().BuildEgg(agentInfo.hatchTime, agentInfo.createdTime, user.location.coordX, user.location.coordY, agentInfo);
         }
         else
         {

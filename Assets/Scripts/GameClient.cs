@@ -232,7 +232,7 @@ public class GameClient : MonoBehaviour
             }
             Enqueue(() =>
             {
-                BuildAgent(newAgent);
+                BuildEgg(newAgent.hatchTime, newAgent.createdTime, newAgent.location.coordX, newAgent.location.coordY, newAgent);
             });
         }
     }
