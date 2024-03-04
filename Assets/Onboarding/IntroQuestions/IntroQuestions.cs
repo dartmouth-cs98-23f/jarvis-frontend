@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Clients;
 using System;
 using System.Threading.Tasks;
+using System.Linq;
 
 public class IntroQuestions : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class IntroQuestions : MonoBehaviour
     public GameObject questionPanelsContainer;
     public List<GameObject> allQuestionPanels = new List<GameObject>();
     private List<HTTPClient.UserQuestion> userQuestions = new List<HTTPClient.UserQuestion>();
+    private List<HTTPClient.UserQuestion> randomlySelectedQuestions;
     public GameObject questionPanelPrefab;
     public GameObject characterSummaryPanel;
     public List<Text> errorTexts = new List<Text>();
@@ -32,7 +34,13 @@ public class IntroQuestions : MonoBehaviour
         // userQuestions = await LocalGetUserQuestions();
         userQuestions = await GetUserQuestions();
 
-        foreach (HTTPClient.UserQuestion question in userQuestions)
+        // Shuffle the list randomly and take the first 7 elements
+        randomlySelectedQuestions = userQuestions
+            .OrderBy(q => Guid.NewGuid())
+            .Take(7)
+            .ToList();
+
+        foreach (HTTPClient.UserQuestion question in randomlySelectedQuestions)
         {
             Transform questionPanelsContainerTransform = questionPanelsContainer.transform; 
             GameObject newQuestionPanel = Instantiate(questionPanelPrefab, questionPanelsContainerTransform);
@@ -171,11 +179,6 @@ public class IntroQuestions : MonoBehaviour
                     // TODO: Switch for backend api connection to userData
                     // HTTPClient.UserData userData = await LocalGetUser();
                     HTTPClient.UserData userData = await httpClient.GetUser(httpClient.MyId);
-
-                    // TODO: Switch for backend api connection to userSummary
-                    // string userSummary = "This is a fake user summary for testing purposes.";
-                    // string userSummary = await httpClient.GetUserSummary(httpClient.MyId);
-
                     if (userData!= null && userData.spriteAnimations != null)
                     {
                         FinishLoading(userData.username, userData.spriteAnimations, userSummary);
@@ -220,7 +223,7 @@ public class IntroQuestions : MonoBehaviour
         for (int i = 0; i < questionInputFields.Count; i++)
         {
             answers.Add(new HTTPClient.PostResponseData {
-                questionId = userQuestions[i].id,
+                questionId = randomlySelectedQuestions[i].id,
                 response = questionInputFields[i].text
             });
             Debug.Log("Adding answer: " + answers[i].response + " to question: " + answers[i].questionId);

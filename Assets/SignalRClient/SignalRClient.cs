@@ -211,6 +211,7 @@ public class SignalRClient
     {
         try
         {
+            Debug.Log("Pinging server that user is online");
             await _connection.SendAsync("PingServer");
         }
         catch (Exception ex)
