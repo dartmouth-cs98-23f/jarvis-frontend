@@ -36,8 +36,8 @@ public class CreateAgentManager : MonoBehaviour
     void Start(){
         spinner.SetActive(false);
         nameInputField.onValueChanged.AddListener(delegate { ValidateUsername(); });
-        descInputField.onValueChanged.AddListener(delegate { CheckEmpty(); });
-        agentVisualDesc.onValueChanged.AddListener(delegate { CheckEmpty(); });
+        descInputField.onValueChanged.AddListener(delegate { CheckEmpty(descInputField, descError); });
+        agentVisualDesc.onValueChanged.AddListener(delegate { CheckEmpty(agentVisualDesc, visualDescError); });
     }
 
     bool ValidateUsername()
@@ -54,11 +54,11 @@ public class CreateAgentManager : MonoBehaviour
         }
     }
 
-    bool CheckEmpty()
+    bool CheckEmpty(InputField inputField, Text errorText)
     {
-        string desc = descInputField.text;
-        string error = InputValidation.CheckEmpty(desc);
-        descError.text = error;
+        string str = inputField.text;
+        string error = InputValidation.CheckEmpty(str);
+        errorText.text = error;
         if (string.IsNullOrEmpty(error)) 
         {
             return true;
@@ -78,20 +78,32 @@ public class CreateAgentManager : MonoBehaviour
 
         // Store incubation time from the slider
         incubation = incubationTime.value;
+
+        bool usernameIsValid = ValidateUsername();
+        bool descIsValid = CheckEmpty(descInputField, descError);
+
+        if (usernameIsValid && descIsValid){
+            sideMenuManager.ToggleVisualDescPanel();
+            sideMenuManager.ToggleCreateAgentPanel();
+        }
     }
 
     public async void StoreVisualDesc(){
         visual = agentVisualDesc.text;
 
-        spinner.SetActive(true);
-        HTTPClient.PostVisualResponse resp = await httpClient.PostVisualDescription(visual);
-        if (resp != null){
-            spinner.SetActive(false);
-            sprite_URL = resp.sprite_URL;
-            sprite_headshot_URL = resp.sprite_headshot_URL;
-            FillConfirmCreateFields();
-            sideMenuManager.ToggleVisualDescPanel();
-            sideMenuManager.ToggleConfirmCreatePanel();
+        bool descIsValid = CheckEmpty(agentVisualDesc, visualDescError);
+
+        if (descIsValid){
+            spinner.SetActive(true);
+            HTTPClient.PostVisualResponse resp = await httpClient.PostVisualDescription(visual);
+            if (resp != null){
+                spinner.SetActive(false);
+                sprite_URL = resp.sprite_URL;
+                sprite_headshot_URL = resp.sprite_headshot_URL;
+                FillConfirmCreateFields();
+                sideMenuManager.ToggleVisualDescPanel();
+                sideMenuManager.ToggleConfirmCreatePanel();
+            }
         }
     }
 

@@ -251,10 +251,6 @@ public class PlayersListManager : MonoBehaviour
     }
 
     public async void OnKickPressed(){
-        kickPanel.SetActive(false);
-        kickShadow.SetActive(false);
-        playersListPanel.SetActive(true);
-        
         // Call the method to remove the user from the world
         bool response = await httpClient.RemoveUserFromWorld(playerID, httpClient.MyId);
 
@@ -262,6 +258,11 @@ public class PlayersListManager : MonoBehaviour
         if (response)
         {
             Debug.Log("User removed from the world successfully.");
+            ClosePlayerListPanel();
+            DisplayPlayersList();
+            kickPanel.SetActive(false);
+            kickShadow.SetActive(false);
+            playersListPanel.SetActive(true);
         }
         else
         {
