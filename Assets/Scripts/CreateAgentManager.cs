@@ -28,7 +28,11 @@ public class CreateAgentManager : MonoBehaviour
     public string sprite_headshot_URL;
     public GameObject eggPrefab;
     public SpriteLoader spriteLoader;
+    public GameObject spinner;
 
+    void Start(){
+        spinner.SetActive(false);
+    }
     public void StoreInput()
     {
         // Store text input from the username input field
@@ -44,14 +48,16 @@ public class CreateAgentManager : MonoBehaviour
     public async void StoreVisualDesc(){
         visual = agentVisualDesc.text;
 
-        HTTPClient.PostVisualResponse resp = await httpClient.PostVisualDescription(visual); // TODO: Add UI loading while getting image from backend
-        sprite_URL = resp.sprite_URL;
-        sprite_headshot_URL = resp.sprite_headshot_URL;
-        Debug.Log("Sprite URL " + sprite_URL);
-        Debug.Log("Sprite Headshot URL " + sprite_headshot_URL);
-        FillConfirmCreateFields();
-        sideMenuManager.ToggleVisualDescPanel();
-        sideMenuManager.ToggleConfirmCreatePanel();
+        spinner.SetActive(true);
+        HTTPClient.PostVisualResponse resp = await httpClient.PostVisualDescription(visual);
+        if (resp != null){
+            spinner.SetActive(false);
+            sprite_URL = resp.sprite_URL;
+            sprite_headshot_URL = resp.sprite_headshot_URL;
+            FillConfirmCreateFields();
+            sideMenuManager.ToggleVisualDescPanel();
+            sideMenuManager.ToggleConfirmCreatePanel();
+        }
     }
 
     public void ResetInputFields()
