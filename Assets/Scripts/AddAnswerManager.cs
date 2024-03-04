@@ -61,7 +61,6 @@ public class AddAnswerManager : MonoBehaviour
     catch (Exception e)
     {
         Debug.LogError("Error while sending answer: " + e.Message);
-        // Add additional error handling logic here if needed
     }
 }
 

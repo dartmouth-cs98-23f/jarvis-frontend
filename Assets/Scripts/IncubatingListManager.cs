@@ -230,7 +230,16 @@ public class IncubatingListManager : MonoBehaviour
             Image spriteHead = incubatingInfoComponent.displayUserImage; // Access the child Image component
             TextMeshProUGUI username = incubatingInfoComponent.usernameTMP; // Access the child TextMeshProUGUI component
             incubatingInfoComponent.trainAgentPanel = trainAgentPanel;
+            incubatingInfoComponent.trainAgentManager = trainAgentManager;
             incubatingInfoComponent.incubatingId = incubatingData.id;
+
+            TimeSpan total = agentData.hatchTime - agentData.createdTime;
+            TimeSpan remaining = agentData.hatchTime - DateTime.UtcNow;
+            double totalHours = total.TotalHours;
+            double remainingHours = remaining.TotalHours;
+
+            incubatingInfoComponent.SetMaxValue((float)totalHours);
+            incubatingInfoComponent.SetProgress((float)(totalHours - remainingHours));
 
             // Call the LoadSprite method with the desired URL
             spriteLoader.LoadSprite(agentData.sprite_headshot_URL, (sprite) => {
