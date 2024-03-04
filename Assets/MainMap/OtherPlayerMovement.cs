@@ -82,6 +82,12 @@ public class OtherPlayerMovement : MonoBehaviour
         }
         else
         {
+            if (Vector2.Distance(transform.position, collidedPlayer.transform.position) <= 0.75f) {
+                Debug.Log("Agents bumping so we don't get stuck!");
+                // Adjust the position to move away slightly
+                transform.position -= new Vector3(1f, 1f, 0f);
+            }
+
             Vector2 positionRelative = transform.InverseTransformPoint(collidedPlayer.transform.position);
             Debug.Log($"Position Relative in OPM: {positionRelative}");
             float moveRelative = Vector2.Distance(positionRelative, movementDirection);

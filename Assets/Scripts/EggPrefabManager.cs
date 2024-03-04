@@ -41,6 +41,7 @@ public class EggPrefabManager : MonoBehaviour
             TimeSpan remaining = hatchTime - DateTime.UtcNow;
             if (remaining < TimeSpan.Zero)
             {
+                Debug.Log("Entered here with hatchTime " + hatchTime);
                 GameObject gameClientGO = GameObject.Find("GameClient");
                 gameClientGO.GetComponent<GameClient>().BuildAgent(agent);
                 gameObject.SetActive(false);

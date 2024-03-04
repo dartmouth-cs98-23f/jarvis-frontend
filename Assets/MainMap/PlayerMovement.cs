@@ -97,6 +97,13 @@ public class PlayerMovement : MonoBehaviour
                     Debug.Log($"Executing Object Position: {transform.position}");
                     Debug.Log($"Tackled NPC Position: {collidedPlayer.transform.position}");
 
+                    if (Vector2.Distance(transform.position, collidedPlayer.transform.position) <= 0.75f) {
+                        Debug.Log("Bumping so we don't get stuck!");
+                        // Adjust the position to move away slightly
+                        transform.position += new Vector3(1f, 1f, 0f);
+                    }
+
+
                     // Check the local position after the InverseTransformPoint
                     Vector2 positionRelative = transform.InverseTransformPoint(collidedPlayer.transform.position);
                     Debug.Log($"Position Relative: {positionRelative}");
