@@ -127,6 +127,12 @@ public class SideMenu : MonoBehaviour
             agents.enabled = true;
             shadow.SetActive(false);
             largerShadow.SetActive(false);
+            GameObject userPrefabInstance = GameObject.Find("UserPrefab(Clone)");
+            userPrefabInstance.GetComponent<PlayerMovement>().enabled = true;
+        }
+        else {
+            GameObject userPrefabInstance = GameObject.Find("UserPrefab(Clone)");
+            userPrefabInstance.GetComponent<PlayerMovement>().enabled = false;
         }
     }
 

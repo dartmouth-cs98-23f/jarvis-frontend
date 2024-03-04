@@ -104,6 +104,9 @@ public class CreateAgentManager : MonoBehaviour
                 sideMenuManager.ToggleVisualDescPanel();
                 sideMenuManager.ToggleConfirmCreatePanel();
             }
+            else {
+                Debug.LogError("Visual Description response is null");
+            }
         }
     }
 
@@ -143,6 +146,9 @@ public class CreateAgentManager : MonoBehaviour
 
     public async void SendAgentInfo()
     {
+        if (incubation == 0.0f){
+            incubation = 2.5f / 60;
+        }
         HTTPClient.IdData agent = await httpClient.CreateAgent(name, desc, httpClient.MyId, incubation, sprite_URL, sprite_headshot_URL);
         Guid agentId = agent.id;
         HTTPClient.UserData user = await httpClient.GetUser(httpClient.MyId);
