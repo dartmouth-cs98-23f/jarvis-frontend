@@ -204,7 +204,7 @@ public class TrainAgentManager : MonoBehaviour
 
         trainAgentTimeRemaining.GetComponent<TextMeshProUGUI>().text = $"Time Remaining: {hours}h {minutes}m";
         trainAgentSlider.GetComponent<Slider>().maxValue = (float)totalHours;
-        trainAgentSlider.GetComponent<Slider>().value = (float)(totalHours - remainingHours) + (float)remaining.TotalMinutes;
+        trainAgentSlider.GetComponent<Slider>().value = (((float)total.TotalMinutes - (float)remaining.TotalMinutes) / 60f);
 
         // Call the LoadSprite method with the desired URL
         spriteLoader.LoadSprite(agent.sprite_headshot_URL, (sprite) => {
