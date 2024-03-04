@@ -18,10 +18,7 @@ public class SignalRClient
     private SignalRClient(string url, string authToken)
     {
         _connection = new HubConnectionBuilder()
-            .WithUrl(url, options =>
-            { 
-                options.AccessTokenProvider = () => Task.FromResult(authToken);
-            })
+            .WithUrl($"{url}?access_token={authToken}")
             .Build();
     }
 
@@ -169,10 +166,8 @@ public class SignalRClient
     {
         _connection.On<ChatResponse>("ChatHandler", (ChatResponse chatResp) =>
         {
-            Message message = JsonUtility.FromJson<Message>(chatResp.Content);
-            Debug.Log("In ChatHandler SignalR: " + message.response);
-            Debug.Log($"Message {chatResp.Id} received from user id: {chatResp.SenderId} sending to {chatResp.ReceiverId}. User is online: {chatResp.IsSenderOnline}. Message: {message.response}");
-            chatManager.ReceiveMessage(chatResp.Id, chatResp.SenderId, message.response, chatResp.IsSenderOnline);
+            Debug.Log($"Message {chatResp.Id} received from user id: {chatResp.SenderId} sending to {chatResp.ReceiverId}. User is online: {chatResp.IsSenderOnline}. Message: {chatResp.Content}");
+            chatManager.ReceiveMessage(chatResp.Id, chatResp.SenderId, chatResp.Content, chatResp.IsSenderOnline);
         });
     }
 
@@ -335,12 +330,6 @@ public class SignalRClient
     {
         get { return userLocations; }
     }
-
-    [System.Serializable]
-    public class Message
-    {
-        public string response;
-    }
 
 }
 }

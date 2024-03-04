@@ -98,7 +98,6 @@ public class ChatManager : MonoBehaviour
             ""receiverId"": ""55cd50d5-7775-4dd2-b632-a502a031ac41"",
             ""isOnline"": true,
             ""content"": ""This is old text"",
-            ""isGroupChat"": false,
             ""createdTime"": ""2022-05-21T08:20:00Z""
         },
         {
@@ -107,7 +106,6 @@ public class ChatManager : MonoBehaviour
             ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
             ""content"": ""This is the newest text"",
             ""isOnline"": false,
-            ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T14:45:30Z""
         },
         {
@@ -116,7 +114,6 @@ public class ChatManager : MonoBehaviour
             ""receiverId"": ""f7dd290b-faab-4c15-b8b9-38cff0895559"",
             ""content"": ""This is new textThis is new text\nThis is new textThis is new text\nThis is new text\nThis is new textThis is new textThis is new textThis is new textThis is new textThis is new textThis is new text"",
             ""isOnline"": true,
-            ""isGroupChat"": false,
             ""createdTime"": ""2023-11-07T13:45:30Z""
         },
     ]";
@@ -177,24 +174,29 @@ public class ChatManager : MonoBehaviour
 
         // TODO: Switch for backend.
         // LocalBuildChatHistory();
-        BuildChatHistory();
+        await BuildChatHistory();
+        await Task.Delay(500);
+        ScrollToBottom();
     }
 
     // this method is called by SignalRClient to handle the other user's online status
     public void SetUserIsOnline(Guid userId, bool isOnline)
     {
-        if (userId == otherCharacterId)
+        Enqueue(() =>
         {
-            if (isOnline) {
-                Debug.Log("Setting other user " + userId.ToString() +  " online");
-                otherCharacterIsOnline = true;
-                displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
-            } else {
-                Debug.Log("Setting other user " + userId.ToString() +  " offline");
-                otherCharacterIsOnline = false;
-                displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/red_circle");
+            if (userId == otherCharacterId)
+            {
+                if (isOnline) {
+                    Debug.Log("Setting other user " + userId.ToString() +  " online");
+                    otherCharacterIsOnline = true;
+                    displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/green_circle");
+                } else {
+                    Debug.Log("Setting other user " + userId.ToString() +  " offline");
+                    otherCharacterIsOnline = false;
+                    displayOtherCharacterActivityStatus.sprite = Resources.Load<Sprite>("Shapes/red_circle");
+                }
             }
-        }
+        });
     }
 
     public async void OnPressAskMeQuestion()
@@ -322,6 +324,11 @@ public class ChatManager : MonoBehaviour
             Debug.LogWarning("Invalid message received");
             return;
         }
+        if (senderId != otherCharacterId)
+        {
+            Debug.LogWarning("Received message from an unexpected sender");
+            return;
+        }
         Enqueue(() =>
         {
             Debug.Log("In ReceiveMessage, enqueing: " + message);
@@ -334,7 +341,6 @@ public class ChatManager : MonoBehaviour
                     ReceiverId = currentUserId,
                     Content = message,
                     IsOnline = isOnline,
-                    IsGroupChat = false,
                     CreatedTime = DateTime.UtcNow
                 });
             }
@@ -418,7 +424,6 @@ public class ChatManager : MonoBehaviour
             ["senderId"] = message.SenderId.ToString(),
             ["receiverId"] = message.ReceiverId.ToString(),
             ["content"] = message.Content,
-            ["isGroupChat"] = message.IsGroupChat,
             ["isOnline"] = message.IsOnline,
             ["createdTime"] = message.CreatedTime.ToString("o")  // "o" for round-trip date/time pattern
         };
@@ -444,7 +449,7 @@ public class ChatManager : MonoBehaviour
         messageInputField.text = "";
     }
 
-    async void BuildChatHistory()
+    async Task BuildChatHistory()
     {
         sortedChatMessages = await httpClient.GetChatHistory(currentUserId, otherCharacterId);
          if (sortedChatMessages == null) 
@@ -489,17 +494,16 @@ public class ChatManager : MonoBehaviour
             return;
         }
         ChatMessageComponent chatMessageComponent = chatGO.GetComponent<ChatMessageComponent>();
-        // string messageContent = StringParser.ParseInput(chatMessage.Content);
-        // Debug.Log("IN GCMO. Generating chat message object with content: " + chatMessage.Content);
+        string messageContent = StringParser.ParseInput(chatMessage.Content);
         if (chatMessage.SenderId == currentUserId)
         {   
             // Debug.Log("Setting chat details for current user");
-            chatMessageComponent.SetChatDetails(currentUserData.username, chatMessage.Content, chatMessage.IsOnline);
+            chatMessageComponent.SetChatDetails(currentUserData.username, messageContent, chatMessage.IsOnline);
         }
         else
         {
             // Debug.Log("Setting chat details for current user");
-            chatMessageComponent.SetChatDetails(otherCharacterData.username, chatMessage.Content, chatMessage.IsOnline);
+            chatMessageComponent.SetChatDetails(otherCharacterData.username, messageContent, chatMessage.IsOnline);
         }
         ScrollToBottom();
     }
@@ -514,10 +518,8 @@ public class ChatManager : MonoBehaviour
         message.SenderId = currentUserId;
         message.ReceiverId = receiverId;
         message.Content = content;
-        message.IsGroupChat = false;
         message.IsOnline = true; // TODO: Check if this is auto-generated on backend
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
-
         await SignalRClient.Instance.SendChat(otherCharacterId, content);
         GenerateChatMessageObject(message);
     }
@@ -535,7 +537,6 @@ public class ChatManager : MonoBehaviour
         message.SenderId = currentUserId;
         message.ReceiverId = receiverId;
         message.Content = content;
-        message.IsGroupChat = false;
         message.IsOnline = true; // TODO: Check logic of this and if this is generated on backend
         message.CreatedTime = DateTime.UtcNow; // TODO: check if this is auto-generated on backend
         AddNewChatEntry(Guid.NewGuid(), message);

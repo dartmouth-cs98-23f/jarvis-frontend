@@ -13,6 +13,7 @@ public struct WorldSprite
     public Guid id;
     public string name;
     public Sprite sprite;
+    public Guid creatorId;
 }
 
 public class ImageSwiper : MonoBehaviour
@@ -172,7 +173,7 @@ public class ImageSwiper : MonoBehaviour
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
                 // Create a new WorldSprite and add it to the list
-                worldSprites.Add(new WorldSprite { id = world.id, name = world.name, sprite = sprite });
+                worldSprites.Add(new WorldSprite { id = world.id, name = world.name, sprite = sprite, creatorId = world.creatorId });
             }
             else
             {
@@ -244,6 +245,16 @@ public class ImageSwiper : MonoBehaviour
         if (worldSprites.Count > 0)
         {
             return worldSprites[currentIndex].id.ToString();
+        }
+        return null; // or string.Empty if you prefer
+    }
+
+    public string GetCurrentWorldCreatorId()
+    {
+        if (worldSprites.Count > 0)
+        {
+            Debug.Log("Current world creator id: " + worldSprites[currentIndex].creatorId.ToString());
+            return worldSprites[currentIndex].creatorId.ToString();
         }
         return null; // or string.Empty if you prefer
     }

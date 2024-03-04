@@ -809,15 +809,32 @@ namespace Clients {
             }
         }
 
-
-        public async Task<bool> RemoveWorldFromList(Guid worldId, Guid userId)
+        public async Task<bool> RemoveWorldFromList(Guid worldId, Guid userId, Guid creatorId)
         {
             string apiUrl = $"{url}/worlds/{worldId}/users/{userId}";
-            Debug.Log("Removing world with id: " + worldId + " from user with id: " + userId);
+            Debug.Log("Removing world with id: " + worldId + " from user with id: " + userId + " and creator id: " + creatorId);
             try
             {
-                HttpResponseMessage response = await httpClient.DeleteAsync(apiUrl);
+                // Create the request body
+                var requestBody = new
+                {
+                    ownerId = creatorId
+                };
 
+                // Serialize the request body to JSON
+                string jsonRequest = JsonConvert.SerializeObject(requestBody);
+                HttpContent content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Create the DELETE request with the request body
+                HttpRequestMessage request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(apiUrl),
+                    Content = content
+                };
+
+                // Send the DELETE request
+                HttpResponseMessage response = await httpClient.SendAsync(request);
                 if (response.IsSuccessStatusCode)
                 {
                     Debug.Log("World removed successfully to user with world id: " + worldId + " and user id: " + userId);
@@ -1056,10 +1073,7 @@ namespace Clients {
 
             [JsonProperty("content")]
             public string Content { get; set; }
-
-            [JsonProperty("isGroupChat")]
-            public bool IsGroupChat { get; set; }
-            [JsonProperty("isOnline")]
+            [JsonProperty("isSenderOnline")]
             public bool IsOnline { get; set; }
 
             [JsonProperty("createdTime")]

@@ -16,13 +16,14 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 targetPosition;
     private Animator animator;
     private float moveSpeed = 5.0f;
+     public Vector2 direction = Vector2.zero;
     private Guid collidedCharacterId;
 
     public GameObject InteractButton;
     public GameObject NurtureButton;
     public Tilemap tilemap; // Reference to the Tilemap
     public bool collided = false;
-    public Collision2D collidedPlayer;
+    public Collider2D collidedPlayer;
 
 
     // Start is called before the first frame update
@@ -53,6 +54,9 @@ public class PlayerMovement : MonoBehaviour
             if (touch.phase == TouchPhase.Began)
             {
                 targetPosition = Camera.main.ScreenToWorldPoint(touch.position);
+                // targetPosition.x = (int) targetPosition.x;
+                // targetPosition.y = (int) targetPosition.y;
+
                 if (IsWithinTilemapBounds(targetPosition)){
                     await SignalRClient.Instance.UpdateLocation((int) targetPosition.x, (int) targetPosition.y);
                 }
@@ -71,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Calculate the direction from the current position to the target position
-        Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
+        direction = (targetPosition - (Vector2)transform.position).normalized;
 
         // Update the animator parameters
         animator.SetFloat("moveX", direction.x);
@@ -90,11 +94,17 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
                 }
                 else{
+                    Debug.Log($"Executing Object Position: {transform.position}");
+                    Debug.Log($"Tackled NPC Position: {collidedPlayer.transform.position}");
+
+                    // Check the local position after the InverseTransformPoint
                     Vector2 positionRelative = transform.InverseTransformPoint(collidedPlayer.transform.position);
+                    Debug.Log($"Position Relative: {positionRelative}");
 
                     float moveRelative = Vector2.Distance(positionRelative, direction);
+                    Debug.Log("moveRelative " + moveRelative);
 
-                    if (moveRelative > .75f)
+                    if (moveRelative > 1.75f)
                     {
                         rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
                         animator.SetBool("moving", true);
@@ -102,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
                     else
                         rb.velocity = Vector2.zero;
                         animator.SetBool("moving", false);
-                        }
+                    }
             }
             else
             {
@@ -111,18 +121,6 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetBool("moving", false);
                 rb.velocity = Vector2.zero;
             }
-            // Get the current player position
-            int xCoordinate = Mathf.RoundToInt(transform.position.x);
-            int yCoordinate = Mathf.RoundToInt(transform.position.y);
-
-            // // TODO: Comment out when backend works
-            // PlayerPrefs.SetString("coordX", xCoordinate.ToString());
-            // PlayerPrefs.SetString("coordY", yCoordinate.ToString()); 
-
-            // TODO: Backend api connection. Send the updated location to the server
-            // await SignalRClient.Instance.UpdateLocation(xCoordinate, yCoordinate);
-            // await SignalRClient.Instance.UpdateLocation((int) targetPosition.x, (int) targetPosition.y);
-
         }
         else
         {
@@ -141,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
         return tilemap.cellBounds.Contains(cellPosition);
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log($"Collided with GameObject: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
         
@@ -150,10 +148,6 @@ public class PlayerMovement : MonoBehaviour
             InteractButton.SetActive(true);
             collided = true;
             collidedPlayer = collision;
-            
-            Vector3 currentPosition = collidedPlayer.transform.position;
-            Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
-            targetPosition = currentPosition2D;
 
             CharacterComponent characterComponent = collision.gameObject.GetComponent<CharacterComponent>();
 
@@ -166,7 +160,7 @@ public class PlayerMovement : MonoBehaviour
                 Debug.Log($"Collided with Character Type: {collidedCharacterType} (ID: {collidedCharacterId})");
 
                 // Store the CollidedCharacterId in PlayerPrefs to access in the Chat scene
-                // TODO: Do this without using PlayerPrefs
+
                 PlayerPrefs.SetString("CollidedCharacterId", collidedCharacterId.ToString());
                 PlayerPrefs.SetString("CollidedCharacterType", collidedCharacterType);
             }
@@ -174,10 +168,6 @@ public class PlayerMovement : MonoBehaviour
         else if (collision.gameObject.CompareTag("egg")){
             collided = true;
             collidedPlayer = collision;
-            
-            Vector3 currentPosition = collidedPlayer.transform.position;
-            Vector2 currentPosition2D = new Vector2(currentPosition.x, currentPosition.y);
-            targetPosition = currentPosition2D;
 
             CharacterComponent eggComponent = collision.gameObject.GetComponent<CharacterComponent>();
 
@@ -196,7 +186,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void OnCollisionExit2D(Collision2D collision)
+    void OnTriggerExit2D(Collider2D collision)
     {
         // Hide click to chat button
         InteractButton.SetActive(false);
