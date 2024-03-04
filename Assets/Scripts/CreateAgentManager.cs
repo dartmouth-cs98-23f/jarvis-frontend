@@ -35,23 +35,9 @@ public class CreateAgentManager : MonoBehaviour
 
     void Start(){
         spinner.SetActive(false);
-        nameInputField.onValueChanged.AddListener(delegate { ValidateUsername(); });
+        nameInputField.onValueChanged.AddListener(delegate { CheckEmpty(nameInputField, nameError); });
         descInputField.onValueChanged.AddListener(delegate { CheckEmpty(descInputField, descError); });
         agentVisualDesc.onValueChanged.AddListener(delegate { CheckEmpty(agentVisualDesc, visualDescError); });
-    }
-
-    bool ValidateUsername()
-    {
-        string username = nameInputField.text;
-        string error = InputValidation.ValidateUsername(username);
-        nameError.text = error;
-        if (string.IsNullOrEmpty(error)) 
-        {
-            return true;
-        } else
-        {
-            return false;
-        }
     }
 
     bool CheckEmpty(InputField inputField, Text errorText)
@@ -79,7 +65,7 @@ public class CreateAgentManager : MonoBehaviour
         // Store incubation time from the slider
         incubation = incubationTime.value;
 
-        bool usernameIsValid = ValidateUsername();
+        bool usernameIsValid = CheckEmpty(nameInputField, nameError);
         bool descIsValid = CheckEmpty(descInputField, descError);
 
         if (usernameIsValid && descIsValid){

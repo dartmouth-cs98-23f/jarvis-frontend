@@ -18,7 +18,26 @@ public class AddAnswerManager : MonoBehaviour
     public GameObject spriteHead;
     public GameObject agentName;
     public GameObject question;
+    public Text answerError;
+    public SideMenu sideMenuManager;
 
+    void Start(){
+        answerInput.onValueChanged.AddListener(delegate { CheckEmpty(answerInput, answerError); });
+    }
+
+    bool CheckEmpty(InputField inputField, Text errorText)
+    {
+        string str = inputField.text;
+        string error = InputValidation.CheckEmpty(str);
+        errorText.text = error;
+        if (string.IsNullOrEmpty(error)) 
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
     public void ResetInputFields()
     {
         // Reset the input fields
@@ -37,31 +56,36 @@ public class AddAnswerManager : MonoBehaviour
     }
 
     public async void SendAnswer()
-{
-    try
     {
-        // Get the answer from the input field
-        answer = answerInput.text;
-
-        Debug.Log("answer test " + answer);
-
-        // Call the PostResponses method to send the answer
-        HTTPClient.PostResponseResp sendAnswerResponse = await httpClient.PostResponse(agentID, httpClient.MyId, questionID, answer);
-
-        if (sendAnswerResponse != null)
+        try
         {
-            Debug.Log("Answer sent successfully. Agent summary is now " + sendAnswerResponse.summary);
+            // Get the answer from the input field
+            answer = answerInput.text;
+            
+            bool answerIsValid = CheckEmpty(answerInput, answerError);
+
+            if (answerIsValid){
+                // Call the PostResponses method to send the answer
+                HTTPClient.PostResponseResp sendAnswerResponse = await httpClient.PostResponse(agentID, httpClient.MyId, questionID, answer);
+                if (sendAnswerResponse != null)
+                {
+                    sideMenuManager.ToggleTypeAnswerPanel();
+                    Debug.Log("Answer sent successfully. Agent summary is now " + sendAnswerResponse.summary);
+                    ResetInputFields();
+                }
+                else
+                {
+                    Debug.LogError("Failed to send answer.");
+                    // Add error handling logic here if needed
+                }
+            }
+            else {
+                Debug.Log("Answer not valid");
+            }
         }
-        else
+        catch (Exception e)
         {
-            Debug.LogError("Failed to send answer.");
-            // Add error handling logic here if needed
+            Debug.LogError("Error while sending answer: " + e.Message);
         }
     }
-    catch (Exception e)
-    {
-        Debug.LogError("Error while sending answer: " + e.Message);
-    }
-}
-
 }
