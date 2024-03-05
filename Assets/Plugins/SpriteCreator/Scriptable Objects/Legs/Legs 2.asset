@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d56554f0f28e3174b9b0f26242568028, type: 3}
+  m_Name: Legs 2
+  m_EditorClassIdentifier: 
+  bodyPartName: Khakis
+  bodyPartAnimationID: 2
+  allBodyPartAnimations:
+  - {fileID: 7400000, guid: 1033fef8e58164a3786f9825c7aa7b4e, type: 2}
+  - {fileID: 7400000, guid: 965d626dc1c1a41d7b3bbcc3f5768e79, type: 2}
+  - {fileID: 7400000, guid: 513e11627fe6f4980b6d2b9eef38caab, type: 2}
+  - {fileID: 7400000, guid: 747ca3d98e1f4422a860b3793f59cb09, type: 2}
+  - {fileID: 7400000, guid: 319bf9f3fe4ee4774a6b4ecb8681ccb0, type: 2}
+  - {fileID: 7400000, guid: b93eef685106343318139f4b1d8c98c0, type: 2}
+  - {fileID: 7400000, guid: 9d7d871abd1574f38ac5c8b0fe938978, type: 2}
+  - {fileID: 7400000, guid: 6268d8d07c9f84d069f1fa367b03c877, type: 2}

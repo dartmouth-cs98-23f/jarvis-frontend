@@ -1252,8 +1252,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 760617767
-  m_SortingLayer: 0
+  m_SortingLayerID: 1701963547
+  m_SortingLayer: 2
   m_SortingOrder: 10
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1504,8 +1504,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 760617767
-  m_SortingLayer: 0
+  m_SortingLayerID: 1701963547
+  m_SortingLayer: 2
   m_SortingOrder: 5
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -3054,24 +3054,31 @@ MonoBehaviour:
     bodyPartOptions:
     - {fileID: 11400000, guid: 04184ccc187ebeb4898134b291bec24b, type: 2}
     - {fileID: 11400000, guid: 48cdaf5d95f59d94a8fa889ff85dcc07, type: 2}
+    - {fileID: 11400000, guid: f27d134edff3d4765850107bc872da53, type: 2}
     bodyPartNameTextComponent: {fileID: 1999301404}
     bodyPartCurrentIndex: 0
   - bodyPartName: Hair
     bodyPartOptions:
     - {fileID: 11400000, guid: 6cbe392ad638a864daa283f1419d4412, type: 2}
     - {fileID: 11400000, guid: 7a2a182ab3c50ce44a5e03b296084fb5, type: 2}
+    - {fileID: 11400000, guid: e0a74bef67b0b4437a5078a0b7b7940b, type: 2}
+    - {fileID: 11400000, guid: 01add277c75194ba4ac68ca1615adfa6, type: 2}
+    - {fileID: 11400000, guid: 249a9690e413d422b976f10b9ebc487a, type: 2}
+    - {fileID: 11400000, guid: 8aaf12b81a77f46ac85ce12d3b254844, type: 2}
     bodyPartNameTextComponent: {fileID: 892154269}
     bodyPartCurrentIndex: 0
   - bodyPartName: Torso
     bodyPartOptions:
     - {fileID: 11400000, guid: 1344766a0a65f164aa04b98df2bc5bd3, type: 2}
     - {fileID: 11400000, guid: bc32bae8dd8f0ce41a514cf6fd504e3c, type: 2}
+    - {fileID: 11400000, guid: d07c372208d294435994afe419d4f773, type: 2}
     bodyPartNameTextComponent: {fileID: 1468974115}
     bodyPartCurrentIndex: 0
   - bodyPartName: Legs
     bodyPartOptions:
     - {fileID: 11400000, guid: 3446583dbcbcedb49ae7587f7ef2e7dc, type: 2}
     - {fileID: 11400000, guid: 664153d2da20a6b4fb38d1ab9adedfb1, type: 2}
+    - {fileID: 11400000, guid: b28cf3019cbfd4148bf0fed7d3aef218, type: 2}
     bodyPartNameTextComponent: {fileID: 1908009049}
     bodyPartCurrentIndex: 0
 --- !u!114 &1700227718
@@ -3170,8 +3177,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 760617767
-  m_SortingLayer: 0
+  m_SortingLayerID: 1701963547
+  m_SortingLayer: 2
   m_SortingOrder: 10
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -3989,10 +3996,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 760617767
-  m_SortingLayer: 0
+  m_SortingLayerID: 1701963547
+  m_SortingLayer: 2
   m_SortingOrder: 10
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -340196075, guid: c4852a23d69558c4cbe3c37ef5c21782, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4000,7 +4007,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2134997622

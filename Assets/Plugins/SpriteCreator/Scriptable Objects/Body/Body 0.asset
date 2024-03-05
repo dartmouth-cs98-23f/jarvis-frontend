@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d56554f0f28e3174b9b0f26242568028, type: 3}
   m_Name: Body 0
   m_EditorClassIdentifier: 
-  bodyPartName: Dark Skin
+  bodyPartName: Body 1
   bodyPartAnimationID: 0
   allBodyPartAnimations:
   - {fileID: 7400000, guid: a58d5b0e476988d41b97434bce79eb13, type: 2}
