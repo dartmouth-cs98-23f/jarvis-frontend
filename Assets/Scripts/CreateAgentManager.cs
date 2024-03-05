@@ -87,7 +87,7 @@ public class CreateAgentManager : MonoBehaviour
     }
 
     public async void StoreVisualDesc(){
-        button.interactable = true;
+        button.interactable = false;
 
         visual = agentVisualDesc.text;
 
@@ -101,6 +101,7 @@ public class CreateAgentManager : MonoBehaviour
                 sprite_URL = resp.sprite_URL;
                 sprite_headshot_URL = resp.sprite_headshot_URL;
                 FillConfirmCreateFields();
+                button.interactable = true;
                 sideMenuManager.ToggleVisualDescPanel();
                 sideMenuManager.ToggleConfirmCreatePanel();
             }
@@ -108,7 +109,6 @@ public class CreateAgentManager : MonoBehaviour
                 Debug.LogError("Visual Description response is null");
             }
         }
-        button.interactable = true;
     }
 
     public void ResetInputFields()

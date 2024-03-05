@@ -64,11 +64,13 @@ public class SideMenu : MonoBehaviour
         hatchedPanel.activeSelf ||
         incubatingPanel.activeSelf ||
         swipePrefab.activeSelf){
-            characters.interactable = false;
-            worldSettings.interactable = false;
-            exitWorld.interactable = false;
-            players.interactable = false;
-            agents.interactable = false;
+            // characters.interactable = false;
+            // worldSettings.interactable = false;
+            // exitWorld.interactable = false;
+            // players.interactable = false;
+            // agents.interactable = false;
+            hamburgerIcon.SetActive(true);
+            hamburgerIcon.GetComponent<EventTrigger>().enabled = false;
             shadow.SetActive(true);
         }
         if (createAgentPanel.activeSelf ||
@@ -80,11 +82,13 @@ public class SideMenu : MonoBehaviour
         viewAnswersPanel.activeSelf ||
         typeAnswerPanel.activeSelf)
         {
-            characters.interactable = false;
-            worldSettings.interactable = false;
-            exitWorld.interactable = false;
-            players.interactable = false;
-            agents.interactable = false;
+            // characters.interactable = false;
+            // worldSettings.interactable = false;
+            // exitWorld.interactable = false;
+            // players.interactable = false;
+            // agents.interactable = false;
+            hamburgerIcon.SetActive(true);
+            hamburgerIcon.GetComponent<EventTrigger>().enabled = false;
             largerShadow.SetActive(true);
         }
         if (!worldSettingsPanel.activeSelf &&
@@ -123,11 +127,12 @@ public class SideMenu : MonoBehaviour
             !viewAnswersPanel.activeSelf &&
             !typeAnswerPanel.activeSelf)
         {
-            characters.interactable = true;
-            worldSettings.interactable = true;
-            exitWorld.interactable = true;
-            players.interactable = true;
-            agents.interactable = true;
+            // characters.interactable = true;
+            // worldSettings.interactable = true;
+            // exitWorld.interactable = true;
+            // players.interactable = true;
+            // agents.interactable = true;
+            hamburgerIcon.GetComponent<EventTrigger>().enabled = true;
             shadow.SetActive(false);
             largerShadow.SetActive(false);
             GameObject userPrefabInstance = GameObject.Find("UserPrefab(Clone)");
