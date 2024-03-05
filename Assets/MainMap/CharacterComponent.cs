@@ -5,8 +5,6 @@ using System;
 
 public class CharacterComponent : MonoBehaviour
 {
-    // TODO: Generate by sprite
-    // public Sprite userSprite;
     public Guid characterId;
     public string characterType;
 

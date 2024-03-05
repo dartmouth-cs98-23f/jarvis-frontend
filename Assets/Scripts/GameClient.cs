@@ -43,7 +43,6 @@ public class GameClient : MonoBehaviour
     void OnEnable()
     {
         httpClient = HTTPClient.Instance; // get httpClient
-        // TODO: Uncomment below for backend connection
         userId = httpClient.MyId;
         worldId = httpClient.WorldId;
         allUsers = new List<HTTPClient.UserData>();
@@ -51,9 +50,7 @@ public class GameClient : MonoBehaviour
         Debug.Log("userId: " + userId);
         Debug.Log("worldId: " + worldId);
 
-        // TODO: Comment below out for backend connection
-        // userId = new Guid("c0c973f7-5f80-437e-8418-f3c401780274");
-        // worldId = new Guid("3b490737-6d3f-4bb8-9593-15e8a1c80dab");
+
         InitializeGame();
     }
 
@@ -121,10 +118,10 @@ public class GameClient : MonoBehaviour
     {
         if (agent.isHatched) {
             Debug.Log("Generating agent prefab with id: " + agent.id);
-            return AgentPrefab; // TODO: Add logic to get actual agent prefab
+            return AgentPrefab; 
         } else {
             Debug.Log("Generating egg prefab with id: " + agent.id);
-            return EggPrefab; // TODO: Add logic for this to display the incubation time and to interact with it - nurture it
+            return EggPrefab; 
         }
     }
     
@@ -150,7 +147,7 @@ public class GameClient : MonoBehaviour
         }
 
         GameObject userPrefab = GenerateUserPrefab(user.id);
-        GameObject userGO = Instantiate(userPrefab, mainMap); // TODO: Replace georgePrefab with actual user prefab
+        GameObject userGO = Instantiate(userPrefab, mainMap);
         userGO.tag = CharacterType.User;
 
         CharacterComponent userComponent = userGO.GetComponent<CharacterComponent>();
@@ -171,7 +168,7 @@ public class GameClient : MonoBehaviour
         }
 
         BodyPartsManager bpComponent = userGO.GetComponent<BodyPartsManager>();
-        bpComponent.SetSprite(user.spriteAnimations); // TODO: Replace with user.spriteAnimations
+        bpComponent.SetSprite(user.spriteAnimations); 
         
         if (user.location == null)
         {
@@ -237,7 +234,6 @@ public class GameClient : MonoBehaviour
         }
     }
 
-    // TODO: Update this method to generate the actual prefab of the user
     GameObject GenerateUserPrefab(Guid userId)
     {
         if (userId == this.userId)
@@ -279,86 +275,5 @@ public class GameClient : MonoBehaviour
         trainAgentManager.SetAgentID(eggId);
     }
 
-    // c8268729-e4f5-4df3-85fc-51779d7c2b35
-    //d2e12e14-5df1-4a0e-92f1-11f2f10e5880
-    // @Deprecated: This is from V1 (MVP)
-    // void BuildAllCharacters()
-    // {
-    //     // TODO: Uncomment below for local testing
-    //     //////////////////////////////////////////////////
-
-    //     string xCoordinateString = PlayerPrefs.GetString("coordX", "0");
-    //     string yCoordinateString = PlayerPrefs.GetString("coordY", "0");
-    //     currentUserData.location.coordX = int.Parse(xCoordinateString);
-    //     currentUserData.location.coordY = int.Parse(yCoordinateString);
-
-    //     //////////////////////////////////////////////////
-
-    //     // ADD back httpClient.currentUserData if testing locally
-    //     // TODO: Handle error codes
-    //     if (currentUserData == null)
-    //     { 
-    //         Debug.Log("error getting user");
-    //         return;
-    //     }
-
-    //     GameObject testGO = Instantiate(currentUserPrefab, mainMap);
-    //     testGO.tag = "Player";
-    //     CharacterComponent testCharacterComponent = testGO.GetComponent<CharacterComponent>();
-    //     testCharacterComponent.SetPosition(currentUserData.location.coordX, currentUserData.location.coordY, 0);
-
-    //     GameObject currentUserGO = Instantiate(currentPlayerPrefab, mainMap);
-    //     currentUserGO.tag = "Player";
-
-    //     Tilemap tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
-
-    //     PlayerMovement playerMovementScript = currentUserGO.GetComponent<PlayerMovement>();
-    //     playerMovementScript.InteractButton = GameObject.Find("ChatButton");
-    //     playerMovementScript.InteractButton.SetActive(false);
-    //     playerMovementScript.SetTilemap(tilemap);
-    //     CharacterComponent characterComponent = currentUserGO.GetComponent<CharacterComponent>();
-    //     characterComponent.SetPosition(currentUserData.location.coordX, currentUserData.location.coordY, 0); // Add back httpClient.currentUserData if testing locally
-
-
-    //     GameObject georgeWashingtonGO = Instantiate(georgePrefab, mainMap);
-    //     georgeWashingtonGO.tag = "Player";
-    //     PlayerMovement georgeWashingtonMovementScript = georgeWashingtonGO.GetComponent<PlayerMovement>();
-    //     Transform georgeMainCamera = georgeWashingtonGO.transform.Find("Main Camera");
-    //     // If the camera exists, destroy it
-    //     // destroy mainCamera and playerMovement script for NPC
-    //     if (georgeMainCamera != null)
-    //     {
-    //         Destroy(georgeMainCamera.gameObject);
-    //     }
-    //     if (georgeWashingtonMovementScript != null)
-    //     {
-    //         Destroy(georgeWashingtonMovementScript);
-    //     }
-        
-    //     CharacterComponent georgeWashingtonComponent = georgeWashingtonGO.GetComponent<CharacterComponent>();
-    //     georgeWashingtonComponent.SetPosition(-10, 10, 0); // Add back httpClient.currentUserData if testing locally
-    //     georgeWashingtonComponent.SetCharacterId(new Guid("55cd50d5-7775-4dd2-b632-a502a031ac41")); // Add back httpClient.currentUserData if testing locally
-
-
-
-    //     GameObject yodaGO = Instantiate(yodaPrefab, mainMap);
-    //     yodaGO.tag = "Player";
-    //     PlayerMovement yodaMovementScript = yodaGO.GetComponent<PlayerMovement>();
-    //     Transform yodaMainCamera = yodaGO.transform.Find("Main Camera");
-    //     // destroy mainCamera and playerMovement script for NPC
-    //     if (yodaMainCamera != null)
-    //     {
-    //         Destroy(yodaMainCamera.gameObject);
-    //     }
-    //     if (yodaMovementScript != null)
-    //     {
-    //         Destroy(yodaMovementScript);
-    //     }
-        
-    //     CharacterComponent yodaComponent = yodaGO.GetComponent<CharacterComponent>();
-    //     yodaComponent.SetPosition(10, -3, 0); // Add back httpClient.currentUserData if testing locally
-    //     yodaComponent.SetCharacterId(new Guid("f7dd290b-faab-4c15-b8b9-38cff0895559")); // Add back httpClient.currentUserData if testing locally
-
-    // }
 
 }

@@ -97,7 +97,6 @@ public class BodyPartsSelector : MonoBehaviour
         for (int partIndex = 0; partIndex < bodyPartSelections.Length; partIndex++){
             indices.Add(characterBody.characterBodyParts[partIndex].bodyPart.bodyPartAnimationID);
         }
-        // TODO: Post this info to the backend
         await httpClient.UpdateUserSprite(httpClient.MyId, indices);
     }
 
