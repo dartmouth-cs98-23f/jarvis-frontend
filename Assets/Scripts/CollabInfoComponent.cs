@@ -65,11 +65,13 @@ public class CollabInfoComponent : MonoBehaviour
     {
         viewAnswersManager.SetIDs(agentID, questionID);
         viewAnswersManager.SetPanelDetails(spriteHead, username.text, questionTMP.text);
+        viewAnswersButton.interactable = false;
         viewAnswersManager.DisplayAnswers();
         // Toggle the panel visibility
         if (viewAnswersPanel != null)
         {
             viewAnswersPanel.SetActive(!viewAnswersPanel.activeSelf);
+            viewAnswersButton.interactable = true;
         }
         else
         {
@@ -81,10 +83,12 @@ public class CollabInfoComponent : MonoBehaviour
     {
         addAnswerManager.SetIDs(agentID, questionID);
         addAnswerManager.SetPanelDetails(spriteHead, username.text, questionTMP.text);
+        answersButton.interactable = false;
         // Toggle the panel visibility
         if (typeAnswerPanel != null)
         {
             typeAnswerPanel.SetActive(!typeAnswerPanel.activeSelf);
+            answersButton.interactable = true;
         }
         else
         {

@@ -33,6 +33,7 @@ public class CreateAgentManager : MonoBehaviour
     public Text descError;
     public Text visualDescError;
     public Button button;
+    public Button confirmButton;
     public GameObject incubationTimeInfoPanel;
     public GameObject incubationTimeInfoButton;
 
@@ -147,6 +148,8 @@ public class CreateAgentManager : MonoBehaviour
 
     public async void SendAgentInfo()
     {
+        confirmButton.interactable = false;
+
         if (incubation == 0.0f){
             incubation = 2.5f / 60;
         }
@@ -162,6 +165,7 @@ public class CreateAgentManager : MonoBehaviour
             }
             
             sideMenuManager.ToggleConfirmCreatePanel();
+            confirmButton.interactable = true;
             sideMenuManager.ToggleHatchedPanel();
             incubatingListManager.CloseIncubatingListPanel();
 

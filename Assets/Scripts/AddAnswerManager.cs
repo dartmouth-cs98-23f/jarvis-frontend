@@ -20,6 +20,7 @@ public class AddAnswerManager : MonoBehaviour
     public GameObject question;
     public Text answerError;
     public SideMenu sideMenuManager;
+    public Button button;
 
     void Start(){
         answerInput.onValueChanged.AddListener(delegate { CheckEmpty(answerInput, answerError); });
@@ -59,6 +60,7 @@ public class AddAnswerManager : MonoBehaviour
     {
         try
         {
+            button.interactable = false;
             // Get the answer from the input field
             answer = answerInput.text;
             
@@ -70,6 +72,7 @@ public class AddAnswerManager : MonoBehaviour
                 if (sendAnswerResponse != null)
                 {
                     sideMenuManager.ToggleTypeAnswerPanel();
+                    button.interactable = true;
                     Debug.Log("Answer sent successfully. Agent summary is now " + sendAnswerResponse.summary);
                     ResetInputFields();
                 }
