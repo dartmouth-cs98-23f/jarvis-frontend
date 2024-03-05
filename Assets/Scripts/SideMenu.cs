@@ -130,11 +130,15 @@ public class SideMenu : MonoBehaviour
             shadow.SetActive(false);
             largerShadow.SetActive(false);
             GameObject userPrefabInstance = GameObject.Find("UserPrefab(Clone)");
-            userPrefabInstance.GetComponent<PlayerMovement>().enabled = true;
+            if (userPrefabInstance != null){
+                userPrefabInstance.GetComponent<PlayerMovement>().enabled = true;
+            }
         }
         else {
             GameObject userPrefabInstance = GameObject.Find("UserPrefab(Clone)");
-            userPrefabInstance.GetComponent<PlayerMovement>().enabled = false;
+            if (userPrefabInstance != null){
+                userPrefabInstance.GetComponent<PlayerMovement>().enabled = false;
+            }
         }
     }
 
