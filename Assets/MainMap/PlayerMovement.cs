@@ -94,11 +94,8 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(Mathf.Round(direction.x * moveSpeed), Mathf.Round(direction.y * moveSpeed));
                 }
                 else{
-                    Debug.Log($"Executing Object Position: {transform.position}");
-                    Debug.Log($"Tackled NPC Position: {collidedPlayer.transform.position}");
 
                     if (Vector2.Distance(transform.position, collidedPlayer.transform.position) <= 0.75f) {
-                        Debug.Log("Bumping so we don't get stuck!");
                         // Adjust the position to move away slightly
                         transform.position += new Vector3(1f, 1f, 0f);
                     }
@@ -106,10 +103,8 @@ public class PlayerMovement : MonoBehaviour
 
                     // Check the local position after the InverseTransformPoint
                     Vector2 positionRelative = transform.InverseTransformPoint(collidedPlayer.transform.position);
-                    Debug.Log($"Position Relative: {positionRelative}");
 
                     float moveRelative = Vector2.Distance(positionRelative, direction);
-                    Debug.Log("moveRelative " + moveRelative);
 
                     if (moveRelative > 1.75f)
                     {
