@@ -48,7 +48,6 @@ public class BodyPartsManager : MonoBehaviour
             string partType = bodyPartTypes[partIndex];
             // Get current body part ID
             string partID = characterBody.characterBodyParts[partIndex].bodyPart.bodyPartAnimationID.ToString();
-            Debug.Log("partType " + partType + " partID " + partID + " Time " + Time.time);
             
             for (int stateIndex = 0; stateIndex < characterStates.Length; stateIndex++)
             {
@@ -60,12 +59,9 @@ public class BodyPartsManager : MonoBehaviour
                     // Get players animation from player body
                     // ***NOTE: Unless Changed Here, Animation Naming Must Be: "[Type]_[Index]_[state]_[direction]" (Ex. Body_0_idle_down)
                     animationClip = Resources.Load<AnimationClip>("Player Animations/" + partType + "/" + partType + "_" + partID + "_" + state + "_" + direction);
-                    Debug.Log(animationClip);
 
                     // Override default animation
                     defaultAnimationClips[partType + "_" + 0 + "_" + state + "_" + direction] = animationClip;
-                    // Debug.Log("DAC " + defaultAnimationClips[partType + "_" + 0 + "_" + state + "_" + direction]);
-                    Debug.Log("DAC " + defaultAnimationClips["Torso_0_idle_up"]);
                 }
             }
         }
