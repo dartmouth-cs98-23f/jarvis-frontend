@@ -3054,12 +3054,17 @@ MonoBehaviour:
     bodyPartOptions:
     - {fileID: 11400000, guid: 04184ccc187ebeb4898134b291bec24b, type: 2}
     - {fileID: 11400000, guid: 48cdaf5d95f59d94a8fa889ff85dcc07, type: 2}
+    - {fileID: 11400000, guid: f27d134edff3d4765850107bc872da53, type: 2}
     bodyPartNameTextComponent: {fileID: 1999301404}
     bodyPartCurrentIndex: 0
   - bodyPartName: Hair
     bodyPartOptions:
     - {fileID: 11400000, guid: 6cbe392ad638a864daa283f1419d4412, type: 2}
     - {fileID: 11400000, guid: 7a2a182ab3c50ce44a5e03b296084fb5, type: 2}
+    - {fileID: 11400000, guid: e0a74bef67b0b4437a5078a0b7b7940b, type: 2}
+    - {fileID: 11400000, guid: 01add277c75194ba4ac68ca1615adfa6, type: 2}
+    - {fileID: 11400000, guid: 249a9690e413d422b976f10b9ebc487a, type: 2}
+    - {fileID: 11400000, guid: 8aaf12b81a77f46ac85ce12d3b254844, type: 2}
     bodyPartNameTextComponent: {fileID: 892154269}
     bodyPartCurrentIndex: 0
   - bodyPartName: Torso
@@ -3073,6 +3078,7 @@ MonoBehaviour:
     bodyPartOptions:
     - {fileID: 11400000, guid: 3446583dbcbcedb49ae7587f7ef2e7dc, type: 2}
     - {fileID: 11400000, guid: 664153d2da20a6b4fb38d1ab9adedfb1, type: 2}
+    - {fileID: 11400000, guid: b28cf3019cbfd4148bf0fed7d3aef218, type: 2}
     bodyPartNameTextComponent: {fileID: 1908009049}
     bodyPartCurrentIndex: 0
 --- !u!114 &1700227718
