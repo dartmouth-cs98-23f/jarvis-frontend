@@ -143,6 +143,7 @@ public class SideMenu : MonoBehaviour
         else {
             GameObject userPrefabInstance = GameObject.Find("UserPrefab(Clone)");
             if (userPrefabInstance != null){
+                userPrefabInstance.GetComponent<PlayerMovement>().StopMovement();
                 userPrefabInstance.GetComponent<PlayerMovement>().enabled = false;
             }
         }
