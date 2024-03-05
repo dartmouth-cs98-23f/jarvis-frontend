@@ -205,6 +205,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void StopMovement()
+    {
+        rb.velocity = Vector2.zero;
+        animator.SetBool("moving", false);
+    }
+
     // Update is called once per frame
     async void Update()
     {
