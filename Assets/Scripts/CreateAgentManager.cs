@@ -32,7 +32,7 @@ public class CreateAgentManager : MonoBehaviour
     public Text nameError;
     public Text descError;
     public Text visualDescError;
-
+    public Button button;
     public GameObject incubationTimeInfoPanel;
     public GameObject incubationTimeInfoButton;
 
@@ -87,6 +87,8 @@ public class CreateAgentManager : MonoBehaviour
     }
 
     public async void StoreVisualDesc(){
+        button.interactable = true;
+
         visual = agentVisualDesc.text;
 
         bool descIsValid = CheckEmpty(agentVisualDesc, visualDescError);
@@ -106,6 +108,7 @@ public class CreateAgentManager : MonoBehaviour
                 Debug.LogError("Visual Description response is null");
             }
         }
+        button.interactable = true;
     }
 
     public void ResetInputFields()

@@ -5,6 +5,7 @@ using Clients;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 public class SideMenu : MonoBehaviour
 {
@@ -12,11 +13,11 @@ public class SideMenu : MonoBehaviour
     public GameObject charactersButton;
     public GameObject charactersSubMenu;
     public GameObject hamburgerIcon;
-    public EventTrigger characters;
-    public EventTrigger worldSettings;
-    public EventTrigger exitWorld;
-    public EventTrigger players;
-    public EventTrigger agents;
+    public Button characters;
+    public Button worldSettings;
+    public Button exitWorld;
+    public Button players;
+    public Button agents;
 
     public GameObject worldSettingsPanel;
     public GameObject ownerWorldSettingsPanel;
@@ -63,11 +64,11 @@ public class SideMenu : MonoBehaviour
         hatchedPanel.activeSelf ||
         incubatingPanel.activeSelf ||
         swipePrefab.activeSelf){
-            characters.enabled = false;
-            worldSettings.enabled = false;
-            exitWorld.enabled = false;
-            players.enabled = false;
-            agents.enabled = false;
+            characters.interactable = false;
+            worldSettings.interactable = false;
+            exitWorld.interactable = false;
+            players.interactable = false;
+            agents.interactable = false;
             shadow.SetActive(true);
         }
         if (createAgentPanel.activeSelf ||
@@ -79,11 +80,11 @@ public class SideMenu : MonoBehaviour
         viewAnswersPanel.activeSelf ||
         typeAnswerPanel.activeSelf)
         {
-            characters.enabled = false;
-            worldSettings.enabled = false;
-            exitWorld.enabled = false;
-            players.enabled = false;
-            agents.enabled = false;
+            characters.interactable = false;
+            worldSettings.interactable = false;
+            exitWorld.interactable = false;
+            players.interactable = false;
+            agents.interactable = false;
             largerShadow.SetActive(true);
         }
         if (!worldSettingsPanel.activeSelf &&
@@ -122,11 +123,11 @@ public class SideMenu : MonoBehaviour
             !viewAnswersPanel.activeSelf &&
             !typeAnswerPanel.activeSelf)
         {
-            characters.enabled = true;
-            worldSettings.enabled = true;
-            exitWorld.enabled = true;
-            players.enabled = true;
-            agents.enabled = true;
+            characters.interactable = true;
+            worldSettings.interactable = true;
+            exitWorld.interactable = true;
+            players.interactable = true;
+            agents.interactable = true;
             shadow.SetActive(false);
             largerShadow.SetActive(false);
             GameObject userPrefabInstance = GameObject.Find("UserPrefab(Clone)");
