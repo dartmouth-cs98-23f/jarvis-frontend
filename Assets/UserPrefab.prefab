@@ -211,7 +211,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 0.4, g: 0.7294118, b: 0.42352942, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -561,6 +561,7 @@ MonoBehaviour:
   NurtureButton: {fileID: 0}
   tilemap: {fileID: 0}
   collided: 0
+  collidedPlayer: {fileID: 0}
 --- !u!114 &896048580768174645
 MonoBehaviour:
   m_ObjectHideFlags: 0
