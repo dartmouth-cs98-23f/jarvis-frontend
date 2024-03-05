@@ -198,6 +198,9 @@ public class GameClient : MonoBehaviour
     {
         Enqueue(() =>
         {
+            if (userId == this.userId){
+                SceneNavigator.LoadMyWorlds();
+            }
             // Find all game objects with the User tag
             GameObject[] userGOs = GameObject.FindGameObjectsWithTag(CharacterType.User);
 
