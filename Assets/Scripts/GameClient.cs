@@ -84,6 +84,7 @@ public class GameClient : MonoBehaviour
         SignalRClient.Instance.OnUserAddedToWorldHandler(this);
         SignalRClient.Instance.OnUserRemovedFromWorldHandler(this);
         SignalRClient.Instance.OnAgentAddedToWorldHandler(this);
+        SignalRClient.Instance.UserOnlineCheckHandler();
     }
 
     async void BuildAllCharactersV2()

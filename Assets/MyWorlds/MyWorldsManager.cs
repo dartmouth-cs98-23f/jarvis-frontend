@@ -208,15 +208,19 @@ public class MyWorldsManager : MonoBehaviour
         {
             // Get the updated list of worlds
             userWorlds = await GetUserWorlds(); // TODO: Uncomment this for backend version 
-            // re-render user's worlds
-            worldSwiper.RemoveWorld();
+            Debug.Log("In LeaveWorld, RemoveWorldSuccessful. New userWorlds Count: " + userWorlds.Count);
 
             if (userWorlds == null || userWorlds.Count == 0)
             {
+                Debug.Log("inside LeaveWorld, setting worldObjects to inactive");
                 currentWorldObject.SetActive(false);
                 leftArrowButton.SetActive(false);
                 rightArrowButton.SetActive(false);
                 enterWorldButton.SetActive(false);
+            } else {
+                // re-render user's worlds
+                worldSwiper.SetupUserWorlds(userWorlds);
+                worldSwiper.RemoveWorld();
             }
         }
     }

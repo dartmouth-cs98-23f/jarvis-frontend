@@ -48,7 +48,6 @@ public class SignalRClient
             if (instance._connection.State == HubConnectionState.Connected)
             {
                 Debug.Log("IM ACTUALLY CONNECTED");
-                instance.UserOnlineCheckHandler();
             }
             else{
                 Debug.Log("I am not actually connected");

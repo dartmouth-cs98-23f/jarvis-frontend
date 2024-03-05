@@ -38,17 +38,7 @@ public class ImageSwiper : MonoBehaviour
     {
         if (myWorldsPanel != null) {
             MyWorldsManager myWorldsManager = myWorldsPanel.GetComponent<MyWorldsManager>();
-            // if (myWorldsManager.userWorlds != null)
-            // {
-            //     userWorlds = myWorldsManager.userWorlds;
-            //     Debug.Log("User Worlds in ImageSwiper: " + userWorlds.Count);
-            // } else 
-            // {
-            //     userWorlds = new List<HTTPClient.UserWorld>(); // TODO: Add no worlds UI
-            //     Debug.Log("No user worlds in ImageSwiper or userWorlds still null");
-            // }
             userWorlds = myWorldsManager.userWorlds;
-            // StartLoadingUserWorlds();
             InitializeDisplayImage();
             rectTransform = GetComponent<RectTransform>(); // Get the RectTransform
             UpdateWorldsDisplay();        
@@ -64,6 +54,7 @@ public class ImageSwiper : MonoBehaviour
     public void SetupUserWorlds(List<HTTPClient.UserWorld> userWorlds)
     {
         this.userWorlds = userWorlds;
+        Debug.Log("In SetupUserWorlds userWorlds count: " + userWorlds.Count);
         StartLoadingUserWorlds();
     }
 
@@ -152,9 +143,17 @@ public class ImageSwiper : MonoBehaviour
     {
         worldSprites = new List<WorldSprite>(); // Initialize or clear the existing list
         Debug.Log("In LoadWorldSprites userWorld count: " + userWorldList.Count);
+        HashSet<Guid> worldIds = new HashSet<Guid>();
         foreach (HTTPClient.UserWorld world in userWorldList)
         {
-            Debug.Log("Loading world thumbnail: " + world.thumbnail_URL);
+            if (worldIds.Contains(world.id))
+            {
+                continue;
+            } else {
+                worldIds.Add(world.id);
+            }
+            Debug.Log("Loading world: " + world.name);
+            // Debug.Log("Loading world thumbnail: " + world.thumbnail_URL);
 
             string thumbnail_URL = world.thumbnail_URL;
             // Basic validation of the URL
@@ -171,7 +170,7 @@ public class ImageSwiper : MonoBehaviour
             {
                 Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-
+                
                 // Create a new WorldSprite and add it to the list
                 worldSprites.Add(new WorldSprite { id = world.id, name = world.name, sprite = sprite, creatorId = world.creatorId });
             }
@@ -227,6 +226,7 @@ public class ImageSwiper : MonoBehaviour
     {
         if(worldSprites != null && worldSprites.Count > 0)
         {
+            Debug.Log("Updating world display, worldSprites count: " + worldSprites.Count);
             displayImage.sprite = worldSprites[currentIndex].sprite;
             displayWorldName.text = worldSprites[currentIndex].name;
         }
@@ -277,19 +277,7 @@ public class ImageSwiper : MonoBehaviour
 
     public void RemoveWorld()
     {
+        Debug.Log("In removeworld userWorldsCount: " + userWorlds.Count);
         currentIndex = currentIndex % userWorlds.Count; // Wrap to the beginning if at the end
-
-        StartLoadingUserWorlds(); 
-
-        // Update the display
-        if (worldSprites.Count > 0)
-        {
-            UpdateWorldsDisplay();
-        }
-        else
-        {   // TODO: Add a UI for no worlds
-            displayImage.sprite = null;
-            displayWorldName.text = "";
-        }
     }
 }
