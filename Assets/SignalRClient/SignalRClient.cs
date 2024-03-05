@@ -105,6 +105,10 @@ public class SignalRClient
     // Calls the backend method UpdateLocation with the current location of the user
     public async Task UpdateLocation(int xCoordinate, int yCoordinate)
     {
+            if (instance._connection.State != HubConnectionState.Connected)
+            {
+                await instance.ConnectAsync();
+            }
             var location = new Location
             {
                 X_coord = xCoordinate,
@@ -145,6 +149,10 @@ public class SignalRClient
     /// <returns></returns>
     public async Task SendChat(Guid receiverId, string message)
     {
+        if (instance._connection.State != HubConnectionState.Connected)
+        {
+            await instance.ConnectAsync();
+        }
         Debug.Log("Sending chat message to " + receiverId + " with message: " + message);
         try
         {
@@ -209,6 +217,10 @@ public class SignalRClient
     /// <returns></returns>
     public async Task PingServer()
     {
+        if (instance._connection.State != HubConnectionState.Connected)
+        {
+            await instance.ConnectAsync();
+        }
         try
         {
             Debug.Log("Pinging server that user is online");
