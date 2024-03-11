@@ -51,9 +51,8 @@ Install XCode (if you want to deploy to app store)
 ## Authors
 
 Evan Phillips
-Alan Moss
 Vico Lee
 
 ## Acknowledgments
-Thanks to Tim Tregubov for his guidance throughout this project
+Thanks to Tim Tregubov and Natalie Svoboda for their guidance throughout this project.
 
