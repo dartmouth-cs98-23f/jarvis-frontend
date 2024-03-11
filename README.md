@@ -27,6 +27,9 @@ We use [SignalRClient](https://github.com/dartmouth-cs98-23f/jarvis-frontend/blo
 3. Handling the adding and removing of users & agents in the world
 4. Sending and updating the chat scene
 
+<img width="799" alt="image" src="https://github.com/dartmouth-cs98-23f/jarvis-frontend/assets/37021321/9b3a2a12-1dfd-4f35-842b-fa34eaa0c42b">
+
+
 #### Recording of Onboarding Flow
 https://github.com/dartmouth-cs98-23f/jarvis-frontend/assets/37021321/b137bc5f-4c8f-4650-851d-f60fcf24ed23
 
