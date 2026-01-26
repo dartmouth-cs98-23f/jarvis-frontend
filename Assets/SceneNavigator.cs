@@ -5,8 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class SceneNavigator : MonoBehaviour
 {
+    public static void LoadMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+        Debug.Log("Loading MainMenu");
+    }
 
-    // Start is called before the first frame update
     public static void LoadCreateAccount()
     {
         SceneManager.LoadScene("CreateAccount");
